@@ -1,0 +1,6 @@
+{
+    "run_list": [
+        "recipe[infantium::infantium]",
+        "recipe[infantium::vagrant-dev]"
+    ]
+}
