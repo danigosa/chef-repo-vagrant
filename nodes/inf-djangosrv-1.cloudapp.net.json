@@ -1,5 +1,0 @@
-{
-    "run_list": [
-        "recipe[infantium::inf-djangosrv-1]"
-    ]
-}

@@ -1,9 +1,3 @@
-package "chef"
-
-service "chef-client" do
-  action [:stop, :disable]
-end
-
 package "openssh-server"
 
 service "ssh" do
@@ -23,11 +17,3 @@ template "/home/ubuntu/.ssh/authorized_keys" do
   owner "ubuntu"
   group "ubuntu"
 end
-
-package "nginx"
-
-service "nginx" do
-  supports :status => true, :restart => true, :reload => true
-  action [:enable, :start]
-end
-
