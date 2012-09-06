@@ -122,4 +122,60 @@ end
 package "postgresql"
 package "postgresql-contrib"
 
+service "postgresql" do
+  supports :restart => true, :status => true, :reload => true
+  action :nothing
+end
 
+template "/etc/postgresql/9.1/main/postgresql.conf" do
+  owner "postgres"
+  group "postgres"
+  mode "0600"
+  notifies :restart, resources(:service => "postgresql"), :immediately
+end
+
+template "/etc/postgresql/9.1/main/pg_hba.conf" do
+  owner "postgres"
+  group "postgres"
+  mode "0600"
+  notifies :restart, resources(:service => "postgresql"), :immediately
+end
+
+# From https://github.com/opscode-cookbooks/postgresql/blob/master/recipes/server.rb
+# Default PostgreSQL install has 'ident' checking on unix user 'postgres'
+# and 'md5' password checking with connections from 'localhost'. This script
+# runs as user 'postgres', so we can execute the 'role' and 'database' resources
+# as 'root' later on, passing the below credentials in the PG client.
+##########################################################
+# TODO: Pass password as json or attribute not hardcoded
+##########################################################
+script "assign-postgres-password" do
+  user "postgres"
+  cwd "/home/ubuntu"
+  interpreter "bash"
+  code <<-EOH
+  echo "ALTER ROLE postgres ENCRYPTED PASSWORD '$1$efcBp33w$Q.trqE9UT3Y8E50BBabcF.';" | psql
+  psql create database if not exists infantiumdb owner postgres encoding 'UTF8'
+  EOH
+  not_if "echo '\connect' | PGPASSWORD=$1$efcBp33w$Q.trqE9UT3Y8E50BBabcF. psql --username=postgres --no-password -h localhost"
+  action :run
+end
+
+script "django-app-setup" do
+  user "ubuntu"
+  cwd "/home/ubuntu"
+  interpreter "bash"
+  code <<-EOH
+  source /home/ubuntu/infantium_portal/env/bin/activate
+  cd /home/ubuntu/infantium_portal/infantium
+  python ./manage.py collectstatic
+  python ./manage.py syncdb --all
+  python ./manage.py migrate --fake
+  python ./manage.py migrate
+  python ./manage.py loaddata default_templates
+  python ./manage.py loaddata apps/web/fixtures/infantium_data.json
+  python ./manage.py loaddata apps/web/fixtures/zinnia_sample_data.json
+  EOH
+  notifies :reload, "service[uwsgi]"
+  notifies :reload, "service[nginx]"
+end
