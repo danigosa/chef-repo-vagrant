@@ -175,6 +175,7 @@ script "django-app-setup" do
   python ./manage.py loaddata default_templates
   python ./manage.py loaddata apps/web/fixtures/infantium_data.json
   python ./manage.py loaddata apps/web/fixtures/zinnia_sample_data.json
+  deactivate
   EOH
   notifies :reload, "service[uwsgi]"
   notifies :reload, "service[nginx]"
