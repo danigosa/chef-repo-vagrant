@@ -13,15 +13,6 @@ server {
         root   /usr/share/nginx/html;
     }
 
-    # uWSGI serving Django.
-    upstream django {
-        # Distribute requests to servers based on client IP. This keeps load
-        # balancing fair but consistent per-client. In this instance we're
-        # only using one uWGSI worker anyway.
-        ip_hash;
-        server 127.0.0.1:49152;
-    }
-
     location ~ /\. {
         access_log off;
         log_not_found off;
@@ -35,7 +26,7 @@ server {
     }
 
     location / {
-        uwsgi_pass  django;
+        uwsgi_pass  127.0.0.1:49152;
         include     uwsgi_params;
         uwsgi_param UWSGI_PYHOME /home/ubuntu/infantium_portal/env;
         uwsgi_param UWSGI_CHDIR /home/ubuntu/infantium_portal/infantium;

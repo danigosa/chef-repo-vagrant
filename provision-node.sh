@@ -9,7 +9,7 @@ ssh-copy-id -i ~/.ssh/dani-inf-azure.pub ubuntu@${node}
 
 scp /etc/apt/trusted.gpg.d/opscode-keyring.gpg ubuntu@${node}:/tmp
 
-scp ./database/infantiumdb_dump_chef.sql ubuntu@${node):/tmp
+scp /home/vagrant/chef-repo/database/infantiumdb_dump_chef.dump ubuntu@${node}:/tmp
 
 ssh -t ubuntu@${node} "cat > /tmp/provision.sh" <<'EOF'
 #!/bin/bash

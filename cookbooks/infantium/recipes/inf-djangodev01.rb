@@ -11,8 +11,35 @@ service "nginx" do
   action [:enable, :start]
 end
 
+script "setup_nginx_conf" do
+  user "ubuntu"
+  cwd "/home/ubuntu"
+  interpreter "bash"
+  code <<-EOH
+  cd /etc/nginx/conf.d
+  sudo cp default.conf default.conf.bak
+  EOH
+end
+
+template "/etc/nginx/conf.d/default.conf" do
+  mode "0600"
+  owner "root"
+  group "root"
+  notifies :reload, "service[ssh]"
+end
+
 package "uwsgi"
 package "uwsgi-plugin-python"
+
+script "setup_uwgsi_conf" do
+  user "ubuntu"
+  cwd "/home/ubuntu"
+  interpreter "bash"
+  code <<-EOH
+  cd /etc/uwsgi/apps-enabled
+  sudo touch infantium.ini
+  EOH
+end
 
 template "/etc/init/uwsgi.conf" do
   mode "0600"
@@ -73,27 +100,11 @@ script "usermod_nginx_user" do
   EOH
 end
 
-script "setup_nginx_conf" do
-  user "ubuntu"
-  cwd "/home/ubuntu"
-  interpreter "bash"
-  code <<-EOH
-  cd /etc/nginx/conf.d
-  sudo mv default.conf default.conf.bak
-  sudo touch infantium_portal.conf
-  EOH
-end
-
-template "/etc/nginx/conf.d/default.conf" do
-  mode "0600"
-  owner "root"
-  group "root"
-  notifies :reload, "service[uwsgi]"
-  notifies :reload, "service[nginx]"
-end
-
 package "git"
 
+##########################################################
+# TODO: Pull source with ssh auth without promtping passwd
+##########################################################
 script "pull_source" do
   user "ubuntu"
   cwd "/home/ubuntu"
@@ -106,6 +117,8 @@ script "pull_source" do
   sudo chown -R $USER:nginx /home/ubuntu/infantium_portal
   sudo chmod -R g+w /home/ubuntu/infantium_portal
   EOH
+  notifies :reload, "service[uwsgi]"
+  notifies :reload, "service[nginx]"
 end
 
 package "python-dev"
@@ -168,7 +181,7 @@ script "assign-postgres-password" do
   echo "ALTER ROLE postgres ENCRYPTED PASSWORD '$1$efcBp33w$Q.trqE9UT3Y8E50BBabcF.';" | psql
   dropdb infantiumdb
   createdb -E UTF8 -O postgres -h inf-djangodev01.cloudapp.net
-  psql < /tmp/infantiumdb_dump_chef.sql
+  psql < /tmp/infantiumdb_dump_chef.dump
   EOH
   not_if "echo '\connect' | PGPASSWORD=$1$efcBp33w$Q.trqE9UT3Y8E50BBabcF. psql --username=postgres --no-password -h localhost"
   action :run
@@ -185,6 +198,7 @@ script "django-app-setup" do
   python ./manage.py syncdb --all
   python ./manage.py migrate --fake
   python ./manage.py migrate
+  deactivate
   EOH
   notifies :reload, "service[uwsgi]"
   notifies :reload, "service[nginx]"
