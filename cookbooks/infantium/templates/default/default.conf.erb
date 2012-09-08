@@ -1,0 +1,44 @@
+server {
+    listen          80;
+    server_name     $hostname;
+    location /static {
+        alias /home/ubuntu/infantium_portal/infantium/apps/web/static;
+    }
+    location /media {
+        alias /home/ubuntu/infantium_portal/infantium/media;
+    }
+    error_page   404              /404.html;
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+
+    # uWSGI serving Django.
+    upstream django {
+        # Distribute requests to servers based on client IP. This keeps load
+        # balancing fair but consistent per-client. In this instance we're
+        # only using one uWGSI worker anyway.
+        ip_hash;
+        server 127.0.0.1:49152;
+    }
+
+    location ~ /\. {
+        access_log off;
+        log_not_found off;
+        deny all;
+    }
+
+    location ~* \.(jpg|jpeg|gif|png|css|js|ico|xml)$ {
+        access_log        off;
+        log_not_found     off;
+        expires           360d;
+    }
+
+    location / {
+        uwsgi_pass  django;
+        include     uwsgi_params;
+        uwsgi_param UWSGI_PYHOME /home/ubuntu/infantium_portal/env;
+        uwsgi_param UWSGI_CHDIR /home/ubuntu/infantium_portal/infantium;
+        uwsgi_param UWSGI_MODULE infantium.wsgi:application;
+    }
+}

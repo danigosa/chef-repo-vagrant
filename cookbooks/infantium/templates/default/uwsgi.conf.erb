@@ -4,6 +4,4 @@ stop on runlevel [06]
 
 respawn
 
-exec uwsgi --master --processes 4 --die-on-term --uid uwsgi --gid nginx \
---socket /tmp/uwsgi.sock --chmod-socket 660 --vhost --logto /var/log/uwsgi.log \
---plugins python
+exec uwsgi --ini /etc/uwsgi/apps-enabled/infantium.ini

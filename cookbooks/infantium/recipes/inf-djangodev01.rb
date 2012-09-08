@@ -21,15 +21,22 @@ template "/etc/init/uwsgi.conf" do
   notifies :reload, "service[ssh]"
 end
 
-service "uwsgi" do
-  supports :status => true, :restart => true, :reload => true
-  action [:enable, :start]
+template "/etc/uwsgi/apps-enabled/infantium.ini" do
+  mode "0600"
+  owner "root"
+  group "root"
+  notifies :reload, "service[ssh]"
 end
 
 execute "uwgsi_useradd" do
   command "useradd -c 'uwsgi user' -g nginx --system uwsgi && touch /home/ubuntu/uwsgi_user_created.donothing"
   creates "/home/ubuntu/uwsgi_user_created.donothing"
   action :run
+end
+
+service "uwsgi" do
+  supports :status => true, :restart => true, :reload => true
+  action [:enable, :start]
 end
 
 package "memcached"
@@ -77,7 +84,7 @@ script "setup_nginx_conf" do
   EOH
 end
 
-template "/etc/nginx/conf.d/infantium_portal.conf" do
+template "/etc/nginx/conf.d/default.conf" do
   mode "0600"
   owner "root"
   group "root"
@@ -95,7 +102,7 @@ script "pull_source" do
   cd /home/ubuntu/infantium_portal
   rm -rf infantium
   git clone https://danigosa@bitbucket.org/gloriamh/infantium.git
-  rm -rf .git .gitignore
+  rm -rf ./infantium/.git ./infantium/.gitignore
   sudo chown -R $USER:nginx /home/ubuntu/infantium_portal
   sudo chmod -R g+w /home/ubuntu/infantium_portal
   EOH
@@ -149,6 +156,7 @@ end
 # as 'root' later on, passing the below credentials in the PG client.
 ##########################################################
 # TODO: Pass password as json or attribute not hardcoded
+# TODO: Hostname as json or attribute not harcoded
 # TODO: SQL dump from GIT repository
 # TODO: Restore will fail if not -c (dropping former objects) option enabled
 ##########################################################
@@ -158,7 +166,9 @@ script "assign-postgres-password" do
   interpreter "bash"
   code <<-EOH
   echo "ALTER ROLE postgres ENCRYPTED PASSWORD '$1$efcBp33w$Q.trqE9UT3Y8E50BBabcF.';" | psql
-  pg_restore -c /tmp/infantiumdb_dump_chef.sql
+  dropdb infantiumdb
+  createdb -E UTF8 -O postgres -h inf-djangodev01.cloudapp.net
+  psql < /tmp/infantiumdb_dump_chef.sql
   EOH
   not_if "echo '\connect' | PGPASSWORD=$1$efcBp33w$Q.trqE9UT3Y8E50BBabcF. psql --username=postgres --no-password -h localhost"
   action :run
@@ -175,7 +185,6 @@ script "django-app-setup" do
   python ./manage.py syncdb --all
   python ./manage.py migrate --fake
   python ./manage.py migrate
-  deactivate
   EOH
   notifies :reload, "service[uwsgi]"
   notifies :reload, "service[nginx]"

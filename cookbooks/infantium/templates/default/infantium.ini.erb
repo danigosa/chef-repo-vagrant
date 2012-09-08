@@ -1,0 +1,16 @@
+[uwsgi]
+chdir=/home/ubuntu/infantium_portal/infantium
+home=/home/ubuntu/infantium_portal/env
+module=infantium.wsgi:application
+socket=127.0.0.1:49152
+die-on-term=True
+vhost=True
+master=True
+pidfile=ngix
+uid=uwsgi
+processes=5
+vacuum=True
+max-requests=5000
+harakiri=10
+daemonize=/var/log/uwsgi/infantium.log
+logto=/var/log/uwsgi.log

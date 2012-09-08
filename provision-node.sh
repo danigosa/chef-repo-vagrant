@@ -13,7 +13,7 @@ scp ./database/infantiumdb_dump_chef.sql ubuntu@${node):/tmp
 
 ssh -t ubuntu@${node} "cat > /tmp/provision.sh" <<'EOF'
 #!/bin/bash
-# Allow ubuntu user to execute sudo without prompting password. Useful but not the most secure in production envs
+# Allow ubuntu user to execute sudo without prompting password through The Windows Azure Linux Agent
 sudo chmod 666 /etc/sudoers.d/waagent
 sudo echo "ubuntu ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/waagent
 sudo chmod 440 /etc/sudoers.d/waagent
