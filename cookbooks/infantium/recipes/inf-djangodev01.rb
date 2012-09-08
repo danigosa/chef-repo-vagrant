@@ -142,12 +142,15 @@ template "/etc/postgresql/9.1/main/pg_hba.conf" do
 end
 
 # From https://github.com/opscode-cookbooks/postgresql/blob/master/recipes/server.rb
+#
 # Default PostgreSQL install has 'ident' checking on unix user 'postgres'
 # and 'md5' password checking with connections from 'localhost'. This script
 # runs as user 'postgres', so we can execute the 'role' and 'database' resources
 # as 'root' later on, passing the below credentials in the PG client.
 ##########################################################
 # TODO: Pass password as json or attribute not hardcoded
+# TODO: SQL dump from GIT repository
+# TODO: Restore will fail if not -c (dropping former objects) option enabled
 ##########################################################
 script "assign-postgres-password" do
   user "postgres"
@@ -155,7 +158,7 @@ script "assign-postgres-password" do
   interpreter "bash"
   code <<-EOH
   echo "ALTER ROLE postgres ENCRYPTED PASSWORD '$1$efcBp33w$Q.trqE9UT3Y8E50BBabcF.';" | psql
-  psql create database if not exists infantiumdb owner postgres encoding 'UTF8'
+  pg_restore -c /tmp/infantiumdb_dump_chef.sql
   EOH
   not_if "echo '\connect' | PGPASSWORD=$1$efcBp33w$Q.trqE9UT3Y8E50BBabcF. psql --username=postgres --no-password -h localhost"
   action :run
@@ -172,9 +175,6 @@ script "django-app-setup" do
   python ./manage.py syncdb --all
   python ./manage.py migrate --fake
   python ./manage.py migrate
-  python ./manage.py loaddata default_templates
-  python ./manage.py loaddata apps/web/fixtures/infantium_data.json
-  python ./manage.py loaddata apps/web/fixtures/zinnia_sample_data.json
   deactivate
   EOH
   notifies :reload, "service[uwsgi]"
