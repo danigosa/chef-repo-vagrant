@@ -83,12 +83,12 @@ package "python-pip"
 package "python-setuptools"
 
 script "install_virtualenv" do
-  user "ubuntu"
-  cwd "/home/ubuntu"
+  user "root"
+  cwd "/var/www"
   interpreter "bash"
   code <<-EOH
-  mkdir -p /home/ubuntu/infantium_portal
-  cd /home/ubuntu/infantium_portal
+  mkdir -p /var/www/infantium_portal/media
+  cd /var/www/infantium_portal
   sudo pip install virtualenv
   rm -rf env
   virtualenv env
@@ -99,13 +99,13 @@ end
 # Restore permissions
 ##########################################################
 script "usermod_nginx_user" do
-  user "ubuntu"
-  cwd "/home/ubuntu"
+  user "root"
+  cwd "/var/www"
   interpreter "bash"
   code <<-EOH
   sudo usermod -a -G nginx $USER
-  sudo chown -R $USER:nginx /home/ubuntu/infantium_portal
-  sudo chmod -R g+w /home/ubuntu/infantium_portal
+  sudo chown -R $USER:nginx /var/www/infantium_portal
+  chmod -R g+w /var/www/infantium_portal
   EOH
 end
 
@@ -122,16 +122,16 @@ script "pull_source" do
   ##########################################################
   # TODO: Pull source with ssh auth without promtping passwd
   ##########################################################
-  user "ubuntu"
-  cwd "/home/ubuntu"
+  user "root"
+  cwd "/var/www"
   interpreter "bash"
   code <<-EOH
-  cd /home/ubuntu/infantium_portal
+  cd /var/www/infantium_portal
   rm -rf infantium
   git clone https://danigosa@bitbucket.org/gloriamh/infantium.git
   rm -rf ./infantium/.git ./infantium/.gitignore
-  sudo chown -R $USER:nginx /home/ubuntu/infantium_portal
-  sudo chmod -R g+w /home/ubuntu/infantium_portal
+  sudo chown -R $USER:nginx /var/www/infantium_portal
+  sudo chmod -R g+w /var/www/infantium_portal
   EOH
 end
 ###################### END COMMENT #######################
@@ -145,15 +145,15 @@ end
 package "unzip"
 
 script "pull_source" do
-  user "ubuntu"
-  cwd "/home/ubuntu"
+  user "root"
+  cwd "/var/www"
   interpreter "bash"
   code <<-EOH
   cd /home/ubuntu/infantium_portal
   rm -rf infantium
-  unzip /tmp/infantium.zip -d /home/ubuntu/infantium_portal/infantium
-  sudo chown -R $USER:nginx /home/ubuntu/infantium_portal
-  sudo chmod -R g+w /home/ubuntu/infantium_portal
+  unzip /tmp/infantium.zip -d /var/www/infantium_portal/infantium
+  sudo chown -R $USER:nginx /var/www/infantium_portal
+  sudo chmod -R g+w /var/www/infantium_portal
   EOH
 end
 
@@ -169,12 +169,12 @@ package "libxslt-dev"
 package "gettext"
 
 script "install_django" do
-  user "ubuntu"
-  cwd "/home/ubuntu"
+  user "root"
+  cwd "/var/www"
   interpreter "bash"
   code <<-EOH
-  source /home/ubuntu/infantium_portal/env/bin/activate
-  pip install -r /home/ubuntu/infantium_portal/infantium/requirements.txt
+  source /var/www/infantium_portal/env/bin/activate
+  pip install -r /var/www/infantium_portal/infantium/requirements.txt
   deactivate
   EOH
 end
@@ -218,7 +218,7 @@ end
 ##########################################################
 script "assign-postgres-password" do
   user "postgres"
-  cwd "/home/ubuntu"
+  cwd "/var/www"
   interpreter "bash"
   code <<-EOH
   echo "ALTER ROLE postgres PASSWORD 'postgres';" | psql
@@ -277,12 +277,12 @@ end
 # DJANGO SETUP
 ##########################################################
 script "django-app-setup" do
-  user "ubuntu"
-  cwd "/home/ubuntu"
+  user "root"
+  cwd "/var/www"
   interpreter "bash"
   code <<-EOH
-  source /home/ubuntu/infantium_portal/env/bin/activate
-  cd /home/ubuntu/infantium_portal/infantium
+  source /var/www/infantium_portal/env/bin/activate
+  cd /var/www/infantium_portal/infantium
   python ./manage.py collectstatic --noinput
   python ./manage.py syncdb --all
   python ./manage.py migrate --fake
