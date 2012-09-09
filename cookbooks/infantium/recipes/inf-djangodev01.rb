@@ -9,20 +9,11 @@ end
 ##########################################################
 package "nginx"
 
-script "setup_nginx_conf" do
-  user "ubuntu"
-  cwd "/home/ubuntu"
-  interpreter "bash"
-  code <<-EOH
-  cd /etc/nginx/conf.d
-  sudo cp default.conf default.conf.bak
-  EOH
-end
-
 template "/etc/nginx/conf.d/default.conf" do
   mode "0600"
   owner "root"
   group "root"
+  action :create_if_missing
   notifies :reload, "service[ssh]"
 end
 
@@ -32,20 +23,11 @@ end
 package "uwsgi"
 package "uwsgi-plugin-python"
 
-script "setup_uwgsi_conf" do
-  user "ubuntu"
-  cwd "/home/ubuntu"
-  interpreter "bash"
-  code <<-EOH
-  cd /etc/uwsgi/apps-enabled
-  sudo touch infantium.ini
-  EOH
-end
-
 template "/etc/init/uwsgi.conf" do
   mode "0600"
   owner "root"
   group "root"
+  action :create_if_missing
   notifies :reload, "service[ssh]"
 end
 
@@ -53,6 +35,7 @@ template "/etc/uwsgi/apps-enabled/infantium.ini" do
   mode "0600"
   owner "root"
   group "root"
+  action :create_if_missing
   notifies :reload, "service[ssh]"
 end
 
@@ -197,7 +180,7 @@ script "install_django" do
 end
 
 ##########################################################
-# INSTALL POSTGRESQL: And restore database
+# INSTALL POSTGRESQL: And automated database backup
 ##########################################################
 package "postgresql"
 package "postgresql-contrib"
@@ -248,6 +231,49 @@ script "assign-postgres-password" do
 end
 
 ##########################################################
+# Automated backuping
+##########################################################
+script "setup_backup_conf" do
+  user "root"
+  interpreter "bash"
+  code <<-EOH
+  mkdir -p /var/backups/database/postgresql/infantiumdb
+  EOH
+end
+
+template "/var/backups/database/postgresql/infantiumdb/pg_backup.config" do
+  mode "0400"
+  owner "root"
+  group "root"
+  action :create_if_missing
+  notifies :reload, "service[ssh]"
+end
+
+template "/var/backups/database/postgresql/infantiumdb/pg_backup_rotated.sh" do
+  mode "0500"
+  owner "root"
+  group "root"
+  action :create_if_missing
+  notifies :reload, "service[ssh]"
+end
+
+template "/var/backups/database/postgresql/infantiumdb/pg_backup.sh" do
+  mode "0500"
+  owner "root"
+  group "root"
+  action :create_if_missing
+  notifies :reload, "service[ssh]"
+end
+
+template "/etc/cron.d/updatedb" do
+  mode "0500"
+  owner "root"
+  group "root"
+  action :create_if_missing
+  notifies :reload, "service[ssh]"
+end
+
+##########################################################
 # DJANGO SETUP
 ##########################################################
 script "django-app-setup" do
@@ -257,7 +283,7 @@ script "django-app-setup" do
   code <<-EOH
   source /home/ubuntu/infantium_portal/env/bin/activate
   cd /home/ubuntu/infantium_portal/infantium
-  python ./manage.py collectstatic
+  python ./manage.py collectstatic --noinput
   python ./manage.py syncdb --all
   python ./manage.py migrate --fake
   python ./manage.py migrate
