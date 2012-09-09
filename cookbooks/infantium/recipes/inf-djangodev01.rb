@@ -4,12 +4,10 @@ service "chef-client" do
   action [:stop, :disable]
 end
 
+##########################################################
+# INSTALL NGINX
+##########################################################
 package "nginx"
-
-service "nginx" do
-  supports :status => true, :restart => true, :reload => true
-  action [:enable, :start]
-end
 
 script "setup_nginx_conf" do
   user "ubuntu"
@@ -28,6 +26,9 @@ template "/etc/nginx/conf.d/default.conf" do
   notifies :reload, "service[ssh]"
 end
 
+##########################################################
+# INSTALL UWGSI
+##########################################################
 package "uwsgi"
 package "uwsgi-plugin-python"
 
@@ -61,11 +62,30 @@ execute "uwgsi_useradd" do
   action :run
 end
 
+##########################################################
+# START SERVICES
+##########################################################
 service "uwsgi" do
-  supports :status => true, :restart => true, :reload => true
+  supports :status => true, :restart => true, :reload => false
   action [:enable, :start]
+  start_command "sudo service uwsgi start"
+  stop_command "sudo service uwsgi stop"
+  restart_command "sudo service uwsgi restart"
+  status_command "sudo service uwsgi status"
 end
 
+service "nginx" do
+  supports :status => true, :restart => true, :reload => false
+  action [:enable, :start]
+  start_command "sudo service nginx start"
+  stop_command "sudo service nginx stop"
+  restart_command "sudo service nginx restart"
+  status_command "sudo service nginx status"
+end
+
+##########################################################
+# INSTALL MEMCACHED
+##########################################################
 package "memcached"
 
 service "memcached" do
@@ -73,6 +93,9 @@ service "memcached" do
   action :enable
 end
 
+##########################################################
+# INSTALL VIRTUALENV: And creates the app env
+##########################################################
 package "python-pip"
 package "python-setuptools"
 
@@ -89,6 +112,9 @@ script "install_virtualenv" do
   EOH
 end
 
+##########################################################
+# Restore permissions
+##########################################################
 script "usermod_nginx_user" do
   user "ubuntu"
   cwd "/home/ubuntu"
@@ -100,12 +126,19 @@ script "usermod_nginx_user" do
   EOH
 end
 
+
+###################### BEGIN COMMENT #####################
+=begin
+##########################################################
+GETTING SOURCE IN UPDATE-NODE.SH TO ALLOW SSH LOGIN TO BITBUCKET
+INSTALLING GIT IN PROVISION-NODE.SH
+
 package "git"
 
-##########################################################
-# TODO: Pull source with ssh auth without promtping passwd
-##########################################################
 script "pull_source" do
+  ##########################################################
+  # TODO: Pull source with ssh auth without promtping passwd
+  ##########################################################
   user "ubuntu"
   cwd "/home/ubuntu"
   interpreter "bash"
@@ -117,10 +150,34 @@ script "pull_source" do
   sudo chown -R $USER:nginx /home/ubuntu/infantium_portal
   sudo chmod -R g+w /home/ubuntu/infantium_portal
   EOH
-  notifies :reload, "service[uwsgi]"
-  notifies :reload, "service[nginx]"
+end
+###################### END COMMENT #######################
+=end
+##########################################################
+
+##########################################################
+# PULL SOURCE: Pull source from /tmp
+##########################################################
+
+package "unzip"
+
+script "pull_source" do
+  user "ubuntu"
+  cwd "/home/ubuntu"
+  interpreter "bash"
+  code <<-EOH
+  cd /home/ubuntu/infantium_portal
+  rm -rf infantium
+  unzip /tmp/infantium.zip -d /home/ubuntu/infantium_portal/infantium
+  sudo chown -R $USER:nginx /home/ubuntu/infantium_portal
+  sudo chmod -R g+w /home/ubuntu/infantium_portal
+  EOH
 end
 
+
+##########################################################
+# INSTALL DJANGO: And requirements
+##########################################################
 package "python-dev"
 package "libpq-dev"
 package "python-lxml"
@@ -139,6 +196,9 @@ script "install_django" do
   EOH
 end
 
+##########################################################
+# INSTALL POSTGRESQL: And restore database
+##########################################################
 package "postgresql"
 package "postgresql-contrib"
 
@@ -178,15 +238,18 @@ script "assign-postgres-password" do
   cwd "/home/ubuntu"
   interpreter "bash"
   code <<-EOH
-  echo "ALTER ROLE postgres ENCRYPTED PASSWORD '$1$efcBp33w$Q.trqE9UT3Y8E50BBabcF.';" | psql
+  echo "ALTER ROLE postgres PASSWORD 'postgres';" | psql
   dropdb infantiumdb
   createdb -E UTF8 -O postgres -h inf-djangodev01.cloudapp.net
   psql < /tmp/infantiumdb_dump_chef.dump
   EOH
-  not_if "echo '\connect' | PGPASSWORD=$1$efcBp33w$Q.trqE9UT3Y8E50BBabcF. psql --username=postgres --no-password -h localhost"
+  not_if "echo '\connect' | PGPASSWORD=postgres psql --username=postgres --no-password -h localhost"
   action :run
 end
 
+##########################################################
+# DJANGO SETUP
+##########################################################
 script "django-app-setup" do
   user "ubuntu"
   cwd "/home/ubuntu"
@@ -200,6 +263,4 @@ script "django-app-setup" do
   python ./manage.py migrate
   deactivate
   EOH
-  notifies :reload, "service[uwsgi]"
-  notifies :reload, "service[nginx]"
 end
