@@ -13,7 +13,7 @@ template "/etc/nginx/conf.d/default.conf" do
   mode "0600"
   owner "root"
   group "root"
-  action :create_if_missing
+  action :create
   notifies :reload, "service[ssh]"
 end
 
@@ -27,15 +27,7 @@ template "/etc/init/uwsgi.conf" do
   mode "0600"
   owner "root"
   group "root"
-  action :create_if_missing
-  notifies :reload, "service[ssh]"
-end
-
-template "/etc/uwsgi/apps-enabled/infantium.ini" do
-  mode "0600"
-  owner "root"
-  group "root"
-  action :create_if_missing
+  action :create
   notifies :reload, "service[ssh]"
 end
 
@@ -50,7 +42,7 @@ end
 ##########################################################
 service "uwsgi" do
   supports :status => true, :restart => true, :reload => false
-  action [:enable, :start]
+  action [:start]
   start_command "sudo service uwsgi start"
   stop_command "sudo service uwsgi stop"
   restart_command "sudo service uwsgi restart"
@@ -59,7 +51,7 @@ end
 
 service "nginx" do
   supports :status => true, :restart => true, :reload => false
-  action [:enable, :start]
+  action [:start]
   start_command "sudo service nginx start"
   stop_command "sudo service nginx stop"
   restart_command "sudo service nginx restart"
@@ -84,7 +76,6 @@ package "python-setuptools"
 
 script "install_virtualenv" do
   user "root"
-  cwd "/var/www"
   interpreter "bash"
   code <<-EOH
   mkdir -p /var/www/infantium_portal/media
@@ -105,7 +96,7 @@ script "usermod_nginx_user" do
   code <<-EOH
   sudo usermod -a -G nginx $USER
   sudo chown -R $USER:nginx /var/www/infantium_portal
-  chmod -R g+w /var/www/infantium_portal
+  sudo chmod -R g+w /var/www/infantium_portal
   EOH
 end
 
@@ -149,7 +140,7 @@ script "pull_source" do
   cwd "/var/www"
   interpreter "bash"
   code <<-EOH
-  cd /home/ubuntu/infantium_portal
+  cd /var/www/infantium_portal
   rm -rf infantium
   unzip /tmp/infantium.zip -d /var/www/infantium_portal/infantium
   sudo chown -R $USER:nginx /var/www/infantium_portal
@@ -216,7 +207,7 @@ end
 # TODO: SQL dump from GIT repository
 # TODO: Restore will fail if not -c (dropping former objects) option enabled
 ##########################################################
-script "assign-postgres-password" do
+script "setup-postgresql" do
   user "postgres"
   cwd "/var/www"
   interpreter "bash"
@@ -237,7 +228,7 @@ script "setup_backup_conf" do
   user "root"
   interpreter "bash"
   code <<-EOH
-  mkdir -p /var/backups/database/postgresql/infantiumdb
+  sudo mkdir -p /var/backups/database/postgresql/infantiumdb
   EOH
 end
 
@@ -245,7 +236,7 @@ template "/var/backups/database/postgresql/infantiumdb/pg_backup.config" do
   mode "0400"
   owner "root"
   group "root"
-  action :create_if_missing
+  action :create
   notifies :reload, "service[ssh]"
 end
 
@@ -253,7 +244,7 @@ template "/var/backups/database/postgresql/infantiumdb/pg_backup_rotated.sh" do
   mode "0500"
   owner "root"
   group "root"
-  action :create_if_missing
+  action :create
   notifies :reload, "service[ssh]"
 end
 
@@ -261,7 +252,7 @@ template "/var/backups/database/postgresql/infantiumdb/pg_backup.sh" do
   mode "0500"
   owner "root"
   group "root"
-  action :create_if_missing
+  action :create
   notifies :reload, "service[ssh]"
 end
 
@@ -269,18 +260,20 @@ template "/etc/cron.d/updatedb" do
   mode "0500"
   owner "root"
   group "root"
-  action :create_if_missing
+  action :create
   notifies :reload, "service[ssh]"
 end
 
 ##########################################################
-# DJANGO SETUP
+# DJANGO SETUP: Set statics
 ##########################################################
 script "django-app-setup" do
   user "root"
   cwd "/var/www"
   interpreter "bash"
   code <<-EOH
+  sudo -s
+  unzip /tmp/media.zip -d /var/www/infantium_portal/infantium/media
   source /var/www/infantium_portal/env/bin/activate
   cd /var/www/infantium_portal/infantium
   python ./manage.py collectstatic --noinput
@@ -289,4 +282,6 @@ script "django-app-setup" do
   python ./manage.py migrate
   deactivate
   EOH
+  notifies :restart, "service[uwsgi]"
+  notifies :restart, "service[nginx]"
 end

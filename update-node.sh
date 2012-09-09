@@ -11,6 +11,10 @@ rsync -a $(dirname $0)/ ${user}@${node}:/srv/chef-solo
 git archive --format zip --output /tmp/infantium.zip --remote git@bitbucket.org:gloriamh/infantium.git master
 scp /tmp/infantium.zip ubuntu@${node}:/tmp
 
+#Provide media folder
+zip -r /home/vagrant/tmp/media.zip /home/vagrant/chef-repo/media
+scp /home/vagrant/tmp/media.zip ubuntu@${node}:/tmp
+
 #Provide dump
 scp /home/vagrant/chef-repo/database/infantiumdb_dump_chef.dump ubuntu@${node}:/tmp
 
