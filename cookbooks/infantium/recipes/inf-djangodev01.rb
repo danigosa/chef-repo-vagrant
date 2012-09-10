@@ -13,8 +13,21 @@ template "/etc/nginx/conf.d/default.conf" do
   mode "0600"
   owner "root"
   group "root"
-  action :create
-  notifies :reload, "service[ssh]"
+end
+
+##########################################################
+# SSL files for Nginx
+##########################################################
+cookbook_file '/usr/local/nginx/conf/infantium.com.crt'
+  owner 'root'
+  group 'root'
+  mode 0600
+end
+
+cookbook_file '/usr/local/nginx/conf/infantium.com.key'
+  owner 'root'
+  group 'root'
+  mode 0600
 end
 
 ##########################################################
@@ -27,8 +40,6 @@ template "/etc/init/uwsgi.conf" do
   mode "0600"
   owner "root"
   group "root"
-  action :create
-  notifies :reload, "service[ssh]"
 end
 
 execute "uwgsi_useradd" do
@@ -143,6 +154,8 @@ script "pull_source" do
   cd /var/www/infantium_portal
   rm -rf infantium
   unzip /tmp/infantium.zip -d /var/www/infantium_portal/infantium
+  mv /var/www/infantium_portal/infantium/infantium/settings.py /var/www/infantium_portal/infantium/infantium/settings.dev.py
+  mv /var/www/infantium_portal/infantium/infantium/settings.prod.py /var/www/infantium_portal/infantium/infantium/settings.py
   sudo chown -R $USER:nginx /var/www/infantium_portal
   sudo chmod -R g+w /var/www/infantium_portal
   EOH
@@ -185,7 +198,6 @@ template "/etc/postgresql/9.1/main/postgresql.conf" do
   owner "postgres"
   group "postgres"
   mode "0600"
-  notifies :restart, resources(:service => "postgresql"), :immediately
 end
 
 template "/etc/postgresql/9.1/main/pg_hba.conf" do
@@ -236,32 +248,24 @@ template "/var/backups/database/postgresql/infantiumdb/pg_backup.config" do
   mode "0400"
   owner "root"
   group "root"
-  action :create
-  notifies :reload, "service[ssh]"
 end
 
 template "/var/backups/database/postgresql/infantiumdb/pg_backup_rotated.sh" do
   mode "0500"
   owner "root"
   group "root"
-  action :create
-  notifies :reload, "service[ssh]"
 end
 
 template "/var/backups/database/postgresql/infantiumdb/pg_backup.sh" do
   mode "0500"
   owner "root"
   group "root"
-  action :create
-  notifies :reload, "service[ssh]"
 end
 
 template "/etc/cron.d/updatedb" do
   mode "0500"
   owner "root"
   group "root"
-  action :create
-  notifies :reload, "service[ssh]"
 end
 
 ##########################################################
