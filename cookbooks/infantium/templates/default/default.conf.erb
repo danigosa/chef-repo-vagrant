@@ -1,16 +1,32 @@
 server {
     listen          80;
-    listen          443 ssl;
-    ssl_certificate /usr/local/nginx/conf/infantium.com.crt;
-    ssl_certificate_key /usr/local/nginx/conf/infantium.com.key;
+#    listen          443 ssl;
+#    ssl_certificate /usr/local/nginx/conf/infantium.com.crt;
+#    ssl_certificate_key /usr/local/nginx/conf/infantium.com.key;
     server_name     $hostname;
 
     location /static {
         alias /var/www/infantium_portal/infantium/static;
     }
+
     location /media {
         alias /var/www/infantium_portal/infantium/media;
     }
+
+#    location /admin {
+#        # force admin to use https
+#        rewrite (.*) https://$hostname/$1 permanent;
+#    }
+
+#    location /accounts {
+#        # force admin to use https
+#        rewrite (.*) https://$hostname/$1 permanent;
+#    }
+
+#    location /members {
+#        # force admin to use https
+#        rewrite (.*) https://$hostname/$1 permanent;
+#    }
 
     location ~ /\. {
         access_log off;

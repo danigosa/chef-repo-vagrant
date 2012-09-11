@@ -18,13 +18,21 @@ end
 ##########################################################
 # SSL files for Nginx
 ##########################################################
-cookbook_file '/usr/local/nginx/conf/infantium.com.crt'
+script "setup_nginx_ssl_conf" do
+  user "root"
+  interpreter "bash"
+  code <<-EOH
+  mkdir -p /usr/local/nginx/conf
+  EOH
+end
+
+cookbook_file '/usr/local/nginx/conf/infantium.com.crt' do
   owner 'root'
   group 'root'
   mode 0600
 end
 
-cookbook_file '/usr/local/nginx/conf/infantium.com.key'
+cookbook_file '/usr/local/nginx/conf/infantium.com.key' do
   owner 'root'
   group 'root'
   mode 0600
