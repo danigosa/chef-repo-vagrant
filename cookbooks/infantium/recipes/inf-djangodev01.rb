@@ -277,7 +277,7 @@ template "/etc/cron.d/updatedb" do
 end
 
 ##########################################################
-# DJANGO SETUP: Set statics
+# DJANGO SETUP: Set static files
 ##########################################################
 script "django-app-setup" do
   user "root"
