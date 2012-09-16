@@ -1,9 +1,23 @@
-#Variables
+##########################################################
+# NODE VARIABLES: Tunning it from here
+##########################################################
+# Domain DNS
 node[:inf_version] = "beta"
 node[:inf_domain] = "infantium.com"
+# Postgresql
 node[:inf_postgre_password] = "postgres"
-node[:inf_hostname] = node[:inf_version] + "." + node[:inf_domain]
+node[:inf_postgre_hostname] = node[:inf_version] + "." + node[:inf_domain]
+node[:inf_postgre_max_cons] = 200
+node[:inf_postgre_shared_buff] = 512
+# Memcached
+node[:inf_memcached_mem] = 512
+node[:inf_memcached_cons] = 2048
+# uWSGI
+node[:inf_uwsgi_workers] = 4
 
+##########################################################
+# START PROVISIONING
+##########################################################
 package "chef"
 
 service "chef-client" do
@@ -89,7 +103,7 @@ end
 package "memcached"
 
 service "memcached" do
-  supports :restart => true, :reload => false
+  supports :restart => true, :reload => true
   action :enable
 end
 
@@ -240,11 +254,35 @@ script "setup-postgresql" do
   code <<-EOH
   echo "ALTER ROLE postgres PASSWORD 'postgres';" | psql
   dropdb infantiumdb
-  createdb -E UTF8 -O postgres -h node[:inf_hostname]
+  createdb -E UTF8 -O postgres -h node[:inf_postgre_hostname]
   psql < /tmp/infantiumdb_dump_chef.dump
   EOH
   not_if "echo '\connect' | PGPASSWORD=postgres psql --username=postgres --no-password -h localhost"
   action :run
+end
+
+##########################################################
+# PGPOOL2 SETUP
+##########################################################
+package "pgpool2"
+
+service "pgpool2" do
+  supports :restart => true, :reload => true
+  action :enable
+end
+
+template "/etc/pgpool2/pgpool.conf" do
+  mode "0644"
+  owner "root"
+  group "root"
+  notifies :restart, "service[pgpool2]", :immediately
+end
+
+template "/etc/pgpool2/pool_hba.conf" do
+  mode "0644"
+  owner "root"
+  group "root"
+  notifies :restart, "service[pgpool2]", :immediately
 end
 
 ##########################################################
@@ -272,7 +310,7 @@ end
 ##########################################################
 # Automated backuping
 ##########################################################
-template "etc/cron.daily/pg_backup.sh" do
+template "/etc/cron.daily/pg_backup.sh" do
   mode "0500"
   owner "root"
   group "root"
