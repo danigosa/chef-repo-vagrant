@@ -18,6 +18,10 @@ server {
         uwsgi_param UWSGI_PYHOME /var/www/infantium_portal/env;
         uwsgi_param UWSGI_CHDIR /var/www/infantium_portal/infantium;
         uwsgi_param UWSGI_MODULE infantium.wsgi:application;
+        # force pages to use http
+        if ($scheme = "https") {
+            rewrite ^ http://$host$request_uri break;
+        }
     }
     location ~ [^(/static/)](admin|accounts|members|api) {
         include     uwsgi_params;
