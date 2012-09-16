@@ -15,28 +15,20 @@ server {
     location /media {
         alias /var/www/infantium_portal/infantium/media;
     }
-#    location ~ /\. {
-#        access_log off;
-#        log_not_found off;
-#        deny all;
-#    }
-#    location ~* \.(jpg|jpeg|gif|png|css|js|ico|xml)$ {
-#        access_log        off;
-#        log_not_found     off;
-#        expires           360d;
-#    }
+    location ~ /\. {
+        access_log off;
+        log_not_found off;
+        deny all;
+    }
+    location ~* \.(jpg|jpeg|gif|png|css|js|ico|xml)$ {
+        access_log        off;
+        log_not_found     off;
+        expires           360d;
+    }
     # Bad requests
     location ~ \.(aspx|php|jsp|cgi)$ {
         return 410;
     }
-#    location /accounts {
-#        # force admin to use https
-#        rewrite (.*) https://$hostname/$1 permanent;
-#    }
-#    location /members {
-#        # force admin to use https
-#        rewrite (.*) https://$hostname/$1 permanent;
-#    }
     location / {
         include     uwsgi_params;
         uwsgi_pass  unix:/tmp/uwsgi.sock;
@@ -44,18 +36,7 @@ server {
         uwsgi_param UWSGI_CHDIR /var/www/infantium_portal/infantium;
         uwsgi_param UWSGI_MODULE infantium.wsgi:application;
     }
-    location ~ ^(.*[^static])/admin {
-        include     uwsgi_params;
-        uwsgi_pass  unix:/tmp/uwsgi.sock;
-        uwsgi_param UWSGI_PYHOME /var/www/infantium_portal/env;
-        uwsgi_param UWSGI_CHDIR /var/www/infantium_portal/infantium;
-        uwsgi_param UWSGI_MODULE infantium.wsgi:application;
-        # force admin to use https
-        if ($scheme = "http") {
-            rewrite ^ https://$host$request_uri break;
-        }
-    }
-    location ~ ^(accounts|members|api) {
+    location ~ (admin|accounts|members|api) {
         include     uwsgi_params;
         uwsgi_pass  unix:/tmp/uwsgi.sock;
         uwsgi_param UWSGI_PYHOME /var/www/infantium_portal/env;
@@ -72,9 +53,4 @@ server {
     listen 80 default;
     server_name _;
     rewrite ^ $scheme://<%= node[:inf_version] %>.infantium.com$request_uri;
-
-    # Bad requests
-    location ~ \.(aspx|php|jsp|cgi)$ {
-        return 410;
-    }
 }

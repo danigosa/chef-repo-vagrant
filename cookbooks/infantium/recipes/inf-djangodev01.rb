@@ -103,7 +103,7 @@ end
 package "memcached"
 
 service "memcached" do
-  supports :restart => true, :reload => false
+  supports :restart => true, :reload => true
   action :enable
 end
 
@@ -261,47 +261,29 @@ script "setup-postgresql" do
   action :run
 end
 
-
 ##########################################################
-# PGBOUNCER SETUP
+# PGPOOL2 SETUP
 ##########################################################
-package "libevent-dev"
+package "pgpool2"
 
-template "/usr/local/etc/pgbouncer.ini" do
-  mode "0600"
-  owner "postgres"
-  group "postgres"
+service "pgpool2" do
+  supports :restart => true, :reload => true
+  action :enable
 end
 
-template "/usr/local/etc/userlist.txt" do
-  mode "0600"
-  owner "postgres"
-  group "postgres"
+template "/etc/pgpool2/pgpool.conf" do
+  mode "0644"
+  owner "root"
+  group "root"
+  notifies :restart, "service[pgpool2]", :immediately
 end
 
-script "pgbouncer-setup" do
-  user "ubuntu"
-  cwd "/home/ubuntu"
-  interpreter "bash"
-  code <<-EOH
-  cd /tmp
-  rm -f pgbouncer-1.5.3
-  wget http://pgfoundry.org/frs/download.php/3369/pgbouncer-1.5.3.tar.gz
-  tar xzf pgbouncer-1.5.3.tar.gz
-  cd pgbouncer-1.5.3
-  ./configure --prefix=/usr/local
-  make
-  sudo make install
-  sudo cp etc/mkauth.py /usr/local/etc/
-  sudo chown postgres /usr/local/etc/mkauth.py
-  sudo chgrp postgres /usr/local/etc/mkauth.py
-  sudo mkdir -p /var/log/pgbouncer/
-  sudo chown postgres /var/log/pgbouncer
-  sudo killall -9 pgbouncer
-  sudo su -l postgres -c "pgbouncer -d /usr/local/etc/pgbouncer.ini"
-  EOH
+template "/etc/pgpool2/pool_hba.conf" do
+  mode "0644"
+  owner "root"
+  group "root"
+  notifies :restart, "service[pgpool2]", :immediately
 end
-
 
 ##########################################################
 # DJANGO SETUP: Set static files
