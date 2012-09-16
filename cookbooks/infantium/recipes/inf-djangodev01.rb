@@ -219,19 +219,11 @@ package "postgresql"
 package "postgresql-contrib"
 
 service "postgresql" do
-  supports :restart => true, :status => true, :reload => true
-  action :nothing
-end
-
-# Set enough SHM for postgresqld
-script "set_SHMMAX_kernel" do
-  user "root"
-  cwd "/var/www"
-  interpreter "bash"
-  code <<-EOH
-  sudo sysctl -w kernel.shmmax=576798720
-  sudo sysctl -p /etc/sysctl.conf
-  EOH
+  supports :restart => true, :status => true, :reload => false
+  start_command "sudo service postgresql start"
+  stop_command "sudo service postgresql stop"
+  restart_command "sudo service postgresql restart"
+  status_command "sudo service postgresql status"
 end
 
 template "/etc/postgresql/9.1/main/postgresql.conf" do
@@ -244,7 +236,18 @@ template "/etc/postgresql/9.1/main/pg_hba.conf" do
   owner "postgres"
   group "postgres"
   mode "0600"
-  notifies :restart, resources(:service => "postgresql"), :immediately
+end
+
+# Set enough SHM for postgresqld
+script "set_SHMMAX_kernel" do
+  user "root"
+  cwd "/var/www"
+  interpreter "bash"
+  code <<-EOH
+  sudo sysctl -w kernel.shmmax=576798720
+  sudo sysctl -p /etc/sysctl.conf
+  EOH
+  notifies :restart, "service[postgresql]", :immediately
 end
 
 # From https://github.com/opscode-cookbooks/postgresql/blob/master/recipes/server.rb
@@ -254,10 +257,7 @@ end
 # runs as user 'postgres', so we can execute the 'role' and 'database' resources
 # as 'root' later on, passing the below credentials in the PG client.
 ##########################################################
-# TODO: Pass password as json or attribute not hardcoded
-# TODO: Hostname as json or attribute not harcoded
-# TODO: SQL dump from GIT repository
-# TODO: Restore will fail if not -c (dropping former objects) option enabled
+# Postgresql start up
 ##########################################################
 script "setup-postgresql" do
   user "postgres"
@@ -266,7 +266,7 @@ script "setup-postgresql" do
   code <<-EOH
   echo "ALTER ROLE postgres PASSWORD 'postgres';" | psql
   dropdb infantiumdb
-  createdb -E UTF8 -O postgres -h node[:inf_postgre_hostname] infantiumdb
+  createdb -E UTF8 infantiumdb
   psql infantiumdb < /tmp/infantiumdb_dump_chef.dump
   EOH
   not_if "echo '\connect' | PGPASSWORD=postgres psql --username=postgres --no-password -h localhost"
