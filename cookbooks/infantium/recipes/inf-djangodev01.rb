@@ -1,3 +1,23 @@
+##########################################################
+# NODE VARIABLES: Tunning it from here
+##########################################################
+# Domain DNS
+node[:inf_version] = "alpha"
+node[:inf_domain] = "infantium.com"
+# Postgresql
+node[:inf_postgre_password] = "postgres"
+node[:inf_postgre_hostname] = node[:inf_version] + "." + node[:inf_domain]
+node[:inf_postgre_max_cons] = 200
+node[:inf_postgre_shared_buff] = 512
+# Memcached
+node[:inf_memcached_mem] = 512
+node[:inf_memcached_cons] = 2048
+# uWSGI
+node[:inf_uwsgi_workers] = 4
+
+##########################################################
+# START PROVISIONING
+##########################################################
 package "chef"
 
 service "chef-client" do
@@ -26,7 +46,7 @@ script "setup_nginx_ssl_conf" do
   EOH
 end
 
-cookbook_file '/usr/local/nginx/conf/infantium.com.crt' do
+cookbook_file '/usr/local/nginx/conf/sslchain.crt' do
   owner 'root'
   group 'root'
   mode 0600
@@ -100,7 +120,7 @@ script "install_virtualenv" do
   mkdir -p /var/www/infantium_portal/media
   cd /var/www/infantium_portal
   sudo pip install virtualenv
-  rm -rf env
+# rm -rf env
   virtualenv env
   EOH
 end
@@ -234,12 +254,54 @@ script "setup-postgresql" do
   code <<-EOH
   echo "ALTER ROLE postgres PASSWORD 'postgres';" | psql
   dropdb infantiumdb
-  createdb -E UTF8 -O postgres -h inf-djangodev01.cloudapp.net
+  createdb -E UTF8 -O postgres -h node[:inf_postgre_hostname]
   psql < /tmp/infantiumdb_dump_chef.dump
   EOH
   not_if "echo '\connect' | PGPASSWORD=postgres psql --username=postgres --no-password -h localhost"
   action :run
 end
+
+
+##########################################################
+# PGBOUNCER SETUP
+##########################################################
+package "libevent-dev"
+
+template "/usr/local/etc/pgbouncer.ini" do
+  mode "0600"
+  owner "postgres"
+  group "postgres"
+end
+
+template "/usr/local/etc/userlist.txt" do
+  mode "0600"
+  owner "postgres"
+  group "postgres"
+end
+
+script "pgbouncer-setup" do
+  user "ubuntu"
+  cwd "/home/ubuntu"
+  interpreter "bash"
+  code <<-EOH
+  cd /tmp
+  rm -f pgbouncer-1.5.3
+  wget http://pgfoundry.org/frs/download.php/3369/pgbouncer-1.5.3.tar.gz
+  tar xzf pgbouncer-1.5.3.tar.gz
+  cd pgbouncer-1.5.3
+  ./configure --prefix=/usr/local
+  make
+  sudo make install
+  sudo cp etc/mkauth.py /usr/local/etc/
+  sudo chown postgres /usr/local/etc/mkauth.py
+  sudo chgrp postgres /usr/local/etc/mkauth.py
+  sudo mkdir -p /var/log/pgbouncer/
+  sudo chown postgres /var/log/pgbouncer
+  sudo killall -9 pgbouncer
+  sudo su -l postgres -c "pgbouncer -d /usr/local/etc/pgbouncer.ini"
+  EOH
+end
+
 
 ##########################################################
 # DJANGO SETUP: Set static files
@@ -263,37 +325,10 @@ script "django-app-setup" do
   notifies :restart, "service[nginx]"
 end
 
-
 ##########################################################
 # Automated backuping
 ##########################################################
-script "setup_backup_conf" do
-  user "root"
-  interpreter "bash"
-  code <<-EOH
-  sudo mkdir -p /var/backups/database/postgresql/infantiumdb
-  EOH
-end
-
-template "/var/backups/database/postgresql/infantiumdb/pg_backup.config" do
-  mode "0400"
-  owner "root"
-  group "root"
-end
-
-template "/var/backups/database/postgresql/infantiumdb/pg_backup_rotated.sh" do
-  mode "0500"
-  owner "root"
-  group "root"
-end
-
-template "/var/backups/database/postgresql/infantiumdb/pg_backup.sh" do
-  mode "0500"
-  owner "root"
-  group "root"
-end
-
-template "/etc/cron.d/updatedb" do
+template "/etc/cron.daily/pg_backup.sh" do
   mode "0500"
   owner "root"
   group "root"

@@ -1,6 +1,14 @@
 server {
-    listen          80;
-    server_name     $hostname;
+    server_name  infantium.com;
+    return       301 http://<%= node[:inf_version] %>.infantium.com$request_uri;
+}
+
+server {
+    listen              80;
+    listen              443 ssl;
+    ssl_certificate     /usr/local/nginx/conf/sslchain.crt;
+    ssl_certificate_key /usr/local/nginx/conf/infantium.com.key;
+    server_name         *.infantium.com;
     location /static {
         alias /var/www/infantium_portal/infantium/static;
     }
@@ -12,11 +20,22 @@ server {
 #        log_not_found off;
 #        deny all;
 #    }
-
 #    location ~* \.(jpg|jpeg|gif|png|css|js|ico|xml)$ {
 #        access_log        off;
 #        log_not_found     off;
 #        expires           360d;
+#    }
+    # Bad requests
+    location ~ \.(aspx|php|jsp|cgi)$ {
+        return 410;
+    }
+#    location /accounts {
+#        # force admin to use https
+#        rewrite (.*) https://$hostname/$1 permanent;
+#    }
+#    location /members {
+#        # force admin to use https
+#        rewrite (.*) https://$hostname/$1 permanent;
 #    }
     location / {
         include     uwsgi_params;
@@ -24,5 +43,38 @@ server {
         uwsgi_param UWSGI_PYHOME /var/www/infantium_portal/env;
         uwsgi_param UWSGI_CHDIR /var/www/infantium_portal/infantium;
         uwsgi_param UWSGI_MODULE infantium.wsgi:application;
+    }
+    location ~ ^(.*[^static])/admin {
+        include     uwsgi_params;
+        uwsgi_pass  unix:/tmp/uwsgi.sock;
+        uwsgi_param UWSGI_PYHOME /var/www/infantium_portal/env;
+        uwsgi_param UWSGI_CHDIR /var/www/infantium_portal/infantium;
+        uwsgi_param UWSGI_MODULE infantium.wsgi:application;
+        # force admin to use https
+        if ($scheme = "http") {
+            rewrite ^ https://$host$request_uri break;
+        }
+    }
+    location ~ ^(accounts|members|api) {
+        include     uwsgi_params;
+        uwsgi_pass  unix:/tmp/uwsgi.sock;
+        uwsgi_param UWSGI_PYHOME /var/www/infantium_portal/env;
+        uwsgi_param UWSGI_CHDIR /var/www/infantium_portal/infantium;
+        uwsgi_param UWSGI_MODULE infantium.wsgi:application;
+        # force admin to use https
+        if ($scheme = "http") {
+            rewrite ^ https://$host$request_uri break;
+        }
+    }
+}
+
+server {
+    listen 80 default;
+    server_name _;
+    rewrite ^ $scheme://<%= node[:inf_version] %>.infantium.com$request_uri;
+
+    # Bad requests
+    location ~ \.(aspx|php|jsp|cgi)$ {
+        return 410;
     }
 }
