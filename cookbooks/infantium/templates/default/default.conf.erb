@@ -35,14 +35,18 @@ server {
         uwsgi_param UWSGI_PYHOME /var/www/infantium_portal/env;
         uwsgi_param UWSGI_CHDIR /var/www/infantium_portal/infantium;
         uwsgi_param UWSGI_MODULE infantium.wsgi:application;
+        # force pages to use http
+        if ($scheme = "https") {
+            rewrite ^ http://$host$request_uri break;
+        }
     }
-    location ~ (admin|accounts|members|api) {
+    location ~ [^(/static)](.*)(admin|accounts|members|api) {
         include     uwsgi_params;
         uwsgi_pass  unix:/tmp/uwsgi.sock;
         uwsgi_param UWSGI_PYHOME /var/www/infantium_portal/env;
         uwsgi_param UWSGI_CHDIR /var/www/infantium_portal/infantium;
         uwsgi_param UWSGI_MODULE infantium.wsgi:application;
-        # force admin to use https
+        # force pages to use https
         if ($scheme = "http") {
             rewrite ^ https://$host$request_uri break;
         }
