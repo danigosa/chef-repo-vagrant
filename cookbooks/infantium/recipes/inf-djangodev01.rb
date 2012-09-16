@@ -117,7 +117,7 @@ script "install_virtualenv" do
   user "root"
   interpreter "bash"
   code <<-EOH
-  mkdir -p /var/www/infantium_portal/media
+  mkdir -p /var/www/infantium_portal
   cd /var/www/infantium_portal
   sudo pip install virtualenv
 # rm -rf env

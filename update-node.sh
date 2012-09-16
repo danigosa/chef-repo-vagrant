@@ -12,8 +12,9 @@ git archive --format zip --output /tmp/infantium.zip --remote git@bitbucket.org:
 scp /tmp/infantium.zip ubuntu@${node}:/tmp
 
 #Provide media folder
-zip -r /home/vagrant/tmp/media.zip /home/vagrant/chef-repo/media
-scp /home/vagrant/tmp/media.zip ubuntu@${node}:/tmp
+cd /home/vagrant/chef-repo
+zip -r /tmp/media.zip ./media
+scp /tmp/media.zip ubuntu@${node}:/tmp
 
 #Provide dumps & fixtures
 scp /home/vagrant/chef-repo/database/infantiumdb_dump_chef.dump ubuntu@${node}:/tmp

@@ -12,9 +12,6 @@ server {
     location /static {
         alias /var/www/infantium_portal/infantium/static;
     }
-    location /media {
-        alias /var/www/infantium_portal/infantium/media;
-    }
     location / {
         include     uwsgi_params;
         uwsgi_pass  unix:/tmp/uwsgi.sock;
@@ -22,7 +19,7 @@ server {
         uwsgi_param UWSGI_CHDIR /var/www/infantium_portal/infantium;
         uwsgi_param UWSGI_MODULE infantium.wsgi:application;
     }
-    location ~ [^(/static|/media)](.*)(admin|accounts|members|api) {
+    location ~ [^(/static/)](admin|accounts|members|api) {
         include     uwsgi_params;
         uwsgi_pass  unix:/tmp/uwsgi.sock;
         uwsgi_param UWSGI_PYHOME /var/www/infantium_portal/env;
