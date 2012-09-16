@@ -9,23 +9,6 @@ SET check_function_bodies = false;
 SET client_min_messages = warning;
 
 --
--- Name: infantiumdb; Type: DATABASE; Schema: -; Owner: postgres
---
-
-CREATE DATABASE infantiumdb WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'en_US.UTF-8' LC_CTYPE = 'en_US.UTF-8';
-
-
-ALTER DATABASE infantiumdb OWNER TO postgres;
-
-\connect infantiumdb
-
-SET statement_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SET check_function_bodies = false;
-SET client_min_messages = warning;
-
---
 -- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
 --
 
@@ -1700,7 +1683,7 @@ ALTER SEQUENCE django_admin_log_id_seq OWNED BY django_admin_log.id;
 -- Name: django_admin_log_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('django_admin_log_id_seq', 47, true);
+SELECT pg_catalog.setval('django_admin_log_id_seq', 48, true);
 
 
 --
@@ -3382,7 +3365,7 @@ COPY auth_permission (id, name, content_type_id, codename) FROM stdin;
 COPY auth_user (id, username, first_name, last_name, email, password, is_staff, is_active, is_superuser, last_login, date_joined) FROM stdin;
 2	dani.gonzalez@infantium.com	Daniel	Gonzalez	dani.gonzalez@infantium.com	pbkdf2_sha256$10000$c9GYlA6JxcH7$fhsvlycmS5ErR0m31aeI5EqGAF+krOJv2/QEsSF31/I=	f	t	f	2012-08-30 16:26:52.551733+00	2012-08-24 15:48:28+00
 3	testplayer@infantium.com	Test	Player	testplayer@infantium.com	pbkdf2_sha256$10000$Bd1jCl1YtfZ6$+b8PaDn0fD4V1uCUZiZPJWytVt0iHrHGbrkCB6Uh4DU=	f	t	f	2012-09-13 14:25:24.832904+00	2012-08-30 18:44:01+00
-1	admin			dani.gonzalez@infantium.com	pbkdf2_sha256$10000$hGymkpReukMw$m15kyUvDR1zA37HBGXekEyeS8rlIFYPgnCuP6II6Yts=	t	t	t	2012-09-14 14:48:44.473724+00	2012-08-24 14:52:49.172034+00
+1	admin			dani.gonzalez@infantium.com	pbkdf2_sha256$10000$hGymkpReukMw$m15kyUvDR1zA37HBGXekEyeS8rlIFYPgnCuP6II6Yts=	t	t	t	2012-09-16 05:14:17.902917+00	2012-08-24 14:52:49.172034+00
 \.
 
 
@@ -3456,7 +3439,7 @@ COPY cms_page (id, created_by, changed_by, parent_id, creation_date, changed_dat
 2	admin	admin	\N	2012-08-02 20:08:24.833+00	2012-09-14 11:45:57.146695+00	2012-08-02 20:10:10.05+00	\N	f	f	metodo		t	web/left-sidebar-method-infantium.html	1	0	0	1	2	4	t	\N	t	\N	1
 4	admin	admin	\N	2012-08-30 15:05:35.017062+00	2012-09-14 12:01:31.323829+00	2012-08-30 15:07:15.374302+00	\N	f	f	lista-apps		t	web/left-sidebar-apps-list.html	1	0	0	1	2	5	t	\N	t	\N	1
 6	admin	admin	\N	2012-08-30 15:13:49.68771+00	2012-09-14 19:04:20.169826+00	2012-08-30 15:15:25.437958+00	\N	f	f	contacto		t	web/left-sidebar-contact.html	1	0	0	1	2	7	t	\N	t	\N	1
-7	admin	admin	\N	2012-08-30 15:16:11.960697+00	2012-09-14 19:45:04.86154+00	2012-08-30 15:21:47.279686+00	\N	f	f	terminos-uso		t	web/left-sidebar-terms.html	1	0	0	1	2	8	t	\N	t	\N	1
+7	admin	admin	\N	2012-08-30 15:16:11.960697+00	2012-09-16 07:01:04.775637+00	2012-08-30 15:21:47.279686+00	\N	f	f	terminos-uso		t	web/left-sidebar-terms.html	1	0	0	1	2	8	t	\N	t	\N	1
 \.
 
 
@@ -3563,9 +3546,9 @@ COPY cms_title (id, language, title, menu_title, slug, path, has_url_overwrite, 
 5	es	Infantium Apps		infantium-apps	infantium-apps	f						4	2012-08-30 15:05:35.217593+00
 2	en	Infantium Method		infantium-method	metodo-infantium	t					Aplicaciones de Infantium	2	2012-08-02 20:08:25.001+00
 6	en	Infantium Apps		infantium-apps	infantium-apps	f			adaptive learning gaming platform for kids aged 0-6 years old	gamification, serious games, childhood education 	Aplicaciones de Infantium	4	2012-08-30 15:07:15.966891+00
-12	en	Términos de Uso		terminos-uso	terminos-uso	f			privacy policy (www.infantium.com and Rufi Adventures) 	kids privacy policy,	Terms and conditions	7	2012-08-30 15:21:47.440981+00
 9	es	Contacto		contacto	contacto	f						6	2012-08-30 15:13:49.862955+00
 11	es	Términos de Uso		terminos-uso	terminos-uso	f			política de privacidad y de contratación de www.infantium.com y Las aventuras de Rufi	política de privacidad, niños, sitio web, aplicación	Política de privacidad 	7	2012-08-30 15:16:12.16455+00
+12	en	Términos de Uso		terminos-uso	terminos-uso	f			privacy policy (www.infantium.com and Rufi Adventures) 	kids privacy policy,	Terms and conditions	7	2012-08-30 15:21:47.440981+00
 \.
 
 
@@ -3826,6 +3809,7 @@ COPY django_admin_log (id, action_time, user_id, content_type_id, object_id, obj
 45	2012-09-14 18:59:24.5861+00	1	36	6	Contacto	2	Modificado/a moderator_state.
 46	2012-09-14 19:04:20.232568+00	1	36	6	Contacto	2	Modificado/a moderator_state.
 47	2012-09-14 19:45:04.915248+00	1	36	7	Términos de Uso	2	Modificado/a moderator_state.
+48	2012-09-16 07:01:04.830235+00	1	36	7	Términos de Uso	2	Changed moderator_state.
 \.
 
 
@@ -3922,8 +3906,8 @@ c9ae1cc82ba943fb662b7cb5e0f6d35a	YjE4Y2RjYjMwN2JmYjNmMTJlMjEzNzlhNTcwNjk5YWE2ZjA
 d310ef0fb9eb61aca087db164f32ae33	ZTBmZjYzNjE1ZmFkMThiOWZlZWNhYWY2YzA2YzU4Yzc1ZTQyMDU5ODqAAn1xAShVDmNtc19hZG1p\nbl9zaXRlSwFVDV9hdXRoX3VzZXJfaWRLAVUPZGphbmdvX2xhbmd1YWdlWAIAAABlbnECVRJfYXV0\naF91c2VyX2JhY2tlbmRVKWRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5k\ndS4=\n	2012-09-28 12:05:54.071889+00
 703f97f58a6434507798923e90eee9ef	NDNjMjJjNGU0NWNmZWU2ZmJhNTVlZjc2NGExZjU2MjY2NzEzYzNiYzqAAn1xAShVCnRlc3Rjb29r\naWVxAlUGd29ya2VkcQNVD2RqYW5nb19sYW5ndWFnZVgCAAAAZW5xBHUu\n	2012-09-28 14:23:36.985933+00
 da67770e3385b4c9709a1658fa933090	NDNjMjJjNGU0NWNmZWU2ZmJhNTVlZjc2NGExZjU2MjY2NzEzYzNiYzqAAn1xAShVCnRlc3Rjb29r\naWVxAlUGd29ya2VkcQNVD2RqYW5nb19sYW5ndWFnZVgCAAAAZW5xBHUu\n	2012-09-28 14:27:21.072698+00
-8aa254090cfb2a4d01a32f1bcb360c36	NDNjMjJjNGU0NWNmZWU2ZmJhNTVlZjc2NGExZjU2MjY2NzEzYzNiYzqAAn1xAShVCnRlc3Rjb29r\naWVxAlUGd29ya2VkcQNVD2RqYW5nb19sYW5ndWFnZVgCAAAAZW5xBHUu\n	2012-09-29 10:47:35.540995+00
 c2831bd2f7bd58e322e43fb5e7c4b00c	MTA3ZGJiM2RkMjdmMWE1MjIzODYzZjg3ZDBhNDdjOWU4MTdhZDA0YzqAAn1xAShVDmNtc19hZG1p\nbl9zaXRlSwFVDV9hdXRoX3VzZXJfaWRLAVUPZGphbmdvX2xhbmd1YWdlWAIAAABlc3ECVRJfYXV0\naF91c2VyX2JhY2tlbmRVKWRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5k\ndS4=\n	2012-09-29 13:04:48.467354+00
+d09c7cb3955a1d0b414f48477cf42458	NmQ3NWRjY2QxMzQ5MmNiMDNhNWNhMmQzYzg5ZGFkMmY4YzdjNDhlNzqAAn1xAShVDmNtc19hZG1p\nbl9zaXRlSwFVEl9hdXRoX3VzZXJfYmFja2VuZFUpZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5k\ncy5Nb2RlbEJhY2tlbmRVD2RqYW5nb19sYW5ndWFnZVgCAAAAZW5xAlUNX2F1dGhfdXNlcl9pZEsB\ndS4=\n	2012-09-30 07:01:05.203664+00
 \.
 
 

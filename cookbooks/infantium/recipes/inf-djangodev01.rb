@@ -205,6 +205,7 @@ script "install_django" do
   cwd "/var/www"
   interpreter "bash"
   code <<-EOH
+  sudo apt-get install libjpeg libjpeg-dev libfreetype6 libfreetype6-dev zlib1g-dev
   source /var/www/infantium_portal/env/bin/activate
   pip install -r /var/www/infantium_portal/infantium/requirements.txt
   deactivate
@@ -220,6 +221,17 @@ package "postgresql-contrib"
 service "postgresql" do
   supports :restart => true, :status => true, :reload => true
   action :nothing
+end
+
+# Set enough SHM for postgresqld
+script "set_SHMMAX_kernel" do
+  user "root"
+  cwd "/var/www"
+  interpreter "bash"
+  code <<-EOH
+  sudo sysctl -w kernel.shmmax=576798720
+  sudo sysctl -p /etc/sysctl.conf
+  EOH
 end
 
 template "/etc/postgresql/9.1/main/postgresql.conf" do
@@ -254,8 +266,8 @@ script "setup-postgresql" do
   code <<-EOH
   echo "ALTER ROLE postgres PASSWORD 'postgres';" | psql
   dropdb infantiumdb
-  createdb -E UTF8 -O postgres -h node[:inf_postgre_hostname]
-  psql < /tmp/infantiumdb_dump_chef.dump
+  createdb -E UTF8 -O postgres -h node[:inf_postgre_hostname] infantiumdb
+  psql infantiumdb < /tmp/infantiumdb_dump_chef.dump
   EOH
   not_if "echo '\connect' | PGPASSWORD=postgres psql --username=postgres --no-password -h localhost"
   action :run

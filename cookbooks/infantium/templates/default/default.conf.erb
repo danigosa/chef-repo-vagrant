@@ -15,10 +15,6 @@ server {
     location /media {
         alias /var/www/infantium_portal/infantium/media;
     }
-    # Bad requests
-    location ~ \.(aspx|php|jsp|cgi)$ {
-        return 410;
-    }
     location / {
         include     uwsgi_params;
         uwsgi_pass  unix:/tmp/uwsgi.sock;
