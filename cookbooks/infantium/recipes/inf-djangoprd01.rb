@@ -322,8 +322,17 @@ end
 ##########################################################
 # Automated backuping
 ##########################################################
+script "pg_backup_infantiumdb-setup" do
+  user "root"
+  cwd "/var/www"
+  interpreter "bash"
+  code <<-EOH
+  sudo mkdir -p /var/backups/database/postgresql/pg_backup_infantiumdb
+  EOH
+end
+
 template "/etc/cron.daily/pg_backup.sh" do
-  mode "0500"
+  mode "0755"
   owner "root"
   group "root"
 end

@@ -11,7 +11,7 @@ PGPASSWORD=postgres
 export PGUSER PGPASSWORD
 
 tdate=`date +%d-%b-%Y`
-spath=/var/backups/database/postgresql/infantiumdb
+spath=/var/backups/database/postgresql
 dbname=infantiumdb
 
 if [ -d $spath/pg_backup_$dbname ]
