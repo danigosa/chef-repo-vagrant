@@ -3677,8 +3677,8 @@ d09c7cb3955a1d0b414f48477cf42458	ZTBmZjYzNjE1ZmFkMThiOWZlZWNhYWY2YzA2YzU4Yzc1ZTQ
 --
 
 COPY django_site (id, domain, name) FROM stdin;
-2	infantium.com	Infantium
-1	localhost:8000	localhost:8000
+2	infantium.es	InfantiumES
+1	infantium.com	Infantium
 \.
 
 
