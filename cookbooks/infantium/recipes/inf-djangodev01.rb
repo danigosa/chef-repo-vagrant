@@ -258,6 +258,7 @@ end
 # as 'root' later on, passing the below credentials in the PG client.
 ##########################################################
 # Postgresql start up
+# WARN: It refreshes DB with clean backup every time! make sure you have the correct db dump in chef-repo/database
 ##########################################################
 script "setup-postgresql" do
   user "postgres"
@@ -269,7 +270,6 @@ script "setup-postgresql" do
   createdb -E UTF8 infantiumdb
   psql infantiumdb < /tmp/infantiumdb_dump_chef.dump
   EOH
-  not_if "echo '\connect' | PGPASSWORD=postgres psql --username=postgres --no-password -h localhost"
   action :run
 end
 

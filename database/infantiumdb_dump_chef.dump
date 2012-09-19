@@ -305,7 +305,7 @@ ALTER SEQUENCE cms_cmsplugin_id_seq OWNED BY cms_cmsplugin.id;
 -- Name: cms_cmsplugin_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('cms_cmsplugin_id_seq', 30, true);
+SELECT pg_catalog.setval('cms_cmsplugin_id_seq', 35, true);
 
 
 --
@@ -452,7 +452,7 @@ ALTER SEQUENCE cms_page_id_seq OWNED BY cms_page.id;
 -- Name: cms_page_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('cms_page_id_seq', 7, true);
+SELECT pg_catalog.setval('cms_page_id_seq', 8, true);
 
 
 --
@@ -489,7 +489,7 @@ ALTER SEQUENCE cms_page_placeholders_id_seq OWNED BY cms_page_placeholders.id;
 -- Name: cms_page_placeholders_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('cms_page_placeholders_id_seq', 19, true);
+SELECT pg_catalog.setval('cms_page_placeholders_id_seq', 21, true);
 
 
 --
@@ -675,7 +675,7 @@ ALTER SEQUENCE cms_placeholder_id_seq OWNED BY cms_placeholder.id;
 -- Name: cms_placeholder_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('cms_placeholder_id_seq', 20, true);
+SELECT pg_catalog.setval('cms_placeholder_id_seq', 22, true);
 
 
 --
@@ -723,7 +723,7 @@ ALTER SEQUENCE cms_title_id_seq OWNED BY cms_title.id;
 -- Name: cms_title_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('cms_title_id_seq', 12, true);
+SELECT pg_catalog.setval('cms_title_id_seq', 14, true);
 
 
 --
@@ -1533,7 +1533,7 @@ ALTER SEQUENCE django_admin_log_id_seq OWNED BY django_admin_log.id;
 -- Name: django_admin_log_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('django_admin_log_id_seq', 55, true);
+SELECT pg_catalog.setval('django_admin_log_id_seq', 65, true);
 
 
 --
@@ -3117,7 +3117,7 @@ COPY auth_permission (id, name, content_type_id, codename) FROM stdin;
 COPY auth_user (id, username, first_name, last_name, email, password, is_staff, is_active, is_superuser, last_login, date_joined) FROM stdin;
 2	dani.gonzalez@infantium.com	Daniel	Gonzalez	dani.gonzalez@infantium.com	pbkdf2_sha256$10000$c9GYlA6JxcH7$fhsvlycmS5ErR0m31aeI5EqGAF+krOJv2/QEsSF31/I=	f	t	f	2012-08-30 16:26:52.551733+00	2012-08-24 15:48:28+00
 3	testplayer@infantium.com	Test	Player	testplayer@infantium.com	pbkdf2_sha256$10000$Bd1jCl1YtfZ6$+b8PaDn0fD4V1uCUZiZPJWytVt0iHrHGbrkCB6Uh4DU=	f	t	f	2012-09-13 14:25:24.832904+00	2012-08-30 18:44:01+00
-1	admin			dani.gonzalez@infantium.com	pbkdf2_sha256$10000$hGymkpReukMw$m15kyUvDR1zA37HBGXekEyeS8rlIFYPgnCuP6II6Yts=	t	t	t	2012-09-17 18:06:38.336441+00	2012-08-24 14:52:49.172034+00
+1	admin			dani.gonzalez@infantium.com	pbkdf2_sha256$10000$hGymkpReukMw$m15kyUvDR1zA37HBGXekEyeS8rlIFYPgnCuP6II6Yts=	t	t	t	2012-09-18 14:43:38.565792+00	2012-08-24 14:52:49.172034+00
 \.
 
 
@@ -3162,6 +3162,10 @@ COPY cms_cmsplugin (id, placeholder_id, parent_id, "position", language, plugin_
 8	14	\N	0	en	TextPlugin	2012-08-30 15:06:38.79842+00	0	1	2	7
 12	13	\N	0	es	TextPlugin	2012-08-30 15:06:08.206493+00	0	1	2	8
 21	20	\N	0	en	TextPlugin	2012-08-30 15:21:17.603399+00	0	1	2	17
+31	21	\N	0	en	TextPlugin	2012-09-18 14:58:13.3803+00	0	1	2	24
+32	22	\N	0	en	TextPlugin	2012-09-18 14:59:31.409041+00	0	1	2	25
+34	22	\N	0	es	TextPlugin	2012-09-18 14:59:31.409041+00	0	1	2	27
+35	21	\N	0	es	TextPlugin	2012-09-18 14:58:13.3803+00	0	1	2	28
 \.
 
 
@@ -3192,6 +3196,7 @@ COPY cms_page (id, created_by, changed_by, parent_id, creation_date, changed_dat
 7	admin	admin	\N	2012-08-30 15:16:11.960697+00	2012-09-16 10:00:15.651756+00	2012-08-30 15:21:47.279686+00	\N	f	f	terminos-uso		t	web/left-sidebar-terms.html	1	0	0	1	2	8	t	\N	t	\N	1
 4	admin	admin	\N	2012-08-30 15:05:35.017062+00	2012-09-17 19:38:57.125662+00	2012-08-30 15:07:15.374302+00	\N	f	f	lista-apps		t	web/left-sidebar-apps-list.html	1	0	0	1	2	5	t	\N	t	\N	1
 5	admin	admin	\N	2012-08-30 15:10:19.27231+00	2012-09-17 19:41:21.381672+00	2012-08-30 15:12:43.012471+00	\N	f	f	quienes-somos		t	web/left-sidebar-who-we-are.html	1	0	0	1	2	6	t	\N	t	\N	1
+8	admin	admin	\N	2012-09-18 14:58:03.430484+00	2012-09-19 16:15:09.780671+00	2012-09-19 09:18:54.271032+00	\N	f	f	app-details		t	web/app-details.html	1	0	0	1	2	9	f	\N	t	\N	1
 \.
 
 
@@ -3215,6 +3220,8 @@ COPY cms_page_placeholders (id, page_id, placeholder_id) FROM stdin;
 17	6	18
 18	7	19
 19	7	20
+20	8	21
+21	8	22
 \.
 
 
@@ -3282,6 +3289,8 @@ COPY cms_placeholder (id, slot, default_width) FROM stdin;
 18	spotlight	\N
 19	content	\N
 20	spotlight	\N
+21	content	\N
+22	spotlight	\N
 \.
 
 
@@ -3301,6 +3310,8 @@ COPY cms_title (id, language, title, menu_title, slug, path, has_url_overwrite, 
 12	en	Términos de Uso		terminos-uso	terminos-uso	f			privacy policy (www.infantium.com and Rufi Adventures) 	kids privacy policy,	Terms and conditions	7	2012-08-30 15:21:47.440981+00
 5	es	Infantium Apps		infantium-apps	infantium-apps	f						4	2012-08-30 15:05:35.217593+00
 8	en	The Team		the-team	the-team	f						5	2012-08-30 15:12:43.159635+00
+14	es	Las a aventuras de Rufi		las-aventuras-de-rufi	las-aventuras-de-rufi	f						8	2012-09-19 09:14:23.468581+00
+13	en	Rufi Adventures		rufi-adventures	rufi-adventures	f						8	2012-09-18 14:58:03.811359+00
 \.
 
 
@@ -3351,6 +3362,10 @@ COPY cmsplugin_text (cmsplugin_ptr_id, body) FROM stdin;
 24	<h2><a href="http://inf-djangoprd01.cloudapp.net/static/cms/wymeditor/iframe/default/metodo-infantium.php">Método </a><a href="metodo-infantium.php">I</a><a href="metodo-infantium.php">nfantium</a> </h2>\n\t\t\t<article>\n\t\t\t\t<h3>Aprendizaje adaptativo</h3>\n\t\t\t\t<p>la tecnología de aprendizaje adaptativo permite individualizar el proceso de aprendizaje según las necesidades, ritmo y nivel de cada niño, creando múltiples itinerarios de aprendizaje. <a href="metodo-infantium.php#logica">Más información</a></p>\n\t\t\t</article>\n\t\t\t<article>\n\t\t\t\t<h3>Inteligencias Mútiples</h3>\n\t\t\t\t<p>El aprendizaje se produce estimulando las múltiples inteligencias de los niños agrupadas en diferentes áreas cognitivas: espacial, matemática, lingüística, musical, etc. la plataforma de infantium se adapta a la forma en que cada niño aprende y entiende el mundo.   <a href="metodo-infantium.php#representacion-mental">Más información</a></p>\n\t\t\t</article>\n\t\t\t<article>\n\t\t\t\t<h3>Aprendizaje basado en juegos y gamificación</h3><p>La plataforma no sólo crea rutas especiales para cada niño, sino que gracias a la gamificación de cada actividad, con la ayuda de padres y educadores, crea un entorno virtual educativo donde los niños desarrollan habilidades necesarias para crecer en un mundo complejo <a href="http://inf-djangoprd01.cloudapp.net/static/cms/wymeditor/iframe/default/metodo-infantium.php#representacion-mental">Más información</a> </p>\n\t\t\t</article>
 30	<h1>Contacto</h1>\n\t<form action="form_action.php" method="post" class="large-form">\n\t\t\t<fieldset>\n\t\t\t<ul>\n\t\t\t\t<li class="input-container">\n\t\t\t\t\t<label class="ir" for="email">Email</label>\n\t\t\t\t\t<input id="email" class="text"/>\n\t\t\t\t\t<span class="form-error">Email incorrecto</span>\n\t\t\t\t</li>\n\t\t\t\t<li class="input-container">\n\t\t\t\t\t<label class="ir" for="message">Mensaje</label>\n\t\t<textarea id="message" rows="8" cols="20" class="textarea"/>\n\t\t\t\t\t<span class="form-error">Introducir un mensaje</span>\n\t\t\t\t</li>\n\t\t\t\t<li class="btn-container">\n\t\t\t\t\t<input type="submit" class="btn btn-blue" value="Envia"/>\n\t\t\t\t</li>\n\t\t\t</ul>\n\t\t</fieldset>\n\t</form>\n\n
 26	<h2><a href="http://inf-djangoprd01.cloudapp.net/static/cms/wymeditor/iframe/default/metodo-infantium.php">Método </a><a href="metodo-infantium.php">I</a><a href="metodo-infantium.php">nfantium</a> </h2>\n\t\t\t<article>\n\t\t\t\t<h3>Aprendizaje adaptativo</h3>\n\t\t\t\t<p>la tecnología de aprendizaje adaptativo permite individualizar el proceso de aprendizaje según las necesidades, ritmo y nivel de cada niño, creando múltiples itinerarios de aprendizaje. <a href="metodo-infantium.php#logica">Más información</a></p>\n\t\t\t</article>\n\t\t\t<article>\n\t\t\t\t<h3>Inteligencias Mútiples</h3>\n\t\t\t\t<p>El aprendizaje se produce estimulando las múltiples inteligencias de los niños agrupadas en diferentes áreas cognitivas: espacial, matemática, lingüística, musical, etc. la plataforma de infantium se adapta a la forma en que cada niño aprende y entiende el mundo.   <a href="metodo-infantium.php#representacion-mental">Más información</a></p>\n\t\t\t</article>\n\t\t\t<article>\n\t\t\t\t<h3>Aprendizaje basado en juegos y gamificación</h3><p>La plataforma no sólo crea rutas especiales para cada niño, sino que gracias a la gamificación de cada actividad, con la ayuda de padres y educadores, crea un entorno virtual educativo donde los niños desarrollan habilidades necesarias para crecer en un mundo complejo <a href="http://inf-djangoprd01.cloudapp.net/static/cms/wymeditor/iframe/default/metodo-infantium.php#representacion-mental">Más información</a> </p>\n\t\t\t</article>
+31	<div class="content app-description">\n\t\t\t<article>\n\t\t\t<h2>Descripcion del juego</h2>\n\t\t\t<p>Maecenas in magna nec velit cursus commodo. Cras nec gravida neque. Nulla facilisi. Curabitur porta, sapien eget feugiat facilisis. Nunc lacinia, arcu nec tincidunt auctor, lorem turpis placerat mi, eget rutrum tortor leo at erat. Curabitur nisl turpis, pellentesque eget pulvinar ac, aliquam a mi. Fusce hendrerit, lacus imperdiet commodo sodales.</p>\n\t\t</article>\n\t\t\n\t\t\t\t\t\t\t\t<article>\n\t\t\t\t\t\t<h2>Nombre del juego</h2>\n\t\t\t\t\t\t<p><img src="/static/img/games/app-detail-game-01.jpg" class="al"/>Maecenas in magna nec velit cursus commodo. Cras nec gravida neque. Nulla facilisi. Curabitur porta, sapien eget feugiat facilisis. Nunc lacinia, arcu nec tincidunt auctor, lorem turpis placerat mi, eget rutrum tortor leo at erat. Curabitur nisl turpis, pellentesque eget pulvinar ac, aliquam a mi. Fusce hendrerit, lacus imperdiet commodo sodales.</p>\n\t\t\t\t\t</article>\n\t\t\t\t\t\t\t\t\t<article>\n\t\t\t\t\t\t<h2>Nombre del juego</h2>\n\t\t\t\t\t\t<p><img src="/static/img/games/app-detail-game-02.jpg" class="al"/>Maecenas in magna nec velit cursus commodo. Cras nec gravida neque. Nulla facilisi. Curabitur porta, sapien eget feugiat facilisis. Nunc lacinia, arcu nec tincidunt auctor, lorem turpis placerat mi, eget rutrum tortor leo at erat. Curabitur nisl turpis, pellentesque eget pulvinar ac, aliquam a mi. Fusce hendrerit, lacus imperdiet commodo sodales.</p>\n\t\t\t\t\t</article>\n\t\t\t\t\t\t\t\t\t<article>\n\t\t\t\t\t\t<h2>Nombre del juego</h2>\n\t\t\t\t\t\t<p><img src="/static/img/games/app-detail-game-03.jpg" class="al"/>Maecenas in magna nec velit cursus commodo. Cras nec gravida neque. Nulla facilisi. Curabitur porta, sapien eget feugiat facilisis. Nunc lacinia, arcu nec tincidunt auctor, lorem turpis placerat mi, eget rutrum tortor leo at erat. Curabitur nisl turpis, pellentesque eget pulvinar ac, aliquam a mi. Fusce hendrerit, lacus imperdiet commodo sodales.</p>\n\t\t\t\t\t</article>\n\t\t\t\t\t\t\t\n\t\t\t<article>\n\t\t\t\t<p><a class="cta">Disponible en el <strong>Microsoft Store</strong></a></p>\n\t\t\t</article>\n</div>
+32	<h2><a href="metodo-infantium.php">Metodo Infantium</a></h2>\n\t\t\t<article>\n\t\t\t\t<h3><a href="metodo-infantium.php#logica">Logica</a></h3>\n\t\t\t\t<p>Nulla facilisi. Nullam id nibh vel velit laoreet ultricies. Morbi laoreet gravi gravida magna in mollis. Duis dictum feugiat odio lorem facta. <a href="metodo-infantium.php#logica">Leer mas sobre logica.</a></p>\n\t\t\t</article>\n\t\t\t<article>\n\t\t\t\t<h3><a href="metodo-infantium.php#representacion-mental">Representacion mental</a></h3>\n\t\t\t\t<p>Nulla facilisi. Nullam id nibh vel velit laoreet ultricies. Morbi laoreet gravi gravida magna in mollis. Duis dictum feugiat odio lorem facta. <a href="metodo-infantium.php#representacion-mental">Leer mas sobre representacion mental.</a></p>\n\t\t\t</article>\n\t\t\t<article>\n\t\t\t\t<h3><a href="metodo-infantium.php#lenguaje">Lenguaje</a></h3>\n\t\t\t\t<p>Nulla facilisi. Nullam id nibh vel velit laoreet ultricies. Morbi laoreet gravi gravida magna in mollis. Duis dictum feugiat odio lorem facta. <a href="metodo-infantium.php#lenguaje">Leer mas sobre lenguaje.</a></p>\n\t\t\t</article>\n
+34	<h2><a href="metodo-infantium.php">Metodo Infantium</a></h2>\n\t\t\t<article>\n\t\t\t\t<h3><a href="metodo-infantium.php#logica">Logica</a></h3>\n\t\t\t\t<p>Nulla facilisi. Nullam id nibh vel velit laoreet ultricies. Morbi laoreet gravi gravida magna in mollis. Duis dictum feugiat odio lorem facta. <a href="metodo-infantium.php#logica">Leer mas sobre logica.</a></p>\n\t\t\t</article>\n\t\t\t<article>\n\t\t\t\t<h3><a href="metodo-infantium.php#representacion-mental">Representacion mental</a></h3>\n\t\t\t\t<p>Nulla facilisi. Nullam id nibh vel velit laoreet ultricies. Morbi laoreet gravi gravida magna in mollis. Duis dictum feugiat odio lorem facta. <a href="metodo-infantium.php#representacion-mental">Leer mas sobre representacion mental.</a></p>\n\t\t\t</article>\n\t\t\t<article>\n\t\t\t\t<h3><a href="metodo-infantium.php#lenguaje">Lenguaje</a></h3>\n\t\t\t\t<p>Nulla facilisi. Nullam id nibh vel velit laoreet ultricies. Morbi laoreet gravi gravida magna in mollis. Duis dictum feugiat odio lorem facta. <a href="metodo-infantium.php#lenguaje">Leer mas sobre lenguaje.</a></p>\n\t\t\t</article>\n
+35	<div class="content app-description">\n\t\t\t<article>\n\t\t\t<h2>Descripcion del juego</h2>\n\t\t\t<p>Maecenas in magna nec velit cursus commodo. Cras nec gravida neque. Nulla facilisi. Curabitur porta, sapien eget feugiat facilisis. Nunc lacinia, arcu nec tincidunt auctor, lorem turpis placerat mi, eget rutrum tortor leo at erat. Curabitur nisl turpis, pellentesque eget pulvinar ac, aliquam a mi. Fusce hendrerit, lacus imperdiet commodo sodales.</p>\n\t\t</article>\n\t\t\n\t\t\t\t\t\t\t\t<article>\n\t\t\t\t\t\t<h2>Nombre del juego</h2>\n\t\t\t\t\t\t<p><img src="/static/img/games/app-detail-game-01.jpg" class="al"/>Maecenas in magna nec velit cursus commodo. Cras nec gravida neque. Nulla facilisi. Curabitur porta, sapien eget feugiat facilisis. Nunc lacinia, arcu nec tincidunt auctor, lorem turpis placerat mi, eget rutrum tortor leo at erat. Curabitur nisl turpis, pellentesque eget pulvinar ac, aliquam a mi. Fusce hendrerit, lacus imperdiet commodo sodales.</p>\n\t\t\t\t\t</article>\n\t\t\t\t\t\t\t\t\t<article>\n\t\t\t\t\t\t<h2>Nombre del juego</h2>\n\t\t\t\t\t\t<p><img src="/static/img/games/app-detail-game-02.jpg" class="al"/>Maecenas in magna nec velit cursus commodo. Cras nec gravida neque. Nulla facilisi. Curabitur porta, sapien eget feugiat facilisis. Nunc lacinia, arcu nec tincidunt auctor, lorem turpis placerat mi, eget rutrum tortor leo at erat. Curabitur nisl turpis, pellentesque eget pulvinar ac, aliquam a mi. Fusce hendrerit, lacus imperdiet commodo sodales.</p>\n\t\t\t\t\t</article>\n\t\t\t\t\t\t\t\t\t<article>\n\t\t\t\t\t\t<h2>Nombre del juego</h2>\n\t\t\t\t\t\t<p><img src="/static/img/games/app-detail-game-03.jpg" class="al"/>Maecenas in magna nec velit cursus commodo. Cras nec gravida neque. Nulla facilisi. Curabitur porta, sapien eget feugiat facilisis. Nunc lacinia, arcu nec tincidunt auctor, lorem turpis placerat mi, eget rutrum tortor leo at erat. Curabitur nisl turpis, pellentesque eget pulvinar ac, aliquam a mi. Fusce hendrerit, lacus imperdiet commodo sodales.</p>\n\t\t\t\t\t</article>\n\t\t\t\t\t\t\t\n\t\t\t<article>\n\t\t\t\t<p><a class="cta">Disponible en el <strong>Microsoft Store</strong></a></p>\n\t\t\t</article>\n</div>
 \.
 
 
@@ -3569,6 +3584,16 @@ COPY django_admin_log (id, action_time, user_id, content_type_id, object_id, obj
 53	2012-09-16 10:00:15.706553+00	1	36	7	Términos de Uso	2	Modificado/a language y moderator_state.
 54	2012-09-17 19:38:57.179232+00	1	36	4	Infantium Apps	2	Changed language and moderator_state.
 55	2012-09-17 19:41:21.509978+00	1	36	5	Quiénes Somos	2	Changed title, slug and moderator_state.
+56	2012-09-18 14:57:14.706436+00	1	20	2	infantium.es	2	Changed domain and name.
+57	2012-09-18 14:57:36.855811+00	1	20	1	infantium.com	2	Changed domain and name.
+58	2012-09-18 14:58:03.834396+00	1	36	8	Rufi Adventures	1	
+59	2012-09-18 15:00:40.976852+00	1	36	8	Rufi Adventures	2	Changed moderator_state.
+60	2012-09-19 09:14:23.494351+00	1	36	8	Rufi Adventures	2	Changed title, slug, language and moderator_state.
+61	2012-09-19 09:16:21.797898+00	1	36	8	Las a aventuras de Rufi	2	Changed language and moderator_state.
+62	2012-09-19 09:18:18.321455+00	1	36	8	Las a aventuras de Rufi	2	Changed language and moderator_state.
+63	2012-09-19 09:18:54.326751+00	1	36	8	Las a aventuras de Rufi	2	Changed published, language and moderator_state.
+64	2012-09-19 09:20:30.648218+00	1	36	8	Las a aventuras de Rufi	2	Changed language and moderator_state.
+65	2012-09-19 16:15:09.841219+00	1	36	8	Rufi Adventures	2	Changed reverse_id and moderator_state.
 \.
 
 
@@ -3666,9 +3691,11 @@ d310ef0fb9eb61aca087db164f32ae33	ZTBmZjYzNjE1ZmFkMThiOWZlZWNhYWY2YzA2YzU4Yzc1ZTQ
 703f97f58a6434507798923e90eee9ef	NDNjMjJjNGU0NWNmZWU2ZmJhNTVlZjc2NGExZjU2MjY2NzEzYzNiYzqAAn1xAShVCnRlc3Rjb29r\naWVxAlUGd29ya2VkcQNVD2RqYW5nb19sYW5ndWFnZVgCAAAAZW5xBHUu\n	2012-09-28 14:23:36.985933+00
 da67770e3385b4c9709a1658fa933090	NDNjMjJjNGU0NWNmZWU2ZmJhNTVlZjc2NGExZjU2MjY2NzEzYzNiYzqAAn1xAShVCnRlc3Rjb29r\naWVxAlUGd29ya2VkcQNVD2RqYW5nb19sYW5ndWFnZVgCAAAAZW5xBHUu\n	2012-09-28 14:27:21.072698+00
 c2831bd2f7bd58e322e43fb5e7c4b00c	MTA3ZGJiM2RkMjdmMWE1MjIzODYzZjg3ZDBhNDdjOWU4MTdhZDA0YzqAAn1xAShVDmNtc19hZG1p\nbl9zaXRlSwFVDV9hdXRoX3VzZXJfaWRLAVUPZGphbmdvX2xhbmd1YWdlWAIAAABlc3ECVRJfYXV0\naF91c2VyX2JhY2tlbmRVKWRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5k\ndS4=\n	2012-09-29 13:04:48.467354+00
-1a8847a8401b1add5ea9474062bf79d1	ZTBmZjYzNjE1ZmFkMThiOWZlZWNhYWY2YzA2YzU4Yzc1ZTQyMDU5ODqAAn1xAShVDmNtc19hZG1p\nbl9zaXRlSwFVDV9hdXRoX3VzZXJfaWRLAVUPZGphbmdvX2xhbmd1YWdlWAIAAABlbnECVRJfYXV0\naF91c2VyX2JhY2tlbmRVKWRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5k\ndS4=\n	2012-09-30 10:12:31.932035+00
-d09c7cb3955a1d0b414f48477cf42458	ZTBmZjYzNjE1ZmFkMThiOWZlZWNhYWY2YzA2YzU4Yzc1ZTQyMDU5ODqAAn1xAShVDmNtc19hZG1p\nbl9zaXRlSwFVDV9hdXRoX3VzZXJfaWRLAVUPZGphbmdvX2xhbmd1YWdlWAIAAABlbnECVRJfYXV0\naF91c2VyX2JhY2tlbmRVKWRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5k\ndS4=\n	2012-10-01 19:43:28.037575+00
-8062f368fc2c1a98bb1f15e24079d824	ZTBmZjYzNjE1ZmFkMThiOWZlZWNhYWY2YzA2YzU4Yzc1ZTQyMDU5ODqAAn1xAShVDmNtc19hZG1p\nbl9zaXRlSwFVDV9hdXRoX3VzZXJfaWRLAVUPZGphbmdvX2xhbmd1YWdlWAIAAABlbnECVRJfYXV0\naF91c2VyX2JhY2tlbmRVKWRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5k\ndS4=\n	2012-10-02 12:35:37.417053+00
+4073ab3ae78b878dfa387d1808d81c0c	NmQ3NWRjY2QxMzQ5MmNiMDNhNWNhMmQzYzg5ZGFkMmY4YzdjNDhlNzqAAn1xAShVDmNtc19hZG1p\nbl9zaXRlSwFVEl9hdXRoX3VzZXJfYmFja2VuZFUpZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5k\ncy5Nb2RlbEJhY2tlbmRVD2RqYW5nb19sYW5ndWFnZVgCAAAAZW5xAlUNX2F1dGhfdXNlcl9pZEsB\ndS4=\n	2012-10-02 15:50:58.379502+00
+86d379b21931daaa4fc3f99f62a3a008	M2JkZTM2NjE4YmFkNGY2NDRiMDViMjk5NzVjYjE0NjY4OTg0YzA4OTqAAn1xAVUPZGphbmdvX2xh\nbmd1YWdlcQJYAgAAAGVucQNzLg==\n	2012-10-03 09:16:45.187493+00
+1a8847a8401b1add5ea9474062bf79d1	MTA3ZGJiM2RkMjdmMWE1MjIzODYzZjg3ZDBhNDdjOWU4MTdhZDA0YzqAAn1xAShVDmNtc19hZG1p\nbl9zaXRlSwFVDV9hdXRoX3VzZXJfaWRLAVUPZGphbmdvX2xhbmd1YWdlWAIAAABlc3ECVRJfYXV0\naF91c2VyX2JhY2tlbmRVKWRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5k\ndS4=\n	2012-10-03 09:20:32.960212+00
+8062f368fc2c1a98bb1f15e24079d824	MTA3ZGJiM2RkMjdmMWE1MjIzODYzZjg3ZDBhNDdjOWU4MTdhZDA0YzqAAn1xAShVDmNtc19hZG1p\nbl9zaXRlSwFVDV9hdXRoX3VzZXJfaWRLAVUPZGphbmdvX2xhbmd1YWdlWAIAAABlc3ECVRJfYXV0\naF91c2VyX2JhY2tlbmRVKWRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5k\ndS4=\n	2012-10-03 10:27:59.919865+00
+d09c7cb3955a1d0b414f48477cf42458	ZTBmZjYzNjE1ZmFkMThiOWZlZWNhYWY2YzA2YzU4Yzc1ZTQyMDU5ODqAAn1xAShVDmNtc19hZG1p\nbl9zaXRlSwFVDV9hdXRoX3VzZXJfaWRLAVUPZGphbmdvX2xhbmd1YWdlWAIAAABlbnECVRJfYXV0\naF91c2VyX2JhY2tlbmRVKWRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5k\ndS4=\n	2012-10-03 16:15:10.29302+00
 \.
 
 
@@ -3677,7 +3704,7 @@ d09c7cb3955a1d0b414f48477cf42458	ZTBmZjYzNjE1ZmFkMThiOWZlZWNhYWY2YzA2YzU4Yzc1ZTQ
 --
 
 COPY django_site (id, domain, name) FROM stdin;
-2	infantium.es	InfantiumES
+2	infantium.es	Infantium_ES
 1	infantium.com	Infantium
 \.
 
