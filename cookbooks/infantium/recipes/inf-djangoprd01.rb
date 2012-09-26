@@ -7,8 +7,8 @@ node[:inf_domain] = "infantium.com"
 # Postgresql
 node[:inf_postgre_password] = "postgres"
 node[:inf_postgre_hostname] = node[:inf_version] + "." + node[:inf_domain]
-node[:inf_postgre_max_cons] = 200
-node[:inf_postgre_shared_buff] = 512
+node[:inf_postgre_max_cons] = 100
+node[:inf_postgre_shared_buff] = 16
 # Memcached
 node[:inf_memcached_mem] = 512
 node[:inf_memcached_cons] = 2048

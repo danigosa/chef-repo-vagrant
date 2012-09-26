@@ -1533,7 +1533,7 @@ ALTER SEQUENCE django_admin_log_id_seq OWNED BY django_admin_log.id;
 -- Name: django_admin_log_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('django_admin_log_id_seq', 64, true);
+SELECT pg_catalog.setval('django_admin_log_id_seq', 65, true);
 
 
 --
@@ -3196,7 +3196,7 @@ COPY cms_page (id, created_by, changed_by, parent_id, creation_date, changed_dat
 7	admin	admin	\N	2012-08-30 15:16:11.960697+00	2012-09-16 10:00:15.651756+00	2012-08-30 15:21:47.279686+00	\N	f	f	terminos-uso		t	web/left-sidebar-terms.html	1	0	0	1	2	8	t	\N	t	\N	1
 4	admin	admin	\N	2012-08-30 15:05:35.017062+00	2012-09-17 19:38:57.125662+00	2012-08-30 15:07:15.374302+00	\N	f	f	lista-apps		t	web/left-sidebar-apps-list.html	1	0	0	1	2	5	t	\N	t	\N	1
 5	admin	admin	\N	2012-08-30 15:10:19.27231+00	2012-09-17 19:41:21.381672+00	2012-08-30 15:12:43.012471+00	\N	f	f	quienes-somos		t	web/left-sidebar-who-we-are.html	1	0	0	1	2	6	t	\N	t	\N	1
-8	admin	admin	\N	2012-09-18 14:58:03.430484+00	2012-09-19 09:20:30.595558+00	2012-09-19 09:18:54.271032+00	\N	f	f	\N		t	web/app-details.html	1	0	0	1	2	9	f	\N	t	\N	1
+8	admin	admin	\N	2012-09-18 14:58:03.430484+00	2012-09-19 16:15:09.780671+00	2012-09-19 09:18:54.271032+00	\N	f	f	app-details		t	web/app-details.html	1	0	0	1	2	9	f	\N	t	\N	1
 \.
 
 
@@ -3310,8 +3310,8 @@ COPY cms_title (id, language, title, menu_title, slug, path, has_url_overwrite, 
 12	en	Términos de Uso		terminos-uso	terminos-uso	f			privacy policy (www.infantium.com and Rufi Adventures) 	kids privacy policy,	Terms and conditions	7	2012-08-30 15:21:47.440981+00
 5	es	Infantium Apps		infantium-apps	infantium-apps	f						4	2012-08-30 15:05:35.217593+00
 8	en	The Team		the-team	the-team	f						5	2012-08-30 15:12:43.159635+00
-13	en	Rufi Adventures		rufi-adventures	rufi-adventures	f						8	2012-09-18 14:58:03.811359+00
 14	es	Las a aventuras de Rufi		las-aventuras-de-rufi	las-aventuras-de-rufi	f						8	2012-09-19 09:14:23.468581+00
+13	en	Rufi Adventures		rufi-adventures	rufi-adventures	f						8	2012-09-18 14:58:03.811359+00
 \.
 
 
@@ -3593,6 +3593,7 @@ COPY django_admin_log (id, action_time, user_id, content_type_id, object_id, obj
 62	2012-09-19 09:18:18.321455+00	1	36	8	Las a aventuras de Rufi	2	Changed language and moderator_state.
 63	2012-09-19 09:18:54.326751+00	1	36	8	Las a aventuras de Rufi	2	Changed published, language and moderator_state.
 64	2012-09-19 09:20:30.648218+00	1	36	8	Las a aventuras de Rufi	2	Changed language and moderator_state.
+65	2012-09-19 16:15:09.841219+00	1	36	8	Rufi Adventures	2	Changed reverse_id and moderator_state.
 \.
 
 
@@ -3690,11 +3691,11 @@ d310ef0fb9eb61aca087db164f32ae33	ZTBmZjYzNjE1ZmFkMThiOWZlZWNhYWY2YzA2YzU4Yzc1ZTQ
 703f97f58a6434507798923e90eee9ef	NDNjMjJjNGU0NWNmZWU2ZmJhNTVlZjc2NGExZjU2MjY2NzEzYzNiYzqAAn1xAShVCnRlc3Rjb29r\naWVxAlUGd29ya2VkcQNVD2RqYW5nb19sYW5ndWFnZVgCAAAAZW5xBHUu\n	2012-09-28 14:23:36.985933+00
 da67770e3385b4c9709a1658fa933090	NDNjMjJjNGU0NWNmZWU2ZmJhNTVlZjc2NGExZjU2MjY2NzEzYzNiYzqAAn1xAShVCnRlc3Rjb29r\naWVxAlUGd29ya2VkcQNVD2RqYW5nb19sYW5ndWFnZVgCAAAAZW5xBHUu\n	2012-09-28 14:27:21.072698+00
 c2831bd2f7bd58e322e43fb5e7c4b00c	MTA3ZGJiM2RkMjdmMWE1MjIzODYzZjg3ZDBhNDdjOWU4MTdhZDA0YzqAAn1xAShVDmNtc19hZG1p\nbl9zaXRlSwFVDV9hdXRoX3VzZXJfaWRLAVUPZGphbmdvX2xhbmd1YWdlWAIAAABlc3ECVRJfYXV0\naF91c2VyX2JhY2tlbmRVKWRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5k\ndS4=\n	2012-09-29 13:04:48.467354+00
-d09c7cb3955a1d0b414f48477cf42458	ZTBmZjYzNjE1ZmFkMThiOWZlZWNhYWY2YzA2YzU4Yzc1ZTQyMDU5ODqAAn1xAShVDmNtc19hZG1p\nbl9zaXRlSwFVDV9hdXRoX3VzZXJfaWRLAVUPZGphbmdvX2xhbmd1YWdlWAIAAABlbnECVRJfYXV0\naF91c2VyX2JhY2tlbmRVKWRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5k\ndS4=\n	2012-10-01 19:43:28.037575+00
 4073ab3ae78b878dfa387d1808d81c0c	NmQ3NWRjY2QxMzQ5MmNiMDNhNWNhMmQzYzg5ZGFkMmY4YzdjNDhlNzqAAn1xAShVDmNtc19hZG1p\nbl9zaXRlSwFVEl9hdXRoX3VzZXJfYmFja2VuZFUpZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5k\ncy5Nb2RlbEJhY2tlbmRVD2RqYW5nb19sYW5ndWFnZVgCAAAAZW5xAlUNX2F1dGhfdXNlcl9pZEsB\ndS4=\n	2012-10-02 15:50:58.379502+00
 86d379b21931daaa4fc3f99f62a3a008	M2JkZTM2NjE4YmFkNGY2NDRiMDViMjk5NzVjYjE0NjY4OTg0YzA4OTqAAn1xAVUPZGphbmdvX2xh\nbmd1YWdlcQJYAgAAAGVucQNzLg==\n	2012-10-03 09:16:45.187493+00
 1a8847a8401b1add5ea9474062bf79d1	MTA3ZGJiM2RkMjdmMWE1MjIzODYzZjg3ZDBhNDdjOWU4MTdhZDA0YzqAAn1xAShVDmNtc19hZG1p\nbl9zaXRlSwFVDV9hdXRoX3VzZXJfaWRLAVUPZGphbmdvX2xhbmd1YWdlWAIAAABlc3ECVRJfYXV0\naF91c2VyX2JhY2tlbmRVKWRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5k\ndS4=\n	2012-10-03 09:20:32.960212+00
 8062f368fc2c1a98bb1f15e24079d824	MTA3ZGJiM2RkMjdmMWE1MjIzODYzZjg3ZDBhNDdjOWU4MTdhZDA0YzqAAn1xAShVDmNtc19hZG1p\nbl9zaXRlSwFVDV9hdXRoX3VzZXJfaWRLAVUPZGphbmdvX2xhbmd1YWdlWAIAAABlc3ECVRJfYXV0\naF91c2VyX2JhY2tlbmRVKWRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5k\ndS4=\n	2012-10-03 10:27:59.919865+00
+d09c7cb3955a1d0b414f48477cf42458	ZTBmZjYzNjE1ZmFkMThiOWZlZWNhYWY2YzA2YzU4Yzc1ZTQyMDU5ODqAAn1xAShVDmNtc19hZG1p\nbl9zaXRlSwFVDV9hdXRoX3VzZXJfaWRLAVUPZGphbmdvX2xhbmd1YWdlWAIAAABlbnECVRJfYXV0\naF91c2VyX2JhY2tlbmRVKWRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5k\ndS4=\n	2012-10-03 16:15:10.29302+00
 \.
 
 
