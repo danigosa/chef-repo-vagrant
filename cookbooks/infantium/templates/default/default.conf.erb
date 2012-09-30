@@ -8,7 +8,7 @@ server {
     listen              443 ssl;
     ssl_certificate     /usr/local/nginx/conf/sslchain.crt;
     ssl_certificate_key /usr/local/nginx/conf/infantium.com.key;
-    server_name         <%= node[:inf_version] %>.infantium.com;
+    server_name         *.infantium.com;
     location /static {
         alias /var/www/infantium_portal/infantium/static;
     }
