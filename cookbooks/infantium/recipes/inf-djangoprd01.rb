@@ -125,21 +125,6 @@ script "install_virtualenv" do
   EOH
 end
 
-##########################################################
-# Restore permissions
-##########################################################
-script "usermod_nginx_user" do
-  user "root"
-  cwd "/var/www"
-  interpreter "bash"
-  code <<-EOH
-  sudo usermod -a -G nginx $USER
-  sudo chown -R $USER:nginx /var/www/infantium_portal
-  sudo chmod -R g+w /var/www/infantium_portal
-  EOH
-end
-
-
 ###################### BEGIN COMMENT #####################
 =begin
 ##########################################################
@@ -160,8 +145,6 @@ script "pull_source" do
   rm -rf infantium
   git clone https://danigosa@bitbucket.org/gloriamh/infantium.git
   rm -rf ./infantium/.git ./infantium/.gitignore
-  sudo chown -R $USER:nginx /var/www/infantium_portal
-  sudo chmod -R g+w /var/www/infantium_portal
   EOH
 end
 ###################### END COMMENT #######################
@@ -184,8 +167,6 @@ script "pull_source" do
   unzip /tmp/infantium.zip -d /var/www/infantium_portal/infantium
   mv /var/www/infantium_portal/infantium/infantium/settings.py /var/www/infantium_portal/infantium/infantium/settings.dev.py
   mv /var/www/infantium_portal/infantium/infantium/settings.prod.py /var/www/infantium_portal/infantium/infantium/settings.py
-  sudo chown -R $USER:nginx /var/www/infantium_portal
-  sudo chmod -R g+w /var/www/infantium_portal
   EOH
 end
 
@@ -244,7 +225,8 @@ script "set_SHMMAX_kernel" do
   cwd "/var/www"
   interpreter "bash"
   code <<-EOH
-  sudo sysctl -w kernel.shmmax=576798720
+  sudo sysctl -w kernel.shmmax=17179869184
+  sudo sysctl -w kernel.shmall=4194304
   sudo sysctl -p /etc/sysctl.conf
   EOH
   notifies :restart, "service[postgresql]", :immediately
@@ -317,6 +299,20 @@ script "django-app-setup" do
   EOH
   notifies :restart, "service[uwsgi]"
   notifies :restart, "service[nginx]"
+end
+
+##########################################################
+# Restore permissions
+##########################################################
+script "usermod_nginx_user" do
+  user "root"
+  cwd "/var/www"
+  interpreter "bash"
+  code <<-EOH
+  sudo usermod -a -G nginx $USER
+  sudo chown -R $USER:nginx /var/www/infantium_portal
+  sudo chmod -R g+w /var/www/infantium_portal
+  EOH
 end
 
 ##########################################################
