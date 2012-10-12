@@ -218,7 +218,7 @@ ALTER SEQUENCE auth_user_id_seq OWNED BY auth_user.id;
 -- Name: auth_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('auth_user_id_seq', 3, true);
+SELECT pg_catalog.setval('auth_user_id_seq', 4, true);
 
 
 --
@@ -1490,7 +1490,7 @@ ALTER SEQUENCE db_userprofile_id_seq OWNED BY db_userprofile.id;
 -- Name: db_userprofile_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('db_userprofile_id_seq', 1, true);
+SELECT pg_catalog.setval('db_userprofile_id_seq', 2, true);
 
 
 --
@@ -1533,7 +1533,7 @@ ALTER SEQUENCE django_admin_log_id_seq OWNED BY django_admin_log.id;
 -- Name: django_admin_log_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('django_admin_log_id_seq', 77, true);
+SELECT pg_catalog.setval('django_admin_log_id_seq', 88, true);
 
 
 --
@@ -2264,7 +2264,7 @@ ALTER SEQUENCE tastypie_apikey_id_seq OWNED BY tastypie_apikey.id;
 -- Name: tastypie_apikey_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('tastypie_apikey_id_seq', 1, true);
+SELECT pg_catalog.setval('tastypie_apikey_id_seq', 2, true);
 
 
 --
@@ -2374,7 +2374,7 @@ ALTER SEQUENCE zinnia_entry_authors_id_seq OWNED BY zinnia_entry_authors.id;
 -- Name: zinnia_entry_authors_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('zinnia_entry_authors_id_seq', 4, true);
+SELECT pg_catalog.setval('zinnia_entry_authors_id_seq', 9, true);
 
 
 --
@@ -2511,7 +2511,7 @@ ALTER SEQUENCE zinnia_entry_sites_id_seq OWNED BY zinnia_entry_sites.id;
 -- Name: zinnia_entry_sites_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('zinnia_entry_sites_id_seq', 4, true);
+SELECT pg_catalog.setval('zinnia_entry_sites_id_seq', 9, true);
 
 
 --
@@ -3115,9 +3115,10 @@ COPY auth_permission (id, name, content_type_id, codename) FROM stdin;
 --
 
 COPY auth_user (id, username, first_name, last_name, email, password, is_staff, is_active, is_superuser, last_login, date_joined) FROM stdin;
-2	dani.gonzalez@infantium.com	Daniel	Gonzalez	dani.gonzalez@infantium.com	pbkdf2_sha256$10000$c9GYlA6JxcH7$fhsvlycmS5ErR0m31aeI5EqGAF+krOJv2/QEsSF31/I=	f	t	f	2012-08-30 16:26:52.551733+00	2012-08-24 15:48:28+00
 3	testplayer@infantium.com	Test	Player	testplayer@infantium.com	pbkdf2_sha256$10000$tvBbxuz2mZZT$fIbbthhV6bsg5729I3L50889XXumIHaGXLs6fH9Tkv4=	f	t	f	2012-09-26 16:47:58.713224+00	2012-08-30 18:44:01+00
-1	admin			dani.gonzalez@infantium.com	pbkdf2_sha256$10000$mOh2xV5IhEDu$xuyasxjU9TudXwBLjFllt6g5lK8A8AhFb/B+6hjcdfI=	t	t	t	2012-10-04 17:19:44.672456+00	2012-08-24 14:52:49.172034+00
+2	Danigosa	Daniel	Gonzalez	dani.gonzalez@infantium.com	pbkdf2_sha256$10000$c9GYlA6JxcH7$fhsvlycmS5ErR0m31aeI5EqGAF+krOJv2/QEsSF31/I=	t	t	t	2012-08-30 16:26:52+00	2012-08-24 15:48:28+00
+4	Karen	Karen	Marquez	karen.marquez@infantium.com	pbkdf2_sha256$10000$IHJEFDEyI2Ub$RJiyeMaBdt/TthFmcnKgnyA6xl5eiN1W/tfRioM/iME=	t	t	t	2012-10-10 14:42:31+00	2012-10-10 14:42:31+00
+1	admin			dani.gonzalez@infantium.com	pbkdf2_sha256$10000$mOh2xV5IhEDu$xuyasxjU9TudXwBLjFllt6g5lK8A8AhFb/B+6hjcdfI=	t	t	t	2012-10-10 15:12:36.232245+00	2012-08-24 14:52:49.172034+00
 \.
 
 
@@ -3573,6 +3574,7 @@ COPY db_score (id, meta, deleted, "dtCreationDateTime", "dtModificationDateTime"
 
 COPY db_userprofile (id, meta, deleted, "dtCreationDateTime", "dtModificationDateTime", user_id, sex, country_code, image) FROM stdin;
 1	{}	f	2012-08-30 18:44:02.05+00	2012-08-30 18:54:03.157+00	3	m	es	users/avatars/painting.png
+2	{}	f	2012-10-10 14:42:32.009485+00	2012-10-10 14:42:32.00953+00	4			
 \.
 
 
@@ -3658,6 +3660,17 @@ COPY django_admin_log (id, action_time, user_id, content_type_id, object_id, obj
 75	2012-10-04 17:44:23.193033+00	1	36	3	Home	2	Changed moderator_state.
 76	2012-10-04 17:47:22.175919+00	1	36	3	Home	2	Changed page_title, meta_description, meta_keywords and moderator_state.
 77	2012-10-04 17:53:19.156396+00	1	36	3	Inicio	2	Changed page_title, meta_description, meta_keywords, language and moderator_state.
+78	2012-10-10 14:41:25.284243+00	1	32	1	Infantium: el sueño de cambiar la educación mediante la tecnología: borrador	2	Modificado/a image.
+79	2012-10-10 14:42:32.019785+00	1	17	4	Karen	1	
+80	2012-10-10 14:43:16.911591+00	1	17	4	Karen	2	Modificado/a password, first_name, last_name, email y is_superuser. Eliminado/a "3fce3aae9eef0aa51dc17c3bb3a5a7571b08d7b6 for Karen" api key.
+81	2012-10-10 14:43:51.928982+00	1	17	2	Danigosa	2	Modificado/a username, password y is_superuser.
+82	2012-10-10 14:44:04.440323+00	1	17	2	Danigosa	2	Modificado/a password.
+83	2012-10-10 14:45:33.252571+00	1	17	2	Danigosa	2	Modificado/a password y is_staff.
+84	2012-10-10 14:46:16.514339+00	1	17	4	Karen	2	Modificado/a password y is_staff.
+85	2012-10-10 14:47:19.106314+00	1	32	1	Infantium: el sueño de cambiar la educación mediante la tecnología: publicado	2	Modificado/a status, authors y slug.
+86	2012-10-10 16:05:11.692125+00	1	32	1	Infantium: el sueño de cambiar la educación mediante la tecnología: publicado	2	Modificado/a image.
+87	2012-10-11 13:11:50.139902+00	1	32	1	Infantium: el sueño de cambiar la educación mediante la tecnología: publicado	2	Modificado/a content.
+88	2012-10-11 13:31:12.747846+00	1	32	1	Infantium: el sueño de cambiar la educación mediante la tecnología: publicado	2	Modificado/a creation_date.
 \.
 
 
@@ -4020,7 +4033,7 @@ COPY zinnia_category (id, title, slug, description, parent_id, lft, rght, tree_i
 --
 
 COPY zinnia_entry (id, title, image, content, excerpt, tags, slug, status, featured, comment_enabled, pingback_enabled, creation_date, last_update, start_publication, end_publication, login_required, password, template) FROM stdin;
-1	Infantium: el sueño de cambiar la educación mediante la tecnología		<p>Infantium es una startup fundada por tres amigos (2 en barcelona y cul&eacute;s, y otro en Madrid y madridista, como no pod&iacute;a ser de otra manera) que comparten pasi&oacute;n por los ni&ntilde;os, la educaci&oacute;n, la tecnolog&iacute;a, y el emprendimiento.</p>\r\n<p>Desde el primer momento en que surgi&oacute; la idea, el objetivo era hacer un producto totalmente diferente, que no se pareciera en nada a la mayor&iacute;a de aplicaciones educativas que hab&iacute;amos visto en el mercado: una mezcla entre entretenimiento y contenido m&aacute;s o menos educativo (curricular o no). Pero m&aacute;s que ofrecer un juego, o &ldquo;automatizar&rdquo; (es decir, en vez de sumar en papel, sumar en una app; o en vez de un rompecabezas de carton, uno en tablet), lo que nos interesaba era<strong>&nbsp;la enorme capacidad que tiene la tecnolog&iacute;a para trasformar la educaci&oacute;n, desde sus ra&iacute;ces.</strong>&nbsp;No s&oacute;lo la forma en que aprendemos, sino como la inteligencia artificial puede potenciar al m&aacute;ximo el propio aprendizaje. <strong>Cada persona es un mundo, un ser que aprende de forma distinta y a ritmos disferentes,</strong> por lo que el concepto de educaci&oacute;n tradicional &ndash;la misma para todos &ndash;no tiene ning&uacute;n tipo de sentido y tiene que cambiar. &nbsp;Por desgracia, la mayor&iacute;a de colegios -en todos los niveles -tienen infraestructuras de IT insuficientes, no hay ninguna estrategia de implantaci&oacute;n (es decir, ordenadores para cada ni&ntilde;o por el hecho de tenerlos no representa un avance signiticativo, salvo que lo que antes se hacia a mano ahora se hace digital) y lo peor, la resistencia al cambio por miedo de muchos: en definiiva, <strong>el cl&aacute;sico modelo del libro de texto que determina qu&eacute;, c&oacute;mo y en qu&eacute; orden aprender.&nbsp;</strong></p>\r\n<p>Uno de los avances m&aacute;s fascinantes en los &uacute;ltimos a&ntilde;os es que ciertas <strong>plataformas educativas adaptativas</strong> se ajusten a las necesidades del estudiante, y tras evaluar su rendimiento, cree lecciones customizadas. En USA algunas de las empresas m&aacute;s innovadoras de elearning se basan en este concepto para, por ejemplo, mejorar en matematicas (<a href="http://www.dreambox.com/">Dreambox</a>&nbsp;o&nbsp;<a href="http://www.reasoningmind.org/">Reasoning Minds</a>), o permitir a estudiantes universitarios que progresen de forma adecuada, pero constante, seg&uacute;n su propio ritmo.</p>\r\n<p>Y mientras todos ponen el foco en secundaria y universitarios, los m&aacute;s peque&ntilde;os quedan olvidados. <strong>Los primeros a&ntilde;os de vida (0-6 a&ntilde;os), son una etapa cr&iacute;tica para el desarrollo cognitivo</strong>, cuando se desarrolla el pensamiento simb&oacute;lico, el matem&aacute;tico, el lenguaje.. que ser&aacute;n fundamentales no s&oacute;lo para tener una base que ayude al &eacute;xito en el colegio, sino para desenvolverse como ser&eacute;s humanos, y adquirir habilidades necesarias en un mundo complejo. Todo lo que no se gane en esa etapa no se recupera jam&aacute;s.</p>\r\n<p>As&iacute; que de ah&iacute; nace Infantium. Nuestro sue&ntilde;o? Aprovechar las posibilidades que otorga la tecnolog&iacute;a para explotar al m&aacute;ximo las capacidades individuales, potenciar al m&aacute;ximo el desarrollo cognitivo en los primeros a&ntilde;os, y crear un m&eacute;todo de aprendizaje que se ajuste a las necesidades, fortalezas y debilidades de cada ni&ntilde;o de forma individual y personalizada. &nbsp;En ning&uacute;n caso la tecnolog&iacute;a es la panacea, y desde luego no substituye la interacci&oacute;n con los padres o profesores. Pero permite extraer informaci&oacute;n precisa mediante un complejo an&aacute;lisis de datos y algoritmos que permiten definir rutas concretas para optimizar los recursos intelectuales de la mejor forma para cada uno. Algo que sino, no ser&iacute;a posible. Tiene sentido que dos ni&ntilde;os distintos usen un mismo juego, que se puede resolver de forma unidireccional? Para qu&eacute;?</p>\r\n<p>Os iremos contando! De momento tenemos casi preparada la primera beta de la primera app que fomar&aacute; parte de la plataforma. As&iacute; que antes de nuestro lanzamiento, que ser&aacute; muy en breve (26 de octubre, fecha oficial de lanzamiento de Windows 8) quer&iacute;amos empezar este blog donde hablaremos no s&oacute;lo de las cosas que ocurren en el mundo de la tecnolog&iacute;a educativa, sino que esperamos que sirva de gu&iacute;a de uso para los padres que lo prueben: cada actividad con su s&iacute;mil para trabajar en casa junto al peque.</p>\r\n<p>Para esto, tenemos el apoyo de grand&iacute;simos partners: la UAB (Y su departamento de Psicolog&iacute;a Evolutiva y de la Educaci&oacute;n, cuya investigaci&oacute;n empezar&aacute; muy pronto), al Ayuntamiento de Lleida, y en concreto al Instituto Municipal de Educaci&oacute;n (Y muy especialmente a su directora, Alba Bosch, toda una visionaria sobre tech y los m&aacute;s peque&ntilde;os) as&iacute; como todas las guarder&iacute;as que participan en el proyecto (esta ser&aacute; una ventana para todas ellas y las profes de infantil) y la Fundaci&oacute;n &ndash;Instituto de Psicopedagogia Antoni Cambrod&iacute;, y sobre todo a Gemma Ribera, que en breve se iniciar&aacute; aqu&iacute; tambi&eacute;n! J</p>\r\n<p>PTodo esto, por supuesto, no ser&iacute;a posible sin la ayuda de Carles Grau (director de Sector P&uacute;blico). Sin &eacute;l este proyecto se hubiera quedado en el tintero. Fue el quien nos dio todo su apoyo y visi&oacute;n. Y a Microsoft por creer en los emprendedores. Y tambi&eacute;n a Carlos Blanco, que nos ha adoptado en el grupo ITnet desde que salimos en&nbsp; Seedrocket y todo su apoyo es incalculable.</p>\r\n<p>Empezamos! &nbsp;</p>			hello	0	f	t	t	2012-09-30 06:11:19+00	2012-09-30 07:06:32.666377+00	\N	\N	f		entry_detail.html
+1	Infantium: el sueño de cambiar la educación mediante la tecnología	uploads/zinnia/oswald-rufi.png	<p>Infantium es una startup fundada por tres amigos (2 en barcelona y cul&eacute;s, y otro en Madrid y madridista, como no pod&iacute;a ser de otra manera) que comparten pasi&oacute;n por los ni&ntilde;os, la educaci&oacute;n, la tecnolog&iacute;a, y el emprendimiento.</p>\r\n<p>Desde el primer momento en que surgi&oacute; la idea, el objetivo era hacer un producto totalmente diferente, que no se pareciera en nada a la mayor&iacute;a de aplicaciones educativas que hab&iacute;amos visto en el mercado: una mezcla entre entretenimiento y contenido m&aacute;s o menos educativo (curricular o no). Pero m&aacute;s que ofrecer un juego, o &ldquo;automatizar&rdquo; (es decir, en vez de sumar en papel, sumar en una app; o en vez de un rompecabezas de carton, uno en tablet), lo que nos interesaba era<strong>&nbsp;la enorme capacidad que tiene la tecnolog&iacute;a para trasformar la educaci&oacute;n, desde sus ra&iacute;ces.</strong>&nbsp;No s&oacute;lo la forma en que aprendemos, sino como la inteligencia artificial puede potenciar al m&aacute;ximo el propio aprendizaje. <strong>Cada persona es un mundo, un ser que aprende de forma distinta y a ritmos disferentes,</strong> por lo que el concepto de educaci&oacute;n tradicional &ndash;la misma para todos &ndash;no tiene ning&uacute;n tipo de sentido y tiene que cambiar. &nbsp;Por desgracia, la mayor&iacute;a de colegios -en todos los niveles -tienen infraestructuras de IT insuficientes, no hay ninguna estrategia de implantaci&oacute;n (es decir, ordenadores para cada ni&ntilde;o por el hecho de tenerlos no representa un avance signiticativo, salvo que lo que antes se hacia a mano ahora se hace digital) y lo peor, la resistencia al cambio por miedo de muchos: en definiiva, <strong>el cl&aacute;sico modelo del libro de texto que determina qu&eacute;, c&oacute;mo y en qu&eacute; orden aprender.&nbsp;</strong></p>\r\n<p>Uno de los avances m&aacute;s fascinantes en los &uacute;ltimos a&ntilde;os es que ciertas <strong>plataformas educativas adaptativas</strong> se ajusten a las necesidades del estudiante, y tras evaluar su rendimiento, cree lecciones customizadas. En USA algunas de las empresas m&aacute;s innovadoras de elearning se basan en este concepto para, por ejemplo, mejorar en matematicas (<a href="http://www.dreambox.com/">Dreambox</a>&nbsp;o&nbsp;<a href="http://www.reasoningmind.org/">Reasoning Minds</a>), o permitir a estudiantes universitarios que progresen de forma adecuada, pero constante, seg&uacute;n su propio ritmo.</p>\r\n<p>Y mientras todos ponen el foco en secundaria y universitarios, los m&aacute;s peque&ntilde;os quedan olvidados. <strong>Los primeros a&ntilde;os de vida (0-6 a&ntilde;os), son una etapa cr&iacute;tica para el desarrollo cognitivo</strong>, cuando se desarrolla el pensamiento simb&oacute;lico, el matem&aacute;tico, el lenguaje.. que ser&aacute;n fundamentales no s&oacute;lo para tener una base que ayude al &eacute;xito en el colegio, sino para desenvolverse como ser&eacute;s humanos, y adquirir habilidades necesarias en un mundo complejo. Todo lo que no se gane en esa etapa no se recupera jam&aacute;s.</p>\r\n<p>As&iacute; que de ah&iacute; nace Infantium. Nuestro sue&ntilde;o? Aprovechar las posibilidades que otorga la tecnolog&iacute;a para explotar al m&aacute;ximo las capacidades individuales, potenciar al m&aacute;ximo el desarrollo cognitivo en los primeros a&ntilde;os, y crear un m&eacute;todo de aprendizaje que se ajuste a las necesidades, fortalezas y debilidades de cada ni&ntilde;o de forma individual y personalizada. &nbsp;En ning&uacute;n caso la tecnolog&iacute;a es la panacea, y desde luego no substituye la interacci&oacute;n con los padres o profesores. Pero permite extraer informaci&oacute;n precisa mediante un complejo an&aacute;lisis de datos y algoritmos que permiten definir rutas concretas para optimizar los recursos intelectuales de la mejor forma para cada uno. Algo que sino, no ser&iacute;a posible. Tiene sentido que dos ni&ntilde;os distintos usen un mismo juego, que se puede resolver de forma unidireccional? Para qu&eacute;?</p>\r\n<p>Os iremos contando! De momento tenemos casi preparada la primera beta de la primera app que fomar&aacute; parte de la plataforma. As&iacute; que antes de nuestro lanzamiento, que ser&aacute; muy en breve (26 de octubre, fecha oficial de lanzamiento de Windows 8) quer&iacute;amos empezar este blog donde hablaremos no s&oacute;lo de las cosas que ocurren en el mundo de la tecnolog&iacute;a educativa, sino que esperamos que sirva de gu&iacute;a de uso para los padres que lo prueben: cada actividad con su s&iacute;mil para trabajar en casa junto al peque.</p>\r\n<p>Para esto, tenemos el apoyo de grand&iacute;simos partners: la UAB (Y su departamento de Psicolog&iacute;a Evolutiva y de la Educaci&oacute;n, cuya investigaci&oacute;n empezar&aacute; muy pronto), al Ayuntamiento de Lleida, y en concreto al Instituto Municipal de Educaci&oacute;n (Y muy especialmente a su directora, Alba Bosch, toda una visionaria sobre tech y los m&aacute;s peque&ntilde;os) as&iacute; como todas las guarder&iacute;as que participan en el proyecto (esta ser&aacute; una ventana para todas ellas y las profes de infantil) y la Fundaci&oacute;n &ndash;Instituto de Psicopedagogia Antoni Cambrod&iacute;, y sobre todo a Gemma Ribera, que en breve se iniciar&aacute; aqu&iacute; tambi&eacute;n! J</p>\r\n<p>PTodo esto, por supuesto, no ser&iacute;a posible sin la ayuda de Carles Grau (director de Sector P&uacute;blico). Sin &eacute;l este proyecto se hubiera quedado en el tintero. Fue el quien nos dio todo su apoyo y visi&oacute;n. Y a Microsoft por creer en los emprendedores. Y tambi&eacute;n a Carlos Blanco en especial, que nos ha adoptado en el grupo ITnet desde que salimos en&nbsp; Seedrocket y todo su apoyo es incalculable (y el de todos su fant&aacute;stico equipo). Y no olvidarnos de nuestros inversores: Oscar, Sergio, David, Jes&uacute;s, Alfredo! Gracias :)&nbsp;</p>\r\n<p>Empezamos! &nbsp;</p>	...		infantium-cambiar-educacion	2	f	t	t	2012-10-09 06:11:19+00	2012-10-11 13:31:12.705194+00	\N	\N	f		entry_detail.html
 \.
 
 
@@ -4029,7 +4042,7 @@ COPY zinnia_entry (id, title, image, content, excerpt, tags, slug, status, featu
 --
 
 COPY zinnia_entry_authors (id, entry_id, user_id) FROM stdin;
-4	1	1
+9	1	4
 \.
 
 
@@ -4054,7 +4067,7 @@ COPY zinnia_entry_related (id, from_entry_id, to_entry_id) FROM stdin;
 --
 
 COPY zinnia_entry_sites (id, entry_id, site_id) FROM stdin;
-4	1	1
+9	1	1
 \.
 
 
