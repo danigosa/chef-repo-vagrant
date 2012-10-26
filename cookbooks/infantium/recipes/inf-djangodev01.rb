@@ -295,6 +295,7 @@ script "django-app-setup" do
   python ./manage.py syncdb --all
   python ./manage.py migrate --fake
   python ./manage.py migrate
+  python ./manage.py update_translation_fields
   deactivate
   EOH
   notifies :restart, "service[uwsgi]"
