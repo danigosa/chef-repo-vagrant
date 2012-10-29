@@ -293,8 +293,7 @@ script "django-app-setup" do
   cd /var/www/infantium_portal/infantium
   python ./manage.py collectstatic --noinput
   python ./manage.py syncdb --all
-  python ./manage.py migrate --fake
-  python ./manage.py migrate
+  python ./manage.py migrate --all
   python ./manage.py update_translation_fields
   deactivate
   EOH
@@ -303,9 +302,22 @@ script "django-app-setup" do
 end
 
 ##########################################################
+# Clean Up
+##########################################################
+script "django-app-cleanup" do
+  user "root"
+  cwd "/var/www/infantium_portal"
+  interpreter "bash"
+  code <<-EOH
+  sudo rm -rf media infantium/media
+  sudo truncate -s 0 infantium/logs/*.log
+  EOH
+end
+
+##########################################################
 # Restore permissions
 ##########################################################
-script "usermod_nginx_user" do
+script "django-app-permissions" do
   user "root"
   cwd "/var/www"
   interpreter "bash"

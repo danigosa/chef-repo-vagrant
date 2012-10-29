@@ -293,8 +293,7 @@ script "django-app-setup" do
   cd /var/www/infantium_portal/infantium
   python ./manage.py collectstatic --noinput
   python ./manage.py syncdb --all
-  python ./manage.py migrate --fake
-  python ./manage.py migrate
+  python ./manage.py migrate -all
   deactivate
   EOH
   notifies :restart, "service[uwsgi]"
