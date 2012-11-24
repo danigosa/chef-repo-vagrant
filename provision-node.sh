@@ -3,9 +3,10 @@
 set -e
 set -x
 
-node="$1"
+user="$1"
+node="$2"
 
-ssh-copy-id -i ~/.ssh/dani-inf-azure.pub ubuntu@${node}
+ssh-copy-id -i ~/.ssh/dani-inf-azure.pub ${user}@${node}
 
 scp /etc/apt/trusted.gpg.d/opscode-keyring.gpg ubuntu@${node}:/tmp
 
@@ -23,6 +24,9 @@ sudo add-apt-repository "deb http://nginx.org/packages/ubuntu/ precise nginx"
 # Gives error but should be possibly uncommented in a future
 #sudo add-apt-repository "deb-src http://nginx.org/packages/ubuntu/ precise nginx"
 
+# Set up repos for Postgresql 9.2
+sudo add-apt-repository ppa:pitti/postgresql
+
 # Install chef-client
 echo "deb http://apt.opscode.com/ `lsb_release -cs`-0.10 main" | sudo tee /etc/apt/sources.list.d/opscode.list
 sudo cp /tmp/opscode-keyring.gpg /etc/apt/trusted.gpg.d/opscode-keyring.gpg
@@ -30,7 +34,7 @@ sudo apt-get update
 sudo apt-get install chef opscode-keyring
 
 # Set up remote chef-solo
-sudo install -d -o ubuntu -g ubuntu /srv/chef-solo
+sudo install -d -o ${user} -g ${user} /srv/chef-solo
 
 # Install GIT
 sudo apt-get git
@@ -42,4 +46,4 @@ sudo apt-get upgrade
 sudo reboot
 EOF
 
-ssh -t ubuntu@${node} bash /tmp/provision.sh
+ssh -t ${user}@${node} bash /tmp/provision.sh

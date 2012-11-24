@@ -1,14 +1,18 @@
+
+##########################################################
+# wa user: azureadmin # wa domain: inf-test.cloudapp.net
+node[:wauser] = "azureadmin"
 ##########################################################
 # NODE VARIABLES: Tunning it from here
 ##########################################################
 # Domain DNS
-node[:inf_version] = "alpha"
+node[:inf_version] = "test"
 node[:inf_domain] = "infantium.com"
 # Postgresql
 node[:inf_postgre_password] = "postgres"
 node[:inf_postgre_hostname] = node[:inf_version] + "." + node[:inf_domain]
 node[:inf_postgre_max_cons] = 100
-node[:inf_postgre_shared_buff] = 16
+node[:inf_postgre_shared_buff] = 250
 # Memcached
 node[:inf_memcached_mem] = 512
 node[:inf_memcached_cons] = 2048
@@ -71,8 +75,8 @@ template "/etc/init/uwsgi.conf" do
 end
 
 execute "uwgsi_useradd" do
-  command "useradd -c 'uwsgi user' -g nginx --system uwsgi && touch /home/ubuntu/uwsgi_user_created.donothing"
-  creates "/home/ubuntu/uwsgi_user_created.donothing"
+  command "useradd -c 'uwsgi user' -g nginx --system uwsgi && touch /home/"+node[:wauser]+"/uwsgi_user_created.donothing"
+  creates "/home/"+node[:wauser]+"/uwsgi_user_created.donothing"
   action :run
 end
 
@@ -196,8 +200,8 @@ end
 ##########################################################
 # INSTALL POSTGRESQL: And automated database backup
 ##########################################################
-package "postgresql"
-package "postgresql-contrib"
+package "postgresql-9.2"
+package "postgresql-common"
 
 service "postgresql" do
   supports :restart => true, :status => true, :reload => false
@@ -342,17 +346,6 @@ end
 
 template "/etc/cron.daily/pg_backup.sh" do
   mode "0755"
-  owner "root"
-  group "root"
-end
-
-##########################################################
-# Setup SFTP
-##########################################################
-package "vsftpd"
-
-template "/etc/vsftpd.conf" do
-  mode "0600"
   owner "root"
   group "root"
 end

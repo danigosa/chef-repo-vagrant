@@ -3,6 +3,7 @@
 set -e
 set -x
 
+user=
 node="$1"
 
 #Configure IPTables Firewall
