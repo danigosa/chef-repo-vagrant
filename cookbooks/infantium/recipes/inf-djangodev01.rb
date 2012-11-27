@@ -269,7 +269,6 @@ template "/etc/pgpool2/pgpool.conf" do
   mode "0644"
   owner "root"
   group "root"
-  notifies :restart, "service[pgpool2]", :immediately
 end
 
 template "/etc/pgpool2/pool_hba.conf" do
@@ -277,6 +276,7 @@ template "/etc/pgpool2/pool_hba.conf" do
   owner "root"
   group "root"
   notifies :restart, "service[pgpool2]", :immediately
+  notifies :restart, "service[postgresql]", :immediately
 end
 
 ##########################################################

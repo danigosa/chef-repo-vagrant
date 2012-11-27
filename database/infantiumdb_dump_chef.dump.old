@@ -136,7 +136,7 @@ ALTER SEQUENCE auth_permission_id_seq OWNED BY auth_permission.id;
 -- Name: auth_permission_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('auth_permission_id_seq', 238, true);
+SELECT pg_catalog.setval('auth_permission_id_seq', 247, true);
 
 
 --
@@ -1050,10 +1050,9 @@ CREATE TABLE db_chart (
     summary text NOT NULL,
     type character varying(20) NOT NULL,
     player_id integer NOT NULL,
-    title_en character varying(255) NOT NULL,
     title_es character varying(255) NOT NULL,
-    summary_en text NOT NULL,
-    summary_es text NOT NULL
+    summary_es text NOT NULL,
+    uuid uuid
 );
 
 
@@ -1121,6 +1120,52 @@ SELECT pg_catalog.setval('db_chart_indicators_id_seq', 1, false);
 
 
 --
+-- Name: db_cluster; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE db_cluster (
+    id integer NOT NULL,
+    meta text,
+    deleted boolean NOT NULL,
+    "dtCreationDateTime" timestamp with time zone NOT NULL,
+    "dtModificationDateTime" timestamp with time zone NOT NULL,
+    uuid uuid,
+    name character varying(255) NOT NULL,
+    name_es character varying(255) NOT NULL,
+    summary text,
+    summary_es text,
+    active boolean NOT NULL,
+    domain_area_id integer
+);
+
+
+--
+-- Name: db_cluster_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE db_cluster_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: db_cluster_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE db_cluster_id_seq OWNED BY db_cluster.id;
+
+
+--
+-- Name: db_cluster_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('db_cluster_id_seq', 29, true);
+
+
+--
 -- Name: db_cognitivearea; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -1132,8 +1177,10 @@ CREATE TABLE db_cognitivearea (
     "dtModificationDateTime" timestamp with time zone NOT NULL,
     name character varying(255) NOT NULL,
     active boolean NOT NULL,
-    name_en character varying(255) NOT NULL,
-    name_es character varying(255) NOT NULL
+    name_es character varying(255) NOT NULL,
+    uuid uuid,
+    summary text,
+    summary_es text
 );
 
 
@@ -1160,7 +1207,7 @@ ALTER SEQUENCE db_cognitivearea_id_seq OWNED BY db_cognitivearea.id;
 -- Name: db_cognitivearea_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('db_cognitivearea_id_seq', 1, false);
+SELECT pg_catalog.setval('db_cognitivearea_id_seq', 3, true);
 
 
 --
@@ -1197,7 +1244,53 @@ ALTER SEQUENCE db_cognitivearea_multiple_intelligences_id_seq OWNED BY db_cognit
 -- Name: db_cognitivearea_multiple_intelligences_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('db_cognitivearea_multiple_intelligences_id_seq', 1, false);
+SELECT pg_catalog.setval('db_cognitivearea_multiple_intelligences_id_seq', 41, true);
+
+
+--
+-- Name: db_domainarea; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE db_domainarea (
+    id integer NOT NULL,
+    meta text,
+    deleted boolean NOT NULL,
+    "dtCreationDateTime" timestamp with time zone NOT NULL,
+    "dtModificationDateTime" timestamp with time zone NOT NULL,
+    uuid uuid,
+    name character varying(255) NOT NULL,
+    name_es character varying(255) NOT NULL,
+    summary text,
+    summary_es text,
+    active boolean NOT NULL,
+    cognitive_area_id integer
+);
+
+
+--
+-- Name: db_domainarea_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE db_domainarea_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: db_domainarea_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE db_domainarea_id_seq OWNED BY db_domainarea.id;
+
+
+--
+-- Name: db_domainarea_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('db_domainarea_id_seq', 15, true);
 
 
 --
@@ -1213,14 +1306,13 @@ CREATE TABLE db_game (
     name character varying(200) NOT NULL,
     min_age_months smallint NOT NULL,
     max_age_months smallint NOT NULL,
-    short_desc character varying(2000),
+    short_desc text,
     long_desc text,
-    name_en character varying(200) NOT NULL,
     name_es character varying(200) NOT NULL,
-    short_desc_en character varying(2000),
-    short_desc_es character varying(2000),
-    long_desc_en text,
-    long_desc_es text
+    short_desc_es text,
+    long_desc_es text,
+    owner_id integer NOT NULL,
+    uuid uuid
 );
 
 
@@ -1247,7 +1339,7 @@ ALTER SEQUENCE db_game_id_seq OWNED BY db_game.id;
 -- Name: db_game_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('db_game_id_seq', 1, true);
+SELECT pg_catalog.setval('db_game_id_seq', 2, true);
 
 
 --
@@ -1264,7 +1356,8 @@ CREATE TABLE db_gameplay (
     start_play timestamp with time zone NOT NULL,
     end_play timestamp with time zone,
     player_id integer NOT NULL,
-    game_id integer NOT NULL
+    game_id integer NOT NULL,
+    uuid uuid
 );
 
 
@@ -1306,7 +1399,8 @@ CREATE TABLE db_gameroute (
     "dtModificationDateTime" timestamp with time zone NOT NULL,
     elapsed_time integer NOT NULL,
     "order" integer NOT NULL,
-    game_play_id integer NOT NULL
+    game_play_id integer NOT NULL,
+    uuid uuid
 );
 
 
@@ -1347,47 +1441,12 @@ CREATE TABLE db_indicator (
     "dtCreationDateTime" timestamp with time zone NOT NULL,
     "dtModificationDateTime" timestamp with time zone NOT NULL,
     name character varying(255) NOT NULL,
-    value double precision NOT NULL,
-    name_en character varying(255) NOT NULL,
-    name_es character varying(255) NOT NULL
+    name_es character varying(255) NOT NULL,
+    uuid uuid,
+    summary text,
+    summary_es text,
+    cluster_id integer
 );
-
-
---
--- Name: db_indicator_cognitive_areas; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE db_indicator_cognitive_areas (
-    id integer NOT NULL,
-    indicator_id integer NOT NULL,
-    cognitivearea_id integer NOT NULL
-);
-
-
---
--- Name: db_indicator_cognitive_areas_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE db_indicator_cognitive_areas_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: db_indicator_cognitive_areas_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE db_indicator_cognitive_areas_id_seq OWNED BY db_indicator_cognitive_areas.id;
-
-
---
--- Name: db_indicator_cognitive_areas_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('db_indicator_cognitive_areas_id_seq', 1, false);
 
 
 --
@@ -1413,7 +1472,7 @@ ALTER SEQUENCE db_indicator_id_seq OWNED BY db_indicator.id;
 -- Name: db_indicator_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('db_indicator_id_seq', 1, false);
+SELECT pg_catalog.setval('db_indicator_id_seq', 8, true);
 
 
 --
@@ -1428,8 +1487,8 @@ CREATE TABLE db_level (
     "dtModificationDateTime" timestamp with time zone NOT NULL,
     name character varying(255) NOT NULL,
     number smallint NOT NULL,
-    name_en character varying(255) NOT NULL,
-    name_es character varying(255) NOT NULL
+    name_es character varying(255) NOT NULL,
+    summary text
 );
 
 
@@ -1472,8 +1531,10 @@ CREATE TABLE db_multipleintelligence (
     name character varying(255) NOT NULL,
     "order" smallint NOT NULL,
     active boolean NOT NULL,
-    name_en character varying(255) NOT NULL,
-    name_es character varying(255) NOT NULL
+    name_es character varying(255) NOT NULL,
+    uuid uuid,
+    summary text,
+    summary_es text
 );
 
 
@@ -1500,7 +1561,7 @@ ALTER SEQUENCE db_multipleintelligence_id_seq OWNED BY db_multipleintelligence.i
 -- Name: db_multipleintelligence_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('db_multipleintelligence_id_seq', 1, false);
+SELECT pg_catalog.setval('db_multipleintelligence_id_seq', 8, true);
 
 
 --
@@ -1515,7 +1576,8 @@ CREATE TABLE db_player (
     "dtModificationDateTime" timestamp with time zone NOT NULL,
     nickname character varying(25) NOT NULL,
     months smallint NOT NULL,
-    user_profile_id integer NOT NULL
+    user_profile_id integer NOT NULL,
+    uuid uuid
 );
 
 
@@ -1543,6 +1605,45 @@ ALTER SEQUENCE db_player_id_seq OWNED BY db_player.id;
 --
 
 SELECT pg_catalog.setval('db_player_id_seq', 1, true);
+
+
+--
+-- Name: db_rawdata; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE db_rawdata (
+    id integer NOT NULL,
+    player_uuid uuid NOT NULL,
+    game_play_uuid uuid NOT NULL,
+    game_route_uuid uuid NOT NULL,
+    data text
+);
+
+
+--
+-- Name: db_rawdata_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE db_rawdata_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: db_rawdata_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE db_rawdata_id_seq OWNED BY db_rawdata.id;
+
+
+--
+-- Name: db_rawdata_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('db_rawdata_id_seq', 1, false);
 
 
 --
@@ -1602,8 +1703,10 @@ CREATE TABLE db_scene (
     "dtModificationDateTime" timestamp with time zone NOT NULL,
     name character varying(255) NOT NULL,
     level_id integer NOT NULL,
-    name_en character varying(255) NOT NULL,
-    name_es character varying(255) NOT NULL
+    name_es character varying(255) NOT NULL,
+    uuid uuid,
+    summary text,
+    summary_es text
 );
 
 
@@ -1646,7 +1749,8 @@ CREATE TABLE db_score (
     results text,
     fields text,
     game_route_id integer NOT NULL,
-    indicator_id integer NOT NULL
+    indicator_id integer NOT NULL,
+    value double precision NOT NULL
 );
 
 
@@ -1760,7 +1864,7 @@ ALTER SEQUENCE django_admin_log_id_seq OWNED BY django_admin_log.id;
 -- Name: django_admin_log_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('django_admin_log_id_seq', 161, true);
+SELECT pg_catalog.setval('django_admin_log_id_seq', 360, true);
 
 
 --
@@ -1799,7 +1903,7 @@ ALTER SEQUENCE django_comment_flags_id_seq OWNED BY django_comment_flags.id;
 -- Name: django_comment_flags_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('django_comment_flags_id_seq', 8, true);
+SELECT pg_catalog.setval('django_comment_flags_id_seq', 10, true);
 
 
 --
@@ -1846,7 +1950,7 @@ ALTER SEQUENCE django_comments_id_seq OWNED BY django_comments.id;
 -- Name: django_comments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('django_comments_id_seq', 12, true);
+SELECT pg_catalog.setval('django_comments_id_seq', 15, true);
 
 
 --
@@ -1884,7 +1988,7 @@ ALTER SEQUENCE django_content_type_id_seq OWNED BY django_content_type.id;
 -- Name: django_content_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('django_content_type_id_seq', 77, true);
+SELECT pg_catalog.setval('django_content_type_id_seq', 80, true);
 
 
 --
@@ -2375,7 +2479,7 @@ ALTER SEQUENCE south_migrationhistory_id_seq OWNED BY south_migrationhistory.id;
 -- Name: south_migrationhistory_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('south_migrationhistory_id_seq', 91, true);
+SELECT pg_catalog.setval('south_migrationhistory_id_seq', 98, true);
 
 
 --
@@ -2411,7 +2515,7 @@ ALTER SEQUENCE tagging_tag_id_seq OWNED BY tagging_tag.id;
 -- Name: tagging_tag_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('tagging_tag_id_seq', 10, true);
+SELECT pg_catalog.setval('tagging_tag_id_seq', 15, true);
 
 
 --
@@ -2450,7 +2554,7 @@ ALTER SEQUENCE tagging_taggeditem_id_seq OWNED BY tagging_taggeditem.id;
 -- Name: tagging_taggeditem_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('tagging_taggeditem_id_seq', 10, true);
+SELECT pg_catalog.setval('tagging_taggeditem_id_seq', 15, true);
 
 
 --
@@ -2579,7 +2683,7 @@ ALTER SEQUENCE zinnia_category_id_seq OWNED BY zinnia_category.id;
 -- Name: zinnia_category_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('zinnia_category_id_seq', 2, true);
+SELECT pg_catalog.setval('zinnia_category_id_seq', 3, true);
 
 
 --
@@ -2648,7 +2752,7 @@ ALTER SEQUENCE zinnia_entry_authors_id_seq OWNED BY zinnia_entry_authors.id;
 -- Name: zinnia_entry_authors_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('zinnia_entry_authors_id_seq', 60, true);
+SELECT pg_catalog.setval('zinnia_entry_authors_id_seq', 69, true);
 
 
 --
@@ -2685,7 +2789,7 @@ ALTER SEQUENCE zinnia_entry_categories_id_seq OWNED BY zinnia_entry_categories.i
 -- Name: zinnia_entry_categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('zinnia_entry_categories_id_seq', 28, true);
+SELECT pg_catalog.setval('zinnia_entry_categories_id_seq', 37, true);
 
 
 --
@@ -2711,7 +2815,7 @@ ALTER SEQUENCE zinnia_entry_id_seq OWNED BY zinnia_entry.id;
 -- Name: zinnia_entry_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('zinnia_entry_id_seq', 3, true);
+SELECT pg_catalog.setval('zinnia_entry_id_seq', 4, true);
 
 
 --
@@ -2748,7 +2852,7 @@ ALTER SEQUENCE zinnia_entry_related_id_seq OWNED BY zinnia_entry_related.id;
 -- Name: zinnia_entry_related_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('zinnia_entry_related_id_seq', 1, false);
+SELECT pg_catalog.setval('zinnia_entry_related_id_seq', 14, true);
 
 
 --
@@ -2785,7 +2889,7 @@ ALTER SEQUENCE zinnia_entry_sites_id_seq OWNED BY zinnia_entry_sites.id;
 -- Name: zinnia_entry_sites_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('zinnia_entry_sites_id_seq', 60, true);
+SELECT pg_catalog.setval('zinnia_entry_sites_id_seq', 69, true);
 
 
 --
@@ -2946,6 +3050,13 @@ ALTER TABLE ONLY db_chart_indicators ALTER COLUMN id SET DEFAULT nextval('db_cha
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY db_cluster ALTER COLUMN id SET DEFAULT nextval('db_cluster_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY db_cognitivearea ALTER COLUMN id SET DEFAULT nextval('db_cognitivearea_id_seq'::regclass);
 
 
@@ -2954,6 +3065,13 @@ ALTER TABLE ONLY db_cognitivearea ALTER COLUMN id SET DEFAULT nextval('db_cognit
 --
 
 ALTER TABLE ONLY db_cognitivearea_multiple_intelligences ALTER COLUMN id SET DEFAULT nextval('db_cognitivearea_multiple_intelligences_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY db_domainarea ALTER COLUMN id SET DEFAULT nextval('db_domainarea_id_seq'::regclass);
 
 
 --
@@ -2988,13 +3106,6 @@ ALTER TABLE ONLY db_indicator ALTER COLUMN id SET DEFAULT nextval('db_indicator_
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY db_indicator_cognitive_areas ALTER COLUMN id SET DEFAULT nextval('db_indicator_cognitive_areas_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY db_level ALTER COLUMN id SET DEFAULT nextval('db_level_id_seq'::regclass);
 
 
@@ -3010,6 +3121,13 @@ ALTER TABLE ONLY db_multipleintelligence ALTER COLUMN id SET DEFAULT nextval('db
 --
 
 ALTER TABLE ONLY db_player ALTER COLUMN id SET DEFAULT nextval('db_player_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY db_rawdata ALTER COLUMN id SET DEFAULT nextval('db_rawdata_id_seq'::regclass);
 
 
 --
@@ -3438,6 +3556,15 @@ COPY auth_permission (id, name, content_type_id, codename) FROM stdin;
 236	Can change log	77	change_log
 237	Can delete log	77	delete_log
 238	Can view logs	77	can_view_logs
+239	Can add raw data	78	add_rawdata
+240	Can change raw data	78	change_rawdata
+241	Can delete raw data	78	delete_rawdata
+242	Can add domain area	79	add_domainarea
+243	Can change domain area	79	change_domainarea
+244	Can delete domain area	79	delete_domainarea
+245	Can add cluster	80	add_cluster
+246	Can change cluster	80	change_cluster
+247	Can delete cluster	80	delete_cluster
 \.
 
 
@@ -3451,7 +3578,7 @@ COPY auth_user (id, username, first_name, last_name, email, password, is_staff, 
 4	Karen	Karen	Marquez	karen.marquez@infantium.com	pbkdf2_sha256$10000$IHJEFDEyI2Ub$RJiyeMaBdt/TthFmcnKgnyA6xl5eiN1W/tfRioM/iME=	t	t	t	2012-10-10 14:42:31+00	2012-10-10 14:42:31+00
 5	jgg	API	ADMIN	developers@infantium.com	pbkdf2_sha256$10000$i6AVDPYQ2igz$OODQMaQ9aI8c7QEPhjZbeTrk827jkKYNO+Rw+5gvnyQ=	f	t	t	2012-10-17 11:19:52+00	2012-10-17 11:19:52+00
 6	saratarres	Sara	Tarrés	mimamapsicologainfantil@gmail.com	pbkdf2_sha256$10000$IlA7hyJHpozr$gEQm3v4jUTZRgDyzUMkf/gkrGQ36kyRDoxUo4imZZOo=	t	t	f	2012-10-26 17:20:09+00	2012-10-26 17:20:09+00
-1	admin			dani.gonzalez@infantium.com	pbkdf2_sha256$10000$mOh2xV5IhEDu$xuyasxjU9TudXwBLjFllt6g5lK8A8AhFb/B+6hjcdfI=	t	t	t	2012-11-09 21:54:03.419659+00	2012-08-24 14:52:49.172034+00
+1	admin			dani.gonzalez@infantium.com	pbkdf2_sha256$10000$mOh2xV5IhEDu$xuyasxjU9TudXwBLjFllt6g5lK8A8AhFb/B+6hjcdfI=	t	t	t	2012-11-18 04:49:04.508366+00	2012-08-24 14:52:49.172034+00
 \.
 
 
@@ -3877,7 +4004,7 @@ COPY cmsplugin_zinnia_selectedentriesplugin_entries (id, selectedentriesplugin_i
 -- Data for Name: db_chart; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY db_chart (id, meta, deleted, "dtCreationDateTime", "dtModificationDateTime", title, summary, type, player_id, title_en, title_es, summary_en, summary_es) FROM stdin;
+COPY db_chart (id, meta, deleted, "dtCreationDateTime", "dtModificationDateTime", title, summary, type, player_id, title_es, summary_es, uuid) FROM stdin;
 \.
 
 
@@ -3890,10 +4017,50 @@ COPY db_chart_indicators (id, chart_id, indicator_id) FROM stdin;
 
 
 --
+-- Data for Name: db_cluster; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY db_cluster (id, meta, deleted, "dtCreationDateTime", "dtModificationDateTime", uuid, name, name_es, summary, summary_es, active, domain_area_id) FROM stdin;
+1	{"empty": "true"}	f	2012-11-27 12:02:08.346482+00	2012-11-27 12:03:07.972513+00	7c7b497a-531f-42e8-9ad2-c2c6ec3d1468	Number names and relationships	Números y relaciones	understanding of numbers, ways of representing numbers, and ability to count in sequence	identificación de números con su representación y habilidad para contar de forma secuencial	t	1
+2	{"empty": "true"}	f	2012-11-27 12:05:41.852882+00	2012-11-27 12:07:26.021047+00	320f7e76-1007-4b83-8c30-127b44bf2c5e	Comparing and ordening numbers	Comparar y ordenar números	Knowledge of numbers in the correct order and understanding that numbers come “before” or “after”\r\none another. Comparing quantities (more than, equal to...)	Comparara magnitudes (mas que, menos que..) y descubrir los nombres de los números en el orden adecuado	t	1
+3	{"empty": "true"}	f	2012-11-27 12:08:56.388349+00	2012-11-27 12:10:27.116216+00	4e3dccc9-eb3e-4356-b48d-d77b623df25d	Counting To Tell the Number of Objects	Contar	Associating quantities and the names of numbers with written numerals. Using one-to-one counting and subitizing (identifying the number of objects without counting) to determine quantity.	Asociar cantidades y el nombre de los números a los numerales. Contar el número de objetos para determinar la cantidad. 	t	1
+4	{"empty": "true"}	f	2012-11-27 12:11:38.814241+00	2012-11-27 12:12:16.124645+00	17d12d51-cfa4-4dce-bc3d-0a87c9391634	Composing and decomposing numbers; addition and subtraction	Composición y descomposición de números	The use of numbers to describe relationships and solve easy problems. 	Uso de números para describir relaciones entre ellos y solucionar problemas sencillos. 	t	2
+5	{"empty": "true"}	f	2012-11-27 12:13:58.7556+00	2012-11-27 12:14:44.205376+00	e0e45c41-dbe1-416d-85ee-7397fa097c72	Recognition of properties and characteristics of geometric shapes	Reconocimiento de propiedades y características de las formas 	Analyzing characteristics and properties of geometric shapes.	Análisis de las caracteríticas de las formas. 	t	3
+7	{"empty": "true"}	f	2012-11-27 12:19:39.606272+00	2012-11-27 12:20:25.823582+00	f4e6bf7f-6732-4ce1-a6ab-82667a5786b3	using visualization and spatial reasoning to solve problems	uso de la visualización y la memoria espacial para resolver problemas	Recognizes and names common shapes, their parts, and attributes using spatial memory	Reconocimiento de figuras y sus partes usando memoria espacial 	t	3
+8	{"empty": "true"}	f	2012-11-27 12:22:17.51982+00	2012-11-27 12:23:59.609135+00	0467c250-b4f8-41e4-b76f-1769ad0363f6	understand patterns, relations and functions	Comprensión de patrones, relaciones y funciones	The recognition of patterns, sequencing, and critical thinking skills necessary to predict \r\nand classify objects in a pattern.	Reconocimiento de patrones, secuenciación y uso del pensamiento crítico para predecir y clasificar objetos en un patrón. 	t	4
+9	{"empty": "true"}	f	2012-11-27 12:25:50.889936+00	2012-11-27 12:26:25.681903+00	738fec68-2329-4207-94a8-48eb40cc70ee	Recognition and analysis of quantitative and qualitative properties.	Análisis y reconocimiento de atributos cualitativos y cuantitativos	The understanding of attributes and relative properties of objects 	Comprender los atributos y propiedades relativas de los objetos. 	t	4
+10	{"empty": "true"}	f	2012-11-27 12:32:14.557838+00	2012-11-27 12:32:42.305046+00	77f4664c-bd4a-4d3d-9473-5baa472a6012	Representing and Interpreting Data	Representación e interpretación de datos	Begins to recognize and interpret information according to common attributes	Empezar a reconocer e interpretar información según atributos comunes 	t	5
+11	{"empty": "true"}	f	2012-11-27 12:33:13.358628+00	2012-11-27 12:33:47.550214+00	076c168b-edd6-4be0-9ba0-d5b81716ced9	Direct Measurement 	Medida	understanding that there are measurable attributes of objects and the processes of measurement	Entender que hay atributos medibles 	t	5
+12	{"empty": "true"}	f	2012-11-27 12:34:32.054978+00	2012-11-27 12:48:30.533267+00	1e344b79-dded-4f22-970d-7d20cac3168f	Understanding of location, position and spatial relationships.	Posición, localización y relaciones espaciales	understanding concepts of localization, position and spatial temporal relationships	Conceptos de localización, posición, y relaciones espacio-temporales	t	5
+6	{"empty": "true"}	f	2012-11-27 12:16:03.570338+00	2012-11-27 12:42:29.646476+00	2533c89b-35a2-4d07-b434-69bc0f3d4fca	Understanding of location, position and spatial relationships.	Posición, localización y relaciones espaciales	concepts of directionality, order, and position of objects, such as up, down, in front, behind	Entender conceptos de direccionalidad, orden  y posición de los objetos (como encima, debajo, detras..) y construcción espacio-temporal 	t	3
+13	{"empty": "true"}	f	2012-11-27 12:38:58.763356+00	2012-11-27 12:44:33.21593+00	3138df14-1afe-4b38-8417-ef4a0eecc989	understanding of location, position and spatial relationships.	Posición, localización y relaciones espaciales	ability to recognize terms of directionality, time, order, and positions	Entender conceptos de direccionalidad, orden  y posición de los objetos (como encima, debajo, detras..) 	t	5
+14	{"empty": "true"}	f	2012-11-27 12:49:21.990135+00	2012-11-27 12:49:59.552381+00	0d9b0c82-2147-4cb2-a6d4-f35199762a45	collect, organize and display data	recoger y organizar datos	classification according to one or more attributes	clasificación según uno o más atributos 	t	6
+15	{"empty": "true"}	f	2012-11-27 12:51:07.340925+00	2012-11-27 12:51:29.164089+00	bb8c4109-3087-41be-a75e-80b3639f4bb4	understanding that predictions can be made	Predicciones	comprehension of daily events to know what will happen next.	Secuenciar escenas de la vida diaria para saber que ocurrirá después 	t	6
+16	{"empty": "true"}	f	2012-11-27 12:55:39.005272+00	2012-11-27 12:56:23.516619+00	36e2cdc1-adac-4fdb-a7db-555aa4f78b38	Spatial exploration and visualization	Exploración espacial y visualización	it includes tracking moving objects with eyes or elaborating search with watching and seeking after a number of changes	Reconocimiento de objetos	t	7
+17	{"empty": "true"}	f	2012-11-27 12:56:59.269705+00	2012-11-27 12:57:19.955156+00	b3a64d47-6bb1-4e11-97f0-e494c6838391	Object permanence	Permanencia del objeto 	Child's ability to understand that objects still exist even if they are no longer visible.	Es la habilidad del niño para comprender que los objetos poseen una existencia independiente de su relación con el objeto; El niño es capaz de mantener una imagen mental de una persona u objeto a pesar de no estar presente o visible. 	t	8
+18	{"empty": "true"}	f	2012-11-27 12:58:50.1947+00	2012-11-27 12:59:11.828754+00	430e1abe-a2e7-459a-8441-900d38d30188	Symbolic Thought	Pensamiento simbólico	A type of thinking in which symbols or internal images are used to represent objects, persons, and events that are not present. Examples of symbolic thought are pretend play, drawing, writing, identification of pictures. 	El pensamiento simbólico es la capacidad de representar:acontecimientos , objetos,personas sin estar presentes. Algunos ejemplos es el juego de imitación, representativo, reconocer imágenes o el propio lenguaje.	t	9
+19	{"empty": "true"}	f	2012-11-27 13:00:09.631247+00	2012-11-27 13:00:43.346599+00	6990e138-270c-4873-b06a-65bc9c51b84d	spatial-temporal relationships	construcción de relaciones espaciales y temporales 	the ability to form mental images from physical objects or to see patterns in time and space	La habilidad de formar imágenes mentales de objetos físicos o de ver patrones en el tiempo y el espacio. 	t	13
+20	{"empty": "true"}	f	2012-11-27 13:02:01.25686+00	2012-11-27 13:02:25.442018+00	a8113351-66d4-4f0f-801f-0e96971e9792	visual symbols.	Símbolos visuales	look for meaning in visual symbols.	Significado de los símbolos visuales 	t	9
+21	{"empty": "true"}	f	2012-11-27 13:04:22.193946+00	2012-11-27 13:07:21.374421+00	43378f79-7d8c-4b3f-8d17-8c9424be2f74	identifying self and in relation to others	Reconocimiento de sí mismo y de los demás	sense of self	Aprender a reconocerse a sí mismo y a los demás 	t	12
+22	{"empty": "true"}	f	2012-11-27 13:07:57.749988+00	2012-11-27 13:08:12.254913+00	9cb67659-b990-47c6-9da7-0d8bd1f7825d	grouping 	Agrupar	grouping like objects togethe	Clasificación	t	11
+23	{"empty": "true"}	f	2012-11-27 13:08:52.108851+00	2012-11-27 13:09:06.664171+00	4396d799-d89d-4c60-bc82-cc7001349464	Memory	Memoria	Recognition of faces and objects	Reconocimiento de imágenes y objetos	t	10
+24	{"empty": "true"}	f	2012-11-27 13:10:22.64938+00	2012-11-27 13:10:55.252367+00	30b69b96-d230-434a-8944-8684ddc0c843	Understanding rhymes, songs and stories.	Entender ritmos, sonidos, historias	listening and understanding	Escuchar y Entender 	t	14
+25	{"empty": "true"}	f	2012-11-27 13:13:10.222792+00	2012-11-27 13:13:30.178673+00	209202bc-3c0c-45ea-897f-b6c3f594fe9d	Comprehension of languages	Comprensión	Listening and understanding	Escuchar y entender 	t	14
+26	{"empty": "true"}	f	2012-11-27 13:13:55.615419+00	2012-11-27 13:14:06.677401+00	86b76116-e57a-4d31-8104-d8a636e531f6	Music \t\t \t\t 	Música	Musical language	Lenguaje musical	t	14
+27	{"empty": "true"}	f	2012-11-27 13:15:39.762248+00	2012-11-27 13:16:37.405893+00	80cdf84b-eac2-4f04-a894-0951d0ba7051	Phonological awareness	Conciencia fonológica	detection and manipulation of sounds: syllables, onsets and rimes, and phonemes	habilidad para reconocer, identificar, deslindar, manipular y obrar con los sonidos (fonemas) que componen a las palabras, ritmos o patrones musicales. 	t	15
+28	{"empty": "true"}	f	2012-11-27 13:17:21.806477+00	2012-11-27 13:18:02.076438+00	9d457b7c-8a23-4369-bbd8-002c0a0a883c	Knowledge of the alphablet and word recognition	Conocimiento del alfabeto y de las palabras escritas	Alphabet and word recognition	Conocimiento del alfabeto y palabras escritas 	t	15
+29	{"empty": "true"}	f	2012-11-27 13:18:33.071461+00	2012-11-27 13:18:48.311397+00	b0bd08d6-b899-472d-9cd9-5e0391b37cdc	visual symbols.	Símbolos visuales	Meaning of visual symbols	Significado de símbolos visuales	t	15
+\.
+
+
+--
 -- Data for Name: db_cognitivearea; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY db_cognitivearea (id, meta, deleted, "dtCreationDateTime", "dtModificationDateTime", name, active, name_en, name_es) FROM stdin;
+COPY db_cognitivearea (id, meta, deleted, "dtCreationDateTime", "dtModificationDateTime", name, active, name_es, uuid, summary, summary_es) FROM stdin;
+2	{"empty": "true"}	f	2012-11-24 16:48:51.535969+00	2012-11-24 17:04:53.82546+00	Symbolic representation	t	Representación Mental	85a6fc8d-9519-4b66-9d93-fb0b21265639	\N	\N
+1	{"empty": "true"}	f	2012-11-24 16:48:14.784532+00	2012-11-26 12:11:55.463828+00	Languages	t	Lenguajes	ba2caae1-c4aa-4218-8ea7-eb68355f48a3	\N	\N
+3	{"empty": "true"}	f	2012-11-24 16:49:42.217257+00	2012-11-26 12:12:00.493633+00	Logic-mathematic Reasoning	t	Razonamiento Lógico-matemático	a2c00e02-7e56-4ada-a43c-4c5242274dda	\N	\N
 \.
 
 
@@ -3902,6 +4069,39 @@ COPY db_cognitivearea (id, meta, deleted, "dtCreationDateTime", "dtModificationD
 --
 
 COPY db_cognitivearea_multiple_intelligences (id, cognitivearea_id, multipleintelligence_id) FROM stdin;
+26	2	1
+27	2	2
+28	2	4
+29	2	5
+36	1	8
+37	1	3
+38	1	4
+39	3	1
+40	3	2
+41	3	4
+\.
+
+
+--
+-- Data for Name: db_domainarea; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY db_domainarea (id, meta, deleted, "dtCreationDateTime", "dtModificationDateTime", uuid, name, name_es, summary, summary_es, active, cognitive_area_id) FROM stdin;
+5	{"empty": "true"}	f	2012-11-26 19:58:28.743676+00	2012-11-26 20:03:56.877207+00	6975cbbd-3e84-4b3c-891e-151473ee4ad0	Measurement and Data	Medida	kids will determine what can be measured and how, using appropriate methods and formulas.	Aprenden a realizar comparación de magnitudes, unidades de medida, estimación y medida del tiempo (mucho rato, poco rato; rápido, lento; día, semana...). Clasificación y seriación	t	3
+1	{"empty": "true"}	f	2012-11-26 19:32:41.460145+00	2012-11-26 20:06:15.568402+00	8ac1388f-bf7a-46f7-9059-c9d62bc84859	Numbers: Cardinality and Counting	Números: contar y cardinalidad	Numbers and Operations: Developing an understanding of whole numbers, including concepts of correspondence, counting, cardinality and comparison.\r\n\r\nChildren develop an understanding of the meanings of whole numbers and recognize the number of objects in small groups without counting-----the first and most basic mathematical algorithm. They understand that the last word that they state in counting tells “how many”, they count to determine number amounts and compare quantities (using language such as “more than” and “less than”), and they order sets by the number of objects in them.\r\n	Entre otras cosas: identificar el cardinal de un conjunto de cosas con su propiedad numérica, descomponer números, ordenar números cardinales, resolver problemas que impliquen la realización de operaciones aritméticas básicas	t	3
+3	{"empty": "true"}	f	2012-11-26 19:51:19.332151+00	2012-11-26 20:05:59.034647+00	ea120663-9918-4388-88da-aea13d1ac2b1	Shapes and spatial relations	Formas y relaciones espaciales	Spatial and time relationships explore the concept of where objects are in relationship to something else (above, below/ before, after; high, low; in front of, in back of, behind; ec.). Learning to understand spatial relationships helps children talk about where things are located. It is the use of visualization and spatial reasoning to analyze characteristics and properties of geometric shapes.	Reconocer formas geométricas: Triángulo, círculo, cuadrado, rectángulo y distinguirlas en base a sus atributos. Utilización de las nociones espaciales básicas para explicar la ubicación propia, de algún objeto, de alguna persona. Dominar las nociones espaciales y temporales básicas (antes, después). \r\n\r\nLa distinción de formas, su reconocimiento e identificación, así como las relaciones de tipo topológico  (entre, abierto, cerrado, …) pertenecen también a la construcción temporal. \r\n	t	3
+4	{"empty": "true"}	f	2012-11-26 19:54:34.15468+00	2012-11-26 20:10:57.589635+00	95e17ff4-7c11-454c-a743-ad1ee62ac099	Patterns, Quantitative and Qualitative Properties 	Patrones y características cualitativas y cuantitativas	Comprehension of patterns, and attributes of objects and shapes	Comprensión de patrones, relaciones y funciones (como clasificación por atributos de color, tamaño, forma, etc.) 	t	3
+2	{"empty": "true"}	f	2012-11-26 19:39:46.982537+00	2012-11-26 20:08:45.168681+00	fc969b08-c6cd-48e0-980e-a28ffe306bc9	Numbers: operations	Números: operaciones	Numbers and Operations: Developing an understanding of whole numbers, including concepts of correspondence, counting, cardinality and comparison.\r\n\r\nChildren develop an understanding of the meanings of whole numbers and recognize the number of objects in small groups without counting-----the first and most basic mathematical algorithm. They understand that the last word that they state in counting tells “how many”, they count to determine number amounts and compare quantities (using language such as “more than” and “less than”), and they order sets by the number of objects in them.	Resolver problemas que impliquen la realización de operaciones aritméticas básicas. También incluye resolución de problemas que impliquen la aplicación de sencillas operaciones (quitar, añadir, repartir) 	t	3
+6	{"empty": "true"}	f	2012-11-26 20:14:58.397523+00	2012-11-26 20:16:08.302395+00	e1f7dd44-89bc-46b8-8cb3-e0a4d28abf17	Information gathering and probabilty	Predicción y organizar información	Sorting and organizing objects by one/more attribute (different, same); Describing the attributes of objects, sequencing.	resolver problemas en los que intervengan secuencias de la vida de la escuela; describir características de los objetos y agruparlos.	t	3
+7	{"empty": "true"}	f	2012-11-26 20:27:41.906413+00	2012-11-26 20:29:13.196163+00	15399eb4-526e-47a3-bc9c-ba5b08fcb518	Spatial exploration and visualization	Visualización y exploración espacial	it includes tracking moving objects with eyes or elaborating search with watching and seeking after a number of changes	La adquisición de habilidades de orientación y representación espacial. No incluye únicamente la habilidad de “ver” los objetos y los espacios, sino también la habilidad de reflexionar sobre ellos y sus posibles representaciones, sobre las relaciones entre sus partes, su estructura, y de examinar sus posibles transformaciones (rotación, sección, desarrollos,…).	t	2
+8	{"empty": "true"}	f	2012-11-26 20:30:26.96177+00	2012-11-26 20:31:02.94588+00	dc22953b-267c-4b92-8018-a22f3034be00	Object permanence	Permanencia del objeto 	Child's ability to understand that objects still exist even if they are no longer visible.	Es la habilidad del niño para comprender que los objetos poseen una existencia independiente de su relación con el objeto; El niño es capaz de mantener una imagen mental de una persona u objeto a pesar de no estar presente o visible. 	t	2
+9	{"empty": "true"}	f	2012-11-27 11:01:35.532241+00	2012-11-27 11:04:36.601318+00	e1e20eb1-b511-4ae4-a494-7936f66a60c9	Symbolic Thinking	Pensamiento simbólico	a type of thinking in which symbols or internal images are used to represent objects, persons, and events that are not present. Examples of symbolic thought are pretend play, drawing, writing, identification of pictures. 	El pensamiento simbólico es la capacidad de representar:acontecimientos , objetos,personas sin estar presentes. Algunos ejemplos es el juego de imitación, representativo, reconocer imágenes o el propio lenguaje.	t	2
+10	{"empty": "true"}	f	2012-11-27 11:12:52.235802+00	2012-11-27 11:13:29.633984+00	8c054b6c-5536-41b0-b3a8-2a51f6c861ae	Memory	Memoria	Recognizing previously seen faces and objects and increasing capacity of recognition memory	Reconocimiento de objetos previamente vistos para aumentar la capacidad de reconocimiento de la memoria. \r\n	t	2
+11	{"empty": "true"}	f	2012-11-27 11:15:17.400442+00	2012-11-27 11:16:43.887724+00	64fc974e-7c34-4864-b948-9c4d2378be6c	Sorting	Clasificar	Grouping like objects together, providing the opportunity for the infant to sort by discriminating same from different.	Agrupar mediante el uso de criterios de discriminación	t	2
+13	{"empty": "true"}	f	2012-11-27 11:22:55.268709+00	2012-11-27 11:30:26.854928+00	69650659-b016-4d66-9a21-4205f4877f68	spatial-temporal reasoning	Construcción de razonamiento espacio-temporal	the ability to form mental images from physical objects or to see patterns in time and space	La habilidad de formar imágenes mentales de objetos físicos o de ver patrones en el tiempo y el espacio. 	t	2
+12	{"empty": "true"}	f	2012-11-27 11:17:54.972412+00	2012-11-27 13:04:01.25928+00	5e86a5b5-eaa0-45d9-af76-8131d99c0559	Identity Formation	Formación de la identidad	identifying self and in relation to others\t\t\r\n	Reconocimiento de si mismo y de su relación con los demás.	t	2
+14	{"empty": "true"}	f	2012-11-27 11:32:47.597127+00	2012-11-27 13:12:13.327494+00	8fda0b33-007e-45b3-a7de-1a7d1b2d8eb3	Language Development	Desarrollo del lenguaje	Listening and Understanding	Escuchar y Entender 	t	1
+15	{"empty": "true"}	f	2012-11-27 11:35:52.722401+00	2012-11-27 11:42:00.249027+00	7f9de278-fc4f-4af3-ab77-1e967817af9e	Literacy	Alfabetización	Literacy includes the domain elements of phonological awareness, book knowledge and appreciation, print awareness and concepts, early writing, and alphabet knowledge. Teachers learn about effective strategies that help children acquire necessary skills that promote the development of successful readers and writers.	Se trata del dominiol lenguaje, entendiendo lenguaje comomanifestaciones que permiten una representación simbólica de la realidad y, en ese sentido, incluimos tanto la plástica como el musical	t	1
 \.
 
 
@@ -3909,8 +4109,8 @@ COPY db_cognitivearea_multiple_intelligences (id, cognitivearea_id, multipleinte
 -- Data for Name: db_game; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY db_game (id, meta, deleted, "dtCreationDateTime", "dtModificationDateTime", name, min_age_months, max_age_months, short_desc, long_desc, name_en, name_es, short_desc_en, short_desc_es, long_desc_en, long_desc_es) FROM stdin;
-1	{"meta1": "1"}	f	2012-08-30 19:17:53.321+00	2012-08-30 19:17:53.321+00	Game1	8	24	descripcion	descripcion larga	name	name	descripcion	\N	descripcion larga	\N
+COPY db_game (id, meta, deleted, "dtCreationDateTime", "dtModificationDateTime", name, min_age_months, max_age_months, short_desc, long_desc, name_es, short_desc_es, long_desc_es, owner_id, uuid) FROM stdin;
+2	{"empty": "true"}	f	2012-11-27 11:30:05.680771+00	2012-11-27 11:30:22.529494+00	Rufi and The Magic Paintings	18	40	Rufi and the Magic Paintings	Rufi and the Magic Paintings	Rufi y las Pinturas Mágicas	Rufi y las Pinturas Mágicas	Rufi y las Pinturas Mágicas	5	9a7603d3-84dd-4d46-8737-d18dae053d0e
 \.
 
 
@@ -3918,7 +4118,7 @@ COPY db_game (id, meta, deleted, "dtCreationDateTime", "dtModificationDateTime",
 -- Data for Name: db_gameplay; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY db_gameplay (id, meta, deleted, "dtCreationDateTime", "dtModificationDateTime", is_playing, start_play, end_play, player_id, game_id) FROM stdin;
+COPY db_gameplay (id, meta, deleted, "dtCreationDateTime", "dtModificationDateTime", is_playing, start_play, end_play, player_id, game_id, uuid) FROM stdin;
 \.
 
 
@@ -3926,7 +4126,7 @@ COPY db_gameplay (id, meta, deleted, "dtCreationDateTime", "dtModificationDateTi
 -- Data for Name: db_gameroute; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY db_gameroute (id, meta, deleted, "dtCreationDateTime", "dtModificationDateTime", elapsed_time, "order", game_play_id) FROM stdin;
+COPY db_gameroute (id, meta, deleted, "dtCreationDateTime", "dtModificationDateTime", elapsed_time, "order", game_play_id, uuid) FROM stdin;
 \.
 
 
@@ -3934,15 +4134,15 @@ COPY db_gameroute (id, meta, deleted, "dtCreationDateTime", "dtModificationDateT
 -- Data for Name: db_indicator; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY db_indicator (id, meta, deleted, "dtCreationDateTime", "dtModificationDateTime", name, value, name_en, name_es) FROM stdin;
-\.
-
-
---
--- Data for Name: db_indicator_cognitive_areas; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY db_indicator_cognitive_areas (id, indicator_id, cognitivearea_id) FROM stdin;
+COPY db_indicator (id, meta, deleted, "dtCreationDateTime", "dtModificationDateTime", name, name_es, uuid, summary, summary_es, cluster_id) FROM stdin;
+2	{"empty": "true"}	f	2012-11-24 17:07:58.559527+00	2012-11-26 11:45:45.329438+00	Shape recognition	Reconocimiento de forma	2c473ecd-aeb3-4f3e-a1e1-17fdc92e0577	\N	\N	\N
+1	{"empty": "true"}	f	2012-11-24 17:07:09.306085+00	2012-11-26 12:12:12.310222+00	Color Recognition	Reconocimiento de color	ebb3c479-46f6-4ddb-ad4d-e9af33807b51	\N	\N	\N
+3	{"empty": "true"}	f	2012-11-24 17:08:33.614998+00	2012-11-26 12:14:01.120479+00	Size recognition	Reconocimiento tamaño	759208f0-e35e-4aa8-b1e2-2c076e21f432	\N	\N	\N
+4	{"empty": "true"}	f	2012-11-24 17:08:51.963099+00	2012-11-26 12:14:23.914061+00	Volume Recognition	Reconocimiento volumen	7ad18354-4037-4e9d-8941-1655e6a4394a	\N	\N	\N
+5	{"empty": "true"}	f	2012-11-26 12:24:08.688346+00	2012-11-26 12:24:28.597557+00	Word Recognition	Reconocimiento de letras	fb5f21a1-dd68-486c-aa59-aa419c2b240e	\N	\N	\N
+6	{"empty": "true"}	f	2012-11-26 12:26:00.794188+00	2012-11-26 12:26:17.176338+00	Comprehension of languages	Comprensión de lenguas	e5bf01c2-9a2a-44fd-85ed-c8506da75c85	\N	\N	\N
+7	{"empty": "true"}	f	2012-11-26 12:26:47.230801+00	2012-11-26 12:26:47.230928+00	Follows directions	Sigue instrucciones 	f50f32d4-29ee-41db-a0e6-1ce5ab1c764d	\N	\N	\N
+8	{"empty": "true"}	f	2012-11-26 12:37:58.050204+00	2012-11-26 12:37:58.050329+00	object permanence: ability to follow an object with visible movement	Permanencia del objeto: capacidad para seguir desplazamientos de un objeto visible	30231590-93bb-4a87-8e2d-3ac685343650	\N	\N	\N
 \.
 
 
@@ -3950,7 +4150,7 @@ COPY db_indicator_cognitive_areas (id, indicator_id, cognitivearea_id) FROM stdi
 -- Data for Name: db_level; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY db_level (id, meta, deleted, "dtCreationDateTime", "dtModificationDateTime", name, number, name_en, name_es) FROM stdin;
+COPY db_level (id, meta, deleted, "dtCreationDateTime", "dtModificationDateTime", name, number, name_es, summary) FROM stdin;
 \.
 
 
@@ -3958,7 +4158,15 @@ COPY db_level (id, meta, deleted, "dtCreationDateTime", "dtModificationDateTime"
 -- Data for Name: db_multipleintelligence; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY db_multipleintelligence (id, meta, deleted, "dtCreationDateTime", "dtModificationDateTime", name, "order", active, name_en, name_es) FROM stdin;
+COPY db_multipleintelligence (id, meta, deleted, "dtCreationDateTime", "dtModificationDateTime", name, "order", active, name_es, uuid, summary, summary_es) FROM stdin;
+3	{"empty": "true"}	f	2012-11-24 16:43:03.178179+00	2012-11-26 12:10:15.26767+00	Linguistic Intelligence	3	t	Inteligencia Lingüística	14673499-361d-47e4-a4ac-66d9cd641e4b	\N	\N
+4	{"empty": "true"}	f	2012-11-24 16:43:30.500965+00	2012-11-26 19:19:07.254199+00	Musical Intelligence	4	t	Inteligencia Musical	3d806dd2-869d-4202-8826-3af4556d856a	kids who have strong musical intelligence are good and thinking in patterns, rhythms and sounds. They have a strong appreciation for music and are often good at musical composition and performance. Since there is a strong auditory component to this intelligence, those who are strongest in it may learn best via lecture. They will sometimes use songs or rhythms to learn. They have sensitivity to rhythm, pitch, meter, tone, melody or timbre.	La inteligencia musical está relacionada con la sensibilidad hacia la música, su eso para la expresión de emociones y sentimientos, la capacidad de percibir, discriminar, transformar y expresar las formas musicales (, ej. componer, tocar un instrumento.), Sensibilidad al ritmo, el tono, la melodía o el timbre de una pieza musical; Habilidad para pensar en términos de sonidos, ritmos y melodías; producción de tonos, o el recuerdo y reconocimiento de sonidos y patrones musicales\r\nPuede estar relacionada con la inteligencia lingüística, con la inteligencia espacial y con la inteligencia corporal cinética. En relación a la primera es fundamental, porque el desarrollo lingüístico parte de la habilidad de retener estructuras lingüísticas y asimilarlas a la fonética. \r\n
+7	{"empty": "true"}	f	2012-11-24 16:46:09.394606+00	2012-11-26 19:25:57.267254+00	Intrapersonal Intelligence	7	f	Inteligencia intrapersonal	0666e756-e2d8-4a3b-921d-cab63961bc94	This area has to do with introspective and self-reflective capacities. This refers to having a deep understanding of the self; what your strengths/ weaknesses are, what makes you unique, being able to predict your own reactions/emotions.	Tiene que ver con uno mismo. Suelen ser personas introvertidas y prefieren trabajar solos. Son muy conscientes de sí mismos y muy capaces de comprender sus propias emociones, motivaciones y metas. Suelen sentirse atraídos por actividades que implican pensar, como la filosofía. Aprenden mejor cuando se les permite concentrarse en el tema de estudio por sí mismos. 
+5	{"empty": "true"}	f	2012-11-24 16:44:48.908639+00	2012-11-26 19:20:31.061243+00	Naturalistic Intelligence	5	t	Inteligencia Naturalista	ace1138e-68f1-46d4-9ddd-1ac81a10c0ec	This area has to do with nurturing and relating information to one’s natural surroundings. Examples include classifying natural forms such as animal and plant species and rocks and mountain types; and the applied knowledge of nature in farming, mining, etc.	Tiene que ver con la naturaleza, crianza, y clasificación. Aquellos con una inteligencia naturalista alta tiene una mayor sensibilidad a la naturaleza, la capacidad de cultivar y criar, y una mayor facilidad para cuidar a animales e interactuar con ellos. Son buenos a la hora de reconocer y clasificar especies.
+6	{"empty": "true"}	f	2012-11-24 16:45:47.360126+00	2012-11-26 18:53:27.397634+00	Bodily-Kinesthetic Intelligence	6	t	Inteligencia corporal-cinética	55a306cd-23b1-4f55-bad5-15ac4c71a5f2	Bodily-kinesthetic intelligence involves strength in physical movement, fine motor control, hand-eye coordination and dexterity.	Inteligencia que comprende dominio corporal y motriz, así como destreza y coordinación visomotora.
+1	{"empty": "true"}	f	2012-11-24 16:40:13.241747+00	2012-11-26 18:58:52.934643+00	Spatial Intelligence	2	t	Inteligencia Espacial	bb836d30-2258-447b-b285-8c9fae0834f3	Spatial intelligence is how we visualize and represent a spatial world in our mind, using concepts like form, shape, colour etc. and manipulate it or understand how things will impacted in a spatial dimension when we change something.\r\n\r\nFor children with spatial intelligence, visualization, a wide variety of objects and triggering the imagination are the best pathways to help them learn.	La  inteligencia  espacial  desarrolla  la  capacidad para  diferenciar  formas  y objetos, incluso  cuando  se  ven  desde  diferentes  ángulos,  así  como  para distinguir y administrar la idea de espacio, elaborar y utilizar mapas y otras formas  de  representación mental; también, para  identificar y  situarse  en  el mundo visual  con  precisión,  efectuar transformaciones  sobre  las  percepciones,\r\nimaginar un movimiento  o  desplazamiento  interno  entre  las  partes de un esquema y  ser  capaz de  recrear  aspectos  de la  experiencia  visual, incluso sin estímulos físicos relevantes.\r\n\r\nEsta inteligencia esta basada en desarrollar la capacidad de pensar en tres dimensiones. Permite percibir imágenes externas e internas, recrearlas, transformarlas o modificarlas, recorrer el espacio o hacer que los objetos lo recorran y producir o decodificar información gráfica.
+2	{"empty": "true"}	f	2012-11-24 16:42:20.253489+00	2012-11-26 19:02:13.414814+00	Logical-Mathematical Intelligence	1	t	Inteligencia Lógica-matemática	34b9f214-cc16-440d-ad04-382210ec122f	Logical-Mathematical intelligence involves the capacity to work well with numbers, scientific processes, logic, or reasoning.  Children strong in Logical-Mathematical intelligence think numerically, or in terms of logical patterns and sequences.  These children like to explore patterns, categories and relationships between concepts by actively manipulating their environment and experimenting with things in an orderly way.  	Es la capacidad para utilizar los números de manera efectiva y de razonar adecuadamente empleando el pensamiento lógico. Es la capacidad que permite resolver problemas de lógica y matemática.\r\nLas personas que tienen un nivel alto en este tipo de inteligencia poseen sensibilidad para realizar esquemas y relaciones lógicas, afirmaciones y las proposiciones, las funciones y otras abstracciones relacionadas. También se refiere a un alto razonamiento numérico, la capacidad de resolución, comprensión y planteamiento de elementos aritméticos, en general en resolución de problemas.
+8	{"empty": "true"}	f	2012-11-24 16:46:25.104615+00	2012-11-26 19:25:07.120089+00	Interpersonal Intelligence	8	f	Inteligencia Interpersonal	2ba04417-c061-491a-959e-bfc95606055a	This area has to do with interaction with others. In theory, individuals who have high interpersonal intelligence are characterized by their sensitivity to others' moods, feelings, temperaments and motivations, and their ability to cooperate in order to work as part of a group. Those with this intelligence communicate effectively and empathize easily with others, and may be either leaders or followers. They typically learn best by working with others and often enjoy discussion and debate.	Está relacionada con la interacción con los demás. Suelen ser personas extrovertidas que se caracterizan por su sensibilidad hacia los estados de ánimo de los demás, sus emociones y motivaciones y su capacidad para cooperar y trabajar en grupo.\r\n \r\nSe comunican de una manera efectiva y empatizan fácilmente con los demás. Pueden ser tanto líderes como seguidores. Suelen aprender mejor trabajando con otros y suelen disfrutar de los debates y discusiones. 
 \.
 
 
@@ -3966,8 +4174,16 @@ COPY db_multipleintelligence (id, meta, deleted, "dtCreationDateTime", "dtModifi
 -- Data for Name: db_player; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY db_player (id, meta, deleted, "dtCreationDateTime", "dtModificationDateTime", nickname, months, user_profile_id) FROM stdin;
-1	{}	f	2012-08-30 19:16:14.76+00	2012-08-30 19:16:18.968+00	menino	12	1
+COPY db_player (id, meta, deleted, "dtCreationDateTime", "dtModificationDateTime", nickname, months, user_profile_id, uuid) FROM stdin;
+1	{}	f	2012-08-30 19:16:14.76+00	2012-08-30 19:16:18.968+00	menino	12	1	\N
+\.
+
+
+--
+-- Data for Name: db_rawdata; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY db_rawdata (id, player_uuid, game_play_uuid, game_route_uuid, data) FROM stdin;
 \.
 
 
@@ -3983,7 +4199,7 @@ COPY db_route_node (id, path, depth, numchild, node_creation, meta, scene_id, ga
 -- Data for Name: db_scene; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY db_scene (id, meta, deleted, "dtCreationDateTime", "dtModificationDateTime", name, level_id, name_en, name_es) FROM stdin;
+COPY db_scene (id, meta, deleted, "dtCreationDateTime", "dtModificationDateTime", name, level_id, name_es, uuid, summary, summary_es) FROM stdin;
 \.
 
 
@@ -3991,7 +4207,7 @@ COPY db_scene (id, meta, deleted, "dtCreationDateTime", "dtModificationDateTime"
 -- Data for Name: db_score; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY db_score (id, meta, deleted, "dtCreationDateTime", "dtModificationDateTime", results, fields, game_route_id, indicator_id) FROM stdin;
+COPY db_score (id, meta, deleted, "dtCreationDateTime", "dtModificationDateTime", results, fields, game_route_id, indicator_id, value) FROM stdin;
 \.
 
 
@@ -4146,6 +4362,7 @@ COPY django_admin_log (id, action_time, user_id, content_type_id, object_id, obj
 131	2012-10-26 17:44:47.890945+00	1	32	2	Niños Wireless Generation: borrador	2	Modificado/a content_en y content_es.
 132	2012-10-26 17:46:22.496849+00	1	32	2	Niños Wireless Generation: borrador	2	Modificado/a content_es.
 133	2012-10-26 17:50:34.117185+00	1	32	2	Niños Wireless Generation: publicado	2	Modificado/a status y tags.
+199	2012-11-26 11:47:20.240381+00	1	66	3	Logic-mathematic Reasoning	2	Changed name.
 135	2012-11-03 09:46:45.932325+00	1	36	7	Términos de Uso	2	Modificado/a template, language y moderator_state.
 136	2012-11-03 19:42:25.433327+00	1	32	3	20 razones por las cuales el arte es bueno para los niños: borrador	1	
 137	2012-11-03 19:43:18.719927+00	1	32	3	20 razones por las cuales el arte es bueno para los niños: borrador	2	Modificado/a authors.
@@ -4173,6 +4390,204 @@ COPY django_admin_log (id, action_time, user_id, content_type_id, object_id, obj
 159	2012-11-03 20:51:56.431193+00	1	32	3	20 razones por las cuales el arte es bueno para los niños: publicado	2	Modificado/a content_es.
 160	2012-11-03 20:52:19.646634+00	1	32	3	20 razones por las cuales el arte es bueno para los niños: publicado	2	Modificado/a categories.
 161	2012-11-09 21:55:22.330593+00	1	36	3	Home	2	Changed moderator_state.
+162	2012-11-18 04:50:42.958457+00	1	31	3	Infantium desde dentro	1	
+163	2012-11-18 05:15:05.87716+00	1	32	4	Infantium en el evento de presentación de Windows 8 en Barcelona: borrador	1	
+164	2012-11-18 05:24:32.4161+00	1	32	4	Infantium en el evento de presentación de Windows 8 en Barcelona: borrador	2	Modificado/a content_en, content_es y image.
+165	2012-11-18 05:26:06.53114+00	1	32	4	Infantium en el evento de presentación de Windows 8 en Barcelona: borrador	2	Modificado/a related y tags.
+166	2012-11-18 05:35:25.942843+00	1	32	4	Infantium en el evento de presentación de Windows 8 en Barcelona: borrador	2	Modificado/a content_en.
+167	2012-11-18 05:37:53.918262+00	1	32	4	Infantium en el evento de presentación de Windows 8 en Barcelona: borrador	2	No ha cambiado ningún campo.
+168	2012-11-18 05:42:37.127957+00	1	32	4	Infantium en el evento de presentación de Windows 8 en Barcelona: borrador	2	Modificado/a content_en.
+169	2012-11-18 05:42:37.452989+00	1	32	4	Infantium en el evento de presentación de Windows 8 en Barcelona: borrador	2	No ha cambiado ningún campo.
+170	2012-11-18 05:42:37.690721+00	1	32	4	Infantium en el evento de presentación de Windows 8 en Barcelona: borrador	2	No ha cambiado ningún campo.
+171	2012-11-18 05:43:50.65205+00	1	32	4	Infantium en el evento de presentación de Windows 8 en Barcelona: publicado	2	Modificado/a status y authors.
+172	2012-11-24 16:40:13.25572+00	1	69	1	Inteligencia Espacial	1	
+173	2012-11-24 16:42:20.258807+00	1	69	2	Inteligencia Lógica-matemática	1	
+174	2012-11-24 16:42:25.018895+00	1	69	2	Inteligencia Lógica-matemática	2	No ha cambiado ningún campo.
+175	2012-11-24 16:43:03.183105+00	1	69	3	Inteligencia Lingüística	1	
+176	2012-11-24 16:43:30.503188+00	1	69	4	Inteligencia Musical	1	
+177	2012-11-24 16:43:34.636042+00	1	69	4	Inteligencia Musical	2	No ha cambiado ningún campo.
+178	2012-11-24 16:44:48.911159+00	1	69	5	Inteligencia Naturalista	1	
+179	2012-11-24 16:45:47.365216+00	1	69	6	Inteligencia corporal-cinética	1	
+180	2012-11-24 16:46:09.397926+00	1	69	7	Inteligencia intrapersonal	1	
+181	2012-11-24 16:46:25.106801+00	1	69	8	Inteligencia Interpersonal	1	
+182	2012-11-24 16:48:14.794801+00	1	66	1	Lenguajes	1	
+183	2012-11-24 16:48:51.554029+00	1	66	2	Representación Mental	1	
+184	2012-11-24 16:49:42.235965+00	1	66	3	Lógico-matemática	1	
+185	2012-11-24 16:54:13.149686+00	1	66	3	Razonamiento Lógico-matemático	2	Modificado/a name y name_es.
+186	2012-11-24 17:01:13.580365+00	1	66	2	Representación Mental	2	Modificado/a name.
+187	2012-11-24 17:03:09.056026+00	1	66	2	Representación Mental	2	Modificado/a name.
+188	2012-11-24 17:04:04.086662+00	1	66	2	Symbolic representation	2	Changed name.
+189	2012-11-24 17:04:53.850762+00	1	66	2	Symbolic representation	2	No fields changed.
+190	2012-11-24 17:05:25.325345+00	1	66	1	Languages	2	Changed name.
+191	2012-11-24 17:07:09.308617+00	1	68	1	Reconocimiento de color	1	
+192	2012-11-24 17:07:36.548381+00	1	68	1	Reconocimiento de color	2	No ha cambiado ningún campo.
+193	2012-11-24 17:07:58.56429+00	1	68	2	Reconocimiento de forma	1	
+194	2012-11-24 17:08:33.619575+00	1	68	3	Reconocimiento tamaño	1	
+195	2012-11-24 17:08:51.96775+00	1	68	4	Reconocimiento volumen	1	
+196	2012-11-26 11:43:50.449461+00	1	68	1	Color Recognition	2	Changed name.
+197	2012-11-26 11:44:31.979785+00	1	68	2	Reconocimiento de forma	2	Modificado/a name.
+198	2012-11-26 11:45:45.332294+00	1	68	2	Shape recognition	2	Changed name.
+200	2012-11-26 11:47:57.33995+00	1	69	6	Bodily-Kinesthetic Intelligence	2	Changed name.
+201	2012-11-26 11:48:21.149593+00	1	69	1	Spatial Intelligence	2	Changed name.
+202	2012-11-26 12:08:03.230268+00	1	69	8	Interpersonal Intelligence	2	Changed name.
+203	2012-11-26 12:08:23.870335+00	1	69	7	Inteligencia intrapersonal	2	Modificado/a name.
+204	2012-11-26 12:09:00.752424+00	1	69	7	Intrapersonal Intelligence	2	Changed name.
+205	2012-11-26 12:10:15.274024+00	1	69	3	Linguistic Intelligence	2	Changed name.
+206	2012-11-26 12:10:46.675433+00	1	69	4	Musical Intelligence	2	Changed name.
+207	2012-11-26 12:11:12.94625+00	1	69	5	Naturalistic Intelligence	2	Changed name.
+208	2012-11-26 12:11:37.451215+00	1	69	2	Logical-Mathematical Intelligence	2	Changed name.
+209	2012-11-26 12:11:55.484645+00	1	66	1	Languages	2	No fields changed.
+210	2012-11-26 12:12:00.515001+00	1	66	3	Logic-mathematic Reasoning	2	No fields changed.
+211	2012-11-26 12:12:12.316787+00	1	68	1	Color Recognition	2	No fields changed.
+212	2012-11-26 12:14:01.12332+00	1	68	3	Size recognition	2	Changed name.
+213	2012-11-26 12:14:23.916838+00	1	68	4	Volume Recognition	2	Changed name.
+214	2012-11-26 12:24:08.690402+00	1	68	5	Word Recognition	1	
+215	2012-11-26 12:24:28.604373+00	1	68	5	Word Recognition	2	No fields changed.
+216	2012-11-26 12:26:00.798963+00	1	68	6	Comprehension of languages	1	
+217	2012-11-26 12:26:17.182971+00	1	68	6	Comprehension of languages	2	No fields changed.
+218	2012-11-26 12:26:47.234792+00	1	68	7	Follows directions	1	
+219	2012-11-26 12:37:58.055493+00	1	68	8	object permanence: ability to follow an object with visible movement	1	
+220	2012-11-26 18:37:51.624709+00	1	69	6	Inteligencia corporal-cinética	2	Modificado/a summary.
+221	2012-11-26 18:38:06.582258+00	1	69	6	Bodily-Kinesthetic Intelligence	2	Changed summary.
+222	2012-11-26 18:51:38.62763+00	1	69	6	Bodily-Kinesthetic Intelligence	2	Changed summary.
+223	2012-11-26 18:53:27.400511+00	1	69	6	Inteligencia corporal-cinética	2	Modificado/a summary.
+224	2012-11-26 18:57:56.298399+00	1	69	1	Inteligencia Espacial	2	Modificado/a summary.
+225	2012-11-26 18:58:52.938658+00	1	69	1	Spatial Intelligence	2	Changed summary.
+226	2012-11-26 19:00:41.993139+00	1	69	2	Logical-Mathematical Intelligence	2	Changed summary.
+227	2012-11-26 19:02:13.417673+00	1	69	2	Inteligencia Lógica-matemática	2	Modificado/a summary.
+228	2012-11-26 19:15:58.763911+00	1	69	4	Inteligencia Musical	2	Modificado/a summary.
+229	2012-11-26 19:19:07.257177+00	1	69	4	Musical Intelligence	2	Changed summary.
+230	2012-11-26 19:20:05.188135+00	1	69	5	Inteligencia Naturalista	2	Modificado/a summary.
+231	2012-11-26 19:20:31.068265+00	1	69	5	Naturalistic Intelligence	2	Changed summary.
+232	2012-11-26 19:22:03.939213+00	1	69	8	Interpersonal Intelligence	2	Changed summary.
+233	2012-11-26 19:22:30.930314+00	1	69	8	Inteligencia Interpersonal	2	Modificado/a summary.
+234	2012-11-26 19:22:56.584528+00	1	69	8	Interpersonal Intelligence	2	Changed summary.
+235	2012-11-26 19:23:40.777792+00	1	69	7	Intrapersonal Intelligence	2	Changed summary.
+236	2012-11-26 19:23:58.18083+00	1	69	7	Inteligencia intrapersonal	2	Modificado/a summary.
+237	2012-11-26 19:24:57.001209+00	1	69	8	Inteligencia Interpersonal	2	No ha cambiado ningún campo.
+238	2012-11-26 19:25:07.126829+00	1	69	8	Interpersonal Intelligence	2	No fields changed.
+239	2012-11-26 19:25:40.839077+00	1	69	7	Intrapersonal Intelligence	2	Changed summary.
+240	2012-11-26 19:25:57.274021+00	1	69	7	Inteligencia intrapersonal	2	Modificado/a summary.
+241	2012-11-26 19:32:41.462869+00	1	79	1	Numbers: Cardinality and Counting	1	
+242	2012-11-26 19:37:49.096255+00	1	79	1	Números: cardinalidad y contar	2	Changed name and summary.
+243	2012-11-26 19:39:01.409447+00	1	79	1	Numbers: Cardinality and Counting	2	No ha cambiado ningún campo.
+244	2012-11-26 19:39:46.987396+00	1	79	2	Numbers: operations	1	
+245	2012-11-26 19:41:49.74412+00	1	79	2	Números: operaciones	2	Changed name and summary.
+246	2012-11-26 19:51:19.334319+00	1	79	3	Formas y relaciones espaciales	1	
+247	2012-11-26 19:53:22.322347+00	1	79	3	Shapes and spatial relations	2	Modificado/a name y summary.
+248	2012-11-26 19:54:34.159594+00	1	79	4	Patterns, Quantitative and Qualitative Properties 	1	
+249	2012-11-26 19:55:19.242908+00	1	79	4	Patrones y características cualitativas y cuantitativas	2	Changed name and summary.
+250	2012-11-26 19:58:28.745909+00	1	79	5	Measurement and Data	1	
+251	2012-11-26 20:00:45.470826+00	1	79	5	Medida	2	Modificado/a name y summary.
+252	2012-11-26 20:02:58.797566+00	1	79	1	Números: contar y cardinalidad	2	Modificado/a name y summary.
+253	2012-11-26 20:03:24.710684+00	1	79	1	Números: cardinalidad y contar	2	Changed summary.
+254	2012-11-26 20:03:56.879965+00	1	79	5	Measurement and Data	2	No fields changed.
+255	2012-11-26 20:05:08.88594+00	1	79	3	Formas y relaciones espaciales	2	Modificado/a name y summary.
+256	2012-11-26 20:05:32.461632+00	1	79	3	Formas y relaciones espaciales	2	Changed summary.
+257	2012-11-26 20:05:59.037446+00	1	79	3	Shapes and spatial relations	2	Changed name.
+258	2012-11-26 20:06:15.571417+00	1	79	1	Numbers: Cardinality and Counting	2	Changed name.
+259	2012-11-26 20:06:59.09083+00	1	79	2	Numbers: operations	2	Changed name and summary.
+260	2012-11-26 20:08:25.108529+00	1	79	2	Numbers: operations	2	Modificado/a summary.
+261	2012-11-26 20:08:45.175655+00	1	79	2	Números: operaciones	2	Modificado/a name.
+262	2012-11-26 20:10:30.266775+00	1	79	4	Patrones y características cualitativas y cuantitativas	2	Modificado/a name y summary.
+263	2012-11-26 20:10:57.592383+00	1	79	4	Patterns, Quantitative and Qualitative Properties 	2	Changed name and summary.
+264	2012-11-26 20:14:58.399644+00	1	79	6	Information gathering and probabilty	1	
+265	2012-11-26 20:16:08.30959+00	1	79	6	Predicción y organizar información	2	Modificado/a name y summary.
+266	2012-11-26 20:27:41.908597+00	1	79	7	Spatial exploration and visualization	1	
+267	2012-11-26 20:29:13.199194+00	1	79	7	Visualización y exploración espacial	2	Modificado/a name y summary.
+268	2012-11-26 20:30:26.96417+00	1	79	8	Permanencia del objeto 	1	
+269	2012-11-26 20:31:02.948926+00	1	79	8	Object permanence	2	Changed name and summary.
+270	2012-11-27 11:01:35.537056+00	1	79	9	Symbolic Thinking	1	
+271	2012-11-27 11:04:36.604319+00	1	79	9	Pensamiento simbólico	2	Modificado/a name y summary.
+272	2012-11-27 11:12:52.238073+00	1	79	10	Memoria	1	
+273	2012-11-27 11:13:29.636931+00	1	79	10	Memory	2	Changed name and summary.
+274	2012-11-27 11:15:17.402634+00	1	79	11	Sorting	1	
+275	2012-11-27 11:16:16.256908+00	1	79	11	Sorting	2	Changed summary.
+276	2012-11-27 11:16:43.89496+00	1	79	11	Clasificar	2	Modificado/a name y summary.
+277	2012-11-27 11:17:54.977021+00	1	79	12	Formación de la identidad	1	
+278	2012-11-27 11:18:08.920219+00	1	79	12	Identity Formation	2	Changed name and summary.
+279	2012-11-27 11:22:55.270931+00	1	79	13	spatial-temporal reasoning	1	
+280	2012-11-27 11:29:24.152141+00	1	60	1	Game1	3	
+281	2012-11-27 11:30:05.685236+00	1	60	2	Rufi and The Magic Paintings	1	
+282	2012-11-27 11:30:22.532585+00	1	60	2	Rufi y las Pinturas Mágicas	2	Modificado/a name, short_desc y long_desc.
+283	2012-11-27 11:30:26.85784+00	1	79	13	Construcción de razonamiento espacio-temporal	2	Modificado/a name y summary.
+284	2012-11-27 11:32:47.599016+00	1	79	14	Language Development	1	
+285	2012-11-27 11:33:07.792844+00	1	79	14	Desarrollo del lenguaje	2	Modificado/a name y summary.
+286	2012-11-27 11:35:52.727532+00	1	79	15	Literacy	1	
+287	2012-11-27 11:42:00.252393+00	1	79	15	Alfabetización	2	Modificado/a name y summary.
+288	2012-11-27 12:02:08.349108+00	1	80	1	Números y relaciones	1	
+289	2012-11-27 12:03:07.97547+00	1	80	1	Number names and relationships	2	Changed name and summary.
+290	2012-11-27 12:05:41.854945+00	1	80	2	Comparing and ordening numbers	1	
+291	2012-11-27 12:07:26.024035+00	1	80	2	Comparar y ordenar números	2	Modificado/a name y summary.
+292	2012-11-27 12:08:56.392949+00	1	80	3	Counting To Tell the Number of Objects	1	
+293	2012-11-27 12:10:27.123909+00	1	80	3	Contar	2	Modificado/a name y summary.
+294	2012-11-27 12:11:38.816337+00	1	80	4	Composing and decomposing numbers; addition and subtraction	1	
+295	2012-11-27 12:12:13.633463+00	1	80	4	Composición y descomposición de números	2	Modificado/a name y summary.
+296	2012-11-27 12:12:16.131639+00	1	80	4	Composición y descomposición de números	2	No ha cambiado ningún campo.
+297	2012-11-27 12:13:58.760306+00	1	80	5	Recognition of properties and characteristics of geometric shapes	1	
+298	2012-11-27 12:14:44.212461+00	1	80	5	Reconocimiento de propiedades y características de las formas 	2	Modificado/a name y summary.
+299	2012-11-27 12:16:03.575385+00	1	80	6	Understanding of location, position and spatial relationships.	1	
+300	2012-11-27 12:16:50.135895+00	1	80	6	Posición, localización y relaciones espaciales	2	Modificado/a name y summary.
+301	2012-11-27 12:19:39.608347+00	1	80	7	using visualization and spatial reasoning to solve problems	1	
+302	2012-11-27 12:20:25.826578+00	1	80	7	uso de la visualización y la memoria espacial para resolver problemas	2	Modificado/a name y summary.
+303	2012-11-27 12:22:17.52192+00	1	80	8	understand patterns, relations and functions	1	
+304	2012-11-27 12:23:59.61197+00	1	80	8	Comprensión de patrones, relaciones y funciones	2	Modificado/a name y summary.
+305	2012-11-27 12:25:50.892197+00	1	80	9	Análisis y reconocimiento de atributos cualitativos y cuantitativos	1	
+306	2012-11-27 12:26:25.68914+00	1	80	9	Recognition and analysis of quantitative and qualitative properties.	2	Changed name and summary.
+307	2012-11-27 12:32:14.559781+00	1	80	10	Representing and Interpreting Data	1	
+308	2012-11-27 12:32:42.312326+00	1	80	10	Representación e interpretación de datos	2	Modificado/a name y summary.
+309	2012-11-27 12:33:13.360797+00	1	80	11	Direct Measurement 	1	
+310	2012-11-27 12:33:47.553187+00	1	80	11	Medida	2	Modificado/a name y summary.
+311	2012-11-27 12:34:32.057184+00	1	80	12	Understanding of location, position and spatial relationships.	1	
+312	2012-11-27 12:35:15.086085+00	1	80	6	Posición, localización y relaciones espaciales	2	Modificado/a domain_area.
+313	2012-11-27 12:38:58.76817+00	1	80	13	Posición, localización y relaciones espaciales	1	
+314	2012-11-27 12:39:29.013798+00	1	80	6	Understanding of location, position and spatial relationships.	2	No fields changed.
+315	2012-11-27 12:40:21.723745+00	1	80	6	Posición, localización y relaciones espaciales	2	Modificado/a summary.
+316	2012-11-27 12:40:41.714128+00	1	80	6	Understanding of location, position and spatial relationships.	2	Changed domain_area.
+317	2012-11-27 12:42:24.971256+00	1	80	6	Understanding of location, position and spatial relationships.	2	Changed domain_area.
+318	2012-11-27 12:42:29.649089+00	1	80	6	Posición, localización y relaciones espaciales	2	No ha cambiado ningún campo.
+319	2012-11-27 12:43:08.439345+00	1	80	13	Posición, localización y relaciones espaciales	2	Modificado/a summary y domain_area.
+320	2012-11-27 12:44:33.223243+00	1	80	13	understanding of location, position and spatial relationships.	2	Changed name and summary.
+321	2012-11-27 12:47:20.492573+00	1	80	12	Posición, localización y relaciones espaciales	2	Modificado/a name.
+322	2012-11-27 12:48:30.536259+00	1	80	12	Understanding of location, position and spatial relationships.	2	Changed name and summary.
+323	2012-11-27 12:49:21.992151+00	1	80	14	collect, organize and display data	1	
+324	2012-11-27 12:49:59.559245+00	1	80	14	recoger y organizar datos	2	Modificado/a name y summary.
+325	2012-11-27 12:51:07.344845+00	1	80	15	understanding that predictions can be made	1	
+326	2012-11-27 12:51:29.17186+00	1	80	15	Predicciones	2	Modificado/a name y summary.
+327	2012-11-27 12:55:39.007251+00	1	80	16	Exploración espacial y visualización	1	
+328	2012-11-27 12:56:23.519629+00	1	80	16	Spatial exploration and visualization	2	Changed name and summary.
+329	2012-11-27 12:56:59.274643+00	1	80	17	Object permanence	1	
+330	2012-11-27 12:57:19.961591+00	1	80	17	Permanencia del objeto 	2	Modificado/a name y summary.
+331	2012-11-27 12:58:50.196797+00	1	80	18	Symbolic Thought	1	
+332	2012-11-27 12:59:11.835664+00	1	80	18	Pensamiento simbólico	2	Modificado/a name y summary.
+333	2012-11-27 13:00:09.632992+00	1	80	19	construcción de relaciones espaciales y temporales 	1	
+334	2012-11-27 13:00:43.353631+00	1	80	19	spatial-temporal relationships	2	Changed name and summary.
+335	2012-11-27 13:02:01.258735+00	1	80	20	visual symbols.	1	
+336	2012-11-27 13:02:25.444862+00	1	80	20	Símbolos visuales	2	Modificado/a name y summary.
+337	2012-11-27 13:04:01.261748+00	1	79	12	Formación de la identidad	2	No ha cambiado ningún campo.
+338	2012-11-27 13:04:22.196118+00	1	80	21	Reconocimiento de sí mismo y de los demás	1	
+339	2012-11-27 13:07:21.381896+00	1	80	21	identifying self and in relation to others	2	Changed name and summary.
+340	2012-11-27 13:07:57.753507+00	1	80	22	grouping 	1	
+341	2012-11-27 13:08:12.259327+00	1	80	22	Agrupar	2	Modificado/a name y summary.
+342	2012-11-27 13:08:52.11369+00	1	80	23	Memoria	1	
+343	2012-11-27 13:09:06.671222+00	1	80	23	Memory	2	Changed name and summary.
+344	2012-11-27 13:10:22.654449+00	1	80	24	Entender ritmos, sonidos, historias	1	
+345	2012-11-27 13:10:55.255424+00	1	80	24	Understanding rhymes, songs and stories.	2	Changed name and summary.
+346	2012-11-27 13:11:20.688793+00	1	79	14	Comprensión	2	Modificado/a name.
+347	2012-11-27 13:12:05.300531+00	1	79	14	dESA	2	Modificado/a name.
+348	2012-11-27 13:12:05.578767+00	1	79	14	dESA	2	No ha cambiado ningún campo.
+349	2012-11-27 13:12:13.331256+00	1	79	14	Desarrollo del lenguaje	2	Modificado/a name.
+350	2012-11-27 13:13:10.2248+00	1	80	25	Comprensión	1	
+351	2012-11-27 13:13:30.185351+00	1	80	25	Comprehension of languages	2	Changed name and summary.
+352	2012-11-27 13:13:55.617493+00	1	80	26	Music \t\t \t\t 	1	
+353	2012-11-27 13:14:06.681758+00	1	80	26	Música	2	Modificado/a name y summary.
+354	2012-11-27 13:15:39.767298+00	1	80	27	Conciencia fonológica	1	
+355	2012-11-27 13:16:37.412852+00	1	80	27	Phonological awareness	2	Changed name and summary.
+356	2012-11-27 13:17:21.808628+00	1	80	28	Knowledge of the alphablet and word recognition	1	
+357	2012-11-27 13:17:38.871139+00	1	80	28	Knowledge of the alphablet and word recognition	2	No fields changed.
+358	2012-11-27 13:18:02.083599+00	1	80	28	Conocimiento del alfabeto y de las palabras escritas	2	Modificado/a name y summary.
+359	2012-11-27 13:18:33.076667+00	1	80	29	Símbolos visuales	1	
+360	2012-11-27 13:18:48.314029+00	1	80	29	visual symbols.	2	Changed name and summary.
 \.
 
 
@@ -4189,6 +4604,8 @@ COPY django_comment_flags (id, user_id, comment_id, flag, flag_date) FROM stdin;
 6	4	8	trackback	2012-11-07 05:23:56.061237+00
 7	4	9	trackback	2012-11-07 17:00:43.872485+00
 8	4	10	trackback	2012-11-08 03:32:24.580731+00
+9	4	13	trackback	2012-11-21 04:10:41.230403+00
+10	4	15	trackback	2012-11-22 20:59:09.797819+00
 \.
 
 
@@ -4208,6 +4625,9 @@ COPY django_comments (id, content_type_id, object_pk, site_id, user_id, user_nam
 10	32	1	1	\N	vuelos		http://drew.nannysnovels.com/pg/blog/read/9139/este-nmero-rasgos-relativos-a-magnicharters	Infantium's Blog - Infantium: Dreaming of Changing Education through technology	2012-11-08 03:32:24.575936+00	\N	t	f
 11	32	3	1	\N	Brent Searle	info@earthartbykids.com	http://www.earthartbykids.com/	Couldn't agree more! \r\nOur mission is to match the unique and wonderful artwork of children as they perceive the world and all its wondrous resources, with unique products that make a statement as gifts, promotional products, or for personal use.\r\n\r\nWe hope you enjoy this art as much as we do -- and the importance of the subject matter, even though some of it makes you smile and laugh -- for it is the earth in all its wonder that is the basis of life. And it is by those who sustainably, thoughtfully, and with so much work, take of the earth that provides for the rest of us. Children capture in art their interpretation of this wondrous process and the plants and animals involved.\r\n\r\nThe artwork comes from the Oregon Agriculture in the Classroom Program (AITC). The more successful this website, the more we will donate to AITC! Feel good about shopping by helping support hands-on learning, agricultural literacy, and teacher training.\r\nwww.earthartbykids.com\r\nhttp://pinterest.com/dadspad2/earth-art-by-kids/\r\nhttps://www.facebook.com/earthartbykids	2012-11-12 20:15:20.268139+00	174.27.54.33	t	f
 12	32	3	1	\N	Access Accounting	ilovejessicasmithforever@gmail.com	http://www.accountingsuccess.com/	Hahaha, Nice 20 reasons! :) Thanks for sharing!	2012-11-13 06:12:32.038311+00	124.106.33.243	t	f
+13	32	1	1	\N	lemon skin whitening		http://whiteningsimple.com/	Infantium's Blog - Infantium: Dreaming of Changing Education through technology	2012-11-21 04:10:40.201215+00	\N	t	f
+14	32	1	1	\N	Article Submission Tool	ilovejessicasmithforever@gmail.com	http://www.mysubmissiontools.com/	I love the title "Dreaming of Changing Education through technology" :)	2012-11-21 12:30:29.935125+00	112.200.88.15	t	f
+15	32	1	1	\N	epoxy primer		http://epoxyresinzone.com/	Infantium's Blog - Infantium: Dreaming of Changing Education through technology	2012-11-22 20:59:09.793091+00	\N	t	f
 \.
 
 
@@ -4279,6 +4699,9 @@ COPY django_content_type (id, name, app_label, model) FROM stdin;
 75	calendar entries plugin	cmsplugin_zinnia	calendarentriesplugin
 76	registration profile	registration	registrationprofile
 77	log	django_logtail	log
+78	raw data	db	rawdata
+79	domain area	db	domainarea
+80	cluster	db	cluster
 \.
 
 
@@ -4529,6 +4952,13 @@ COPY south_migrationhistory (id, app_name, migration, applied) FROM stdin;
 89	db	0003_auto__add_field_userprofile_completed__chg_field_userprofile_country_c	2012-10-31 21:06:17.400471+00
 90	cms	0036_auto__add_field_cmsplugin_changed_date	2012-10-31 21:06:18.133981+00
 91	link	0009_add_target	2012-10-31 21:06:18.519018+00
+92	db	0004_auto__add_field_game_owner	2012-11-24 16:13:29.092684+00
+93	db	0005_auto__add_field_game_uuid	2012-11-24 16:13:29.254055+00
+94	db	0006_auto__add_rawdata__chg_field_game_uuid	2012-11-24 16:13:29.686029+00
+95	db	0007_auto__del_field_game_uuid__add_field_score_value__del_field_indicator_	2012-11-24 16:13:30.687927+00
+96	db	0008_auto__add_field_game_uuid	2012-11-24 16:13:30.828431+00
+97	db	0009_auto__del_field_game_long_desc_en__del_field_game_name_en__del_field_g	2012-11-24 16:13:31.397207+00
+98	db	0010_auto__add_domainarea__add_cluster__del_field_indicator_cognitive_areas	2012-11-26 18:30:38.765712+00
 \.
 
 
@@ -4547,6 +4977,11 @@ COPY tagging_tag (id, name) FROM stdin;
 8	cognitive development
 9	art
 10	spatial intelligence
+11	Barcelona
+12	Microsoft
+13	apps
+14	presentación
+15	windows 8
 \.
 
 
@@ -4561,6 +4996,11 @@ COPY tagging_taggeditem (id, tag_id, content_type_id, object_id) FROM stdin;
 8	8	32	3
 9	9	32	3
 10	10	32	3
+11	11	32	4
+12	12	32	4
+13	13	32	4
+14	14	32	4
+15	15	32	4
 \.
 
 
@@ -4587,8 +5027,9 @@ COPY tastypie_apikey (id, user_id, key, created) FROM stdin;
 --
 
 COPY zinnia_category (id, title, slug, description, parent_id, lft, rght, tree_id, level, title_en, title_es, description_en, description_es) FROM stdin;
-1	Plumas Invitadas	guest-authors		\N	1	2	2	0	Guest Authors	Plumas Invitadas		\N
 2	Educación Infantil	early-childhood-education		\N	1	2	1	0	Early childhood education	Educación Infantil		\N
+1	Plumas Invitadas	guest-authors		\N	1	2	3	0	Guest Authors	Plumas Invitadas		\N
+3	Infantium desde dentro	inside-infatium		\N	1	2	2	0	Inside of Infatium!	Infantium desde dentro	\N	\N
 \.
 
 
@@ -4600,6 +5041,7 @@ COPY zinnia_entry (id, title, image, content, excerpt, tags, slug, status, featu
 1	Infantium: Dreaming of Changing Education through technology 	uploads/zinnia/oswald-rufi.png	<p>Infantium has been co-founded by 3 friends (2 living in Barcelona and 1 in Madrid) who share passion for children, education, technology, innovation and entrepreneurship. And we all share the same passion: individualized learning</p>\r\n<p>From the very beginning, when the idea came up, our mission was to develop a different product from the already existing ones in the educational app marketplace (mostly, a mix of fun, engaging and educational content &ndash;curricular or not). But more than just building an app to automate and support existing games (that is, not adding or substracting using pen and pencil, but an iPad app), we were <strong>interested in creating a powerful technologic tool to transform learning and education in its roots</strong>; not just the way we learn, but also how your <strong>learning can be dramatically maximized by the use of Artificial Intelligence.</strong></p>\r\n<p><strong>Each individual is unique, and learns at a different pace</strong>, so the traditional education system -requiring all children to do the same at the same time &ndash;needs an urgent transformation. Unfortunately, although many schools are wired, technology is not effectively used: there are computers, iPads, digital blackboards plugged into internet, but there is no leverage of technology to transform learning.<strong> The result: a conventional system where textbook still determining what, when and in which order to learn.</strong></p>\r\n<p>One of the most fascinating advances in recent years is the <strong>use of adaptive learning technology</strong>. These platforms adapt to each student&rsquo;s needs, providing individualized learning.</p>\r\n<p>But while the focus is mainly on K-12 and general university studies, early learners are still forgotten. T<strong>he first 6 years of a child&rsquo;s life are crucial for cognitive</strong> development,<strong> future behavior and intelligence.</strong> If critical periods' in brain development are not utilized, opportunities are lost, never to be regained. Of course, opportunities to grow continue, but it is not the same. As Osborne Abbey &ndash;vice president of education for Nobel Learning Communities &ndash;said, by offering children as young as six months an educational &amp; nurturing environment, parents are allowing their children every chance to develop by design, rather than chance, skills necessary for success.</p>\r\n<p><strong>Infantium is born with that dream: redesigning educational methods to tap the full benefits that technology (and Artificial Intelligence) has to offer exploiting individual skills</strong>; <strong>maximizing cognitive development during the first years;</strong> and designing an individualized learning method adjusting to particular needs, strengths and weaknesses of every child, through different &ldquo;learning paths&rdquo;. Of course, technology alone does not create the perfect learning, and of course it does not substitute parenting: interaction parent-teacher is essential. <strong>But when it comes to games, does it make sense two kids playing the same game that has unidirectional resolution? What for?</strong></p>\r\n<p>For now, we have already finished the beta version of the first app of the platform (with 3 games). So before we see the light &ndash;very soon, <strong>with the official Windows 8 release, on October 26<sup>th</sup></strong> , we wanted to start this blog. Our first product &ndash;the Adventures of Rufi &ndash;is the first beta version of a new adaptive learning platform that aims to challenge, educate but above all, personalize the way every child learns during the critical first years of their lives.</p>\r\n<p>So before launching the adventures of Rufi, we are inspired to start a blog to showcase some of the many exciting things that are happening in the world of technology, children, education and developmental psychology for babies and young children. We also want to be a useful guide for parents. We&rsquo;ll explain how to work at home with the little ones the topics we work on the app to get the best result.</p>\r\n<p>Our partners make it possible: <strong>Autonomous University of Barcelona</strong> (Evolutionary Educational Psychology Department), <strong>the city council of Lleida, and in particular the Local Institute of Education</strong> (specially the director, Alba Bosch) and the nurseries, day care centers and kindergartens they manage and where we have implemented and tested the activities (this blog will be a windows for all the educators participants in the project) and the <strong>Antoni Cambrod&iacute; Foundation- Institute of Evolutionary Psychology</strong>,<strong> and the support of Microsoft from the very beginning</strong>.</p>\r\n<p>We would like to thank Carles Grau, (Director of Public Sector in Microsoft Iberica) for his unconditional support and help from the very beginning. His vision and advice about children and technology where fundamental for our work. And also want to thank Carlos Blanco, because since the moment we won Seedrocket, he has incubated and protected us! And of course all our investors: Sergio, Oscar, David, Jesus, Alfredo.. Many thanks! &nbsp;</p>\r\n<p>We hope you enjoy our blog! Let&rsquo;s go!</p>	...		infantium-cambiar-educacion	2	f	t	t	2012-10-09 06:11:19+00	2012-10-14 07:31:14.548266+00	\N	\N	f		entry_detail.html	Infantium: Dreaming of Changing Education through technology 	Infantium: el sueño de cambiar la educación mediante la tecnología	<p>Infantium has been co-founded by 3 friends (2 living in Barcelona and 1 in Madrid) who share passion for children, education, technology, innovation and entrepreneurship. And we all share the same passion: individualized learning</p>\r\n<p>From the very beginning, when the idea came up, our mission was to develop a different product from the already existing ones in the educational app marketplace (mostly, a mix of fun, engaging and educational content &ndash;curricular or not). But more than just building an app to automate and support existing games (that is, not adding or substracting using pen and pencil, but an iPad app), we were <strong>interested in creating a powerful technologic tool to transform learning and education in its roots</strong>; not just the way we learn, but also how your <strong>learning can be dramatically maximized by the use of Artificial Intelligence.</strong></p>\r\n<p><strong>Each individual is unique, and learns at a different pace</strong>, so the traditional education system -requiring all children to do the same at the same time &ndash;needs an urgent transformation. Unfortunately, although many schools are wired, technology is not effectively used: there are computers, iPads, digital blackboards plugged into internet, but there is no leverage of technology to transform learning.<strong> The result: a conventional system where textbook still determining what, when and in which order to learn.</strong></p>\r\n<p>One of the most fascinating advances in recent years is the <strong>use of adaptive learning technology</strong>. These platforms adapt to each student&rsquo;s needs, providing individualized learning.</p>\r\n<p>But while the focus is mainly on K-12 and general university studies, early learners are still forgotten. T<strong>he first 6 years of a child&rsquo;s life are crucial for cognitive</strong> development,<strong> future behavior and intelligence.</strong> If critical periods' in brain development are not utilized, opportunities are lost, never to be regained. Of course, opportunities to grow continue, but it is not the same. As Osborne Abbey &ndash;vice president of education for Nobel Learning Communities &ndash;said, by offering children as young as six months an educational &amp; nurturing environment, parents are allowing their children every chance to develop by design, rather than chance, skills necessary for success.</p>\r\n<p><strong>Infantium is born with that dream: redesigning educational methods to tap the full benefits that technology (and Artificial Intelligence) has to offer exploiting individual skills</strong>; <strong>maximizing cognitive development during the first years;</strong> and designing an individualized learning method adjusting to particular needs, strengths and weaknesses of every child, through different &ldquo;learning paths&rdquo;. Of course, technology alone does not create the perfect learning, and of course it does not substitute parenting: interaction parent-teacher is essential. <strong>But when it comes to games, does it make sense two kids playing the same game that has unidirectional resolution? What for?</strong></p>\r\n<p>For now, we have already finished the beta version of the first app of the platform (with 3 games). So before we see the light &ndash;very soon, <strong>with the official Windows 8 release, on October 26<sup>th</sup></strong> , we wanted to start this blog. Our first product &ndash;the Adventures of Rufi &ndash;is the first beta version of a new adaptive learning platform that aims to challenge, educate but above all, personalize the way every child learns during the critical first years of their lives.</p>\r\n<p>So before launching the adventures of Rufi, we are inspired to start a blog to showcase some of the many exciting things that are happening in the world of technology, children, education and developmental psychology for babies and young children. We also want to be a useful guide for parents. We&rsquo;ll explain how to work at home with the little ones the topics we work on the app to get the best result.</p>\r\n<p>Our partners make it possible: <strong>Autonomous University of Barcelona</strong> (Evolutionary Educational Psychology Department), <strong>the city council of Lleida, and in particular the Local Institute of Education</strong> (specially the director, Alba Bosch) and the nurseries, day care centers and kindergartens they manage and where we have implemented and tested the activities (this blog will be a windows for all the educators participants in the project) and the <strong>Antoni Cambrod&iacute; Foundation- Institute of Evolutionary Psychology</strong>,<strong> and the support of Microsoft from the very beginning</strong>.</p>\r\n<p>We would like to thank Carles Grau, (Director of Public Sector in Microsoft Iberica) for his unconditional support and help from the very beginning. His vision and advice about children and technology where fundamental for our work. And also want to thank Carlos Blanco, because since the moment we won Seedrocket, he has incubated and protected us! And of course all our investors: Sergio, Oscar, David, Jesus, Alfredo.. Many thanks! &nbsp;</p>\r\n<p>We hope you enjoy our blog! Let&rsquo;s go!</p>	<p>Infantium es una startup fundada por tres amigos (2 en Barcelona y uno en Madrid) que comparten pasi&oacute;n por los ni&ntilde;os, la educaci&oacute;n, la tecnolog&iacute;a, y el emprendimiento. Y que comparten un sue&ntilde;o: educaci&oacute;n personalizada para cada ni&ntilde;o.</p>\r\n<p>Desde el primer momento en que surgi&oacute; la idea, el objetivo era hacer un producto totalmente diferente, que no se pareciera en nada a la mayor&iacute;a de aplicaciones educativas que hab&iacute;amos visto en el mercado: una mezcla entre entretenimiento y contenido m&aacute;s o menos educativo (curricular o no). Pero m&aacute;s que ofrecer un juego, o &ldquo;automatizar&rdquo; (es decir, en vez de sumar en papel, sumar en una app; o en vez de un rompecabezas de cart&oacute;n, uno en tablet), lo que nos interesaba era<strong>&nbsp;la enorme capacidad que tiene la tecnolog&iacute;a para trasformar la educaci&oacute;n, desde sus ra&iacute;ces.</strong>&nbsp;No s&oacute;lo la forma en que aprendemos, sino como la inteligencia artificial puede potenciar al m&aacute;ximo el propio aprendizaje.&nbsp;<strong>Cada persona es un mundo, un ser que aprende de forma distinta y a ritmos diferentes,</strong>&nbsp;por lo que el concepto de educaci&oacute;n tradicional &ndash;la misma para todos &ndash;no tiene ning&uacute;n tipo de sentido y tiene que cambiar. &nbsp;Por desgracia, la mayor&iacute;a de colegios -en todos los niveles -tienen infraestructuras de IT insuficientes, no hay ninguna estrategia de implantaci&oacute;n (es decir, ordenadores para cada ni&ntilde;o por el hecho de tenerlos no representa un avance significativo, salvo que lo que antes se hac&iacute;a a mano ahora se hace digital) y lo peor, la resistencia al cambio por miedo de muchos: en definitiva,&nbsp;<strong>el cl&aacute;sico modelo del libro de texto que determina qu&eacute;, c&oacute;mo y en qu&eacute; orden aprender.&nbsp;</strong></p>\r\n<p>Uno de los avances m&aacute;s fascinantes en los &uacute;ltimos a&ntilde;os es que ciertas&nbsp;<strong>plataformas educativas adaptativas</strong>&nbsp;se ajusten a las necesidades del estudiante, y tras evaluar su rendimiento, cree lecciones customizadas. En USA algunas de las empresas m&aacute;s innovadoras de elearning se basan en este concepto para, por ejemplo, mejorar en matem&aacute;ticas (<a href="http://www.dreambox.com/">Dreambox</a>&nbsp;o&nbsp;<a href="http://www.reasoningmind.org/">Reasoning Minds</a>), o permitir a estudiantes universitarios que progresen de forma adecuada, pero constante, seg&uacute;n su propio ritmo.</p>\r\n<p>Y mientras todos ponen el foco en secundaria y universitarios, los m&aacute;s peque&ntilde;os quedan olvidados.&nbsp;<strong>Los primeros a&ntilde;os de vida (0-6 a&ntilde;os), son una etapa cr&iacute;tica para el desarrollo cognitivo</strong>, cuando se desarrolla el pensamiento simb&oacute;lico, el matem&aacute;tico, el lenguaje, que ser&aacute;n fundamentales no s&oacute;lo para tener una base que ayude al &eacute;xito en el colegio, sino para desenvolverse como seres humanos, y adquirir habilidades necesarias en un mundo complejo. Todo lo que no se gane en esa etapa no se recupera jam&aacute;s.</p>\r\n<p>As&iacute; que de ah&iacute; nace Infantium.&nbsp;<strong>Nuestro sue&ntilde;o? Aprovechar las posibilidades que otorga la tecnolog&iacute;a para explotar al m&aacute;ximo las capacidades individuales, potenciar al m&aacute;ximo el desarrollo cognitivo en los primeros a&ntilde;os</strong>, y crear un m&eacute;todo de aprendizaje que se ajuste a las necesidades, fortalezas y debilidades de cada ni&ntilde;o de forma individual y personalizada. &nbsp;En ning&uacute;n caso la tecnolog&iacute;a es la panacea, y desde luego no substituye la interacci&oacute;n con los padres o profesores. Pero permite extraer informaci&oacute;n precisa mediante un complejo an&aacute;lisis de datos y algoritmos que permiten definir rutas concretas para optimizar los recursos intelectuales de la mejor forma para cada uno. Algo que si no, no ser&iacute;a posible. &iquest;Tiene sentido que dos ni&ntilde;os distintos usen un mismo juego, que se puede resolver de forma unidireccional? &iquest;Para qu&eacute;?</p>\r\n<p>Os iremos contando! De momento tenemos casi preparada la primera beta de la primera app que formar&aacute; parte de la plataforma. As&iacute; que antes de nuestro lanzamiento, que ser&aacute; muy en breve (26 de octubre, fecha oficial de lanzamiento de Windows 8) quer&iacute;amos empezar este blog donde hablaremos no s&oacute;lo de las cosas que ocurren en el mundo de la tecnolog&iacute;a educativa, sino que esperamos que sirva de gu&iacute;a de uso para los padres que lo prueben: cada actividad con su s&iacute;mil para trabajar en casa junto al peque.</p>\r\n<p>Para esto, tenemos el apoyo de grand&iacute;simos partners:&nbsp;<strong>la UAB</strong>&nbsp;(Y su departamento de Psicolog&iacute;a Evolutiva y de la Educaci&oacute;n, cuya investigaci&oacute;n empezar&aacute; muy pronto),&nbsp;<strong>al Ayuntamiento de Lleida</strong>, y en concreto al Instituto Municipal de Educaci&oacute;n (Y muy especialmente a su directora, Alba Bosch, toda una visionaria sobre tech y los m&aacute;s peque&ntilde;os) as&iacute; como todas las guarder&iacute;as que participan en el proyecto (esta ser&aacute; una ventana para todas ellas y las profes de infantil) y la F<strong>undaci&oacute;n &ndash;Instituto de Psicopedagog&iacute;a Antoni Cambrod&iacute;</strong>, y sobre todo a Gemma Ribera, que en breve se iniciar&aacute; aqu&iacute; tambi&eacute;n! Y por supuesto el&nbsp;<strong>apoyo de Microsoft</strong>&nbsp;desde el principio.</p>\r\n<p>Todo esto, por supuesto, no ser&iacute;a posible sin la ayuda de Carles Grau (director de Sector P&uacute;blico). Sin &eacute;l este proyecto se hubiera quedado en el tintero. Fue el quien nos dio todo su apoyo y visi&oacute;n. Y a Microsoft por creer en los emprendedores. Y tambi&eacute;n a Carlos Blanco en especial, que nos ha adoptado en el grupo ITnet desde que salimos en&nbsp; Seedrocket y todo su apoyo es incalculable (y el de todos su fant&aacute;stico equipo). Y no olvidarnos de nuestros inversores: Oscar, Sergio, David, Jes&uacute;s, Alfredo! Mil Gracias :)&nbsp;</p>\r\n<p>Esperamos que disfrut&eacute;is nuestro blog! Empezamos!</p>	...	...
 2	Children: Wireless generation	uploads/zinnia/sara_tarres.png	<p class="Body1">Hello Infantium friends, I'm Sara Tarr&eacute;s, a child psychologist and a mom of two little ones: a 4 year old boy and a 16 months boy. Some of you may already know me from the blogging <a class="blue" href="http://www.mamapsicologainfantil.com/">My mother is a child psychologist</a>, others from my collaborations with <a class="blue" href="http://babyradio.es/">babyradio</a>, and some of you get to know me for the first time.</p>\r\n<p class="Body1">When the Infantium team proposed the idea of participating in their blog as a guest author, I did not hesitate a moment, as I found that it was a very interesting and innovative project. Understanding the importance and relevance that information and communication technologies (ICT) play supporting the learning process of our children, I declare myself as a strong advocate and supporter of making good use of them since early years.</p>\r\n<p class="Body1">Few are those who doubt, today, the recognized potential of ICT as catalysts for early childhood education, knowledge and entertainment, fostering the development and training of children. Everyone &ndash;parents, educators, teachers, professors &ndash;should promote responsible and appropriate use of technology in early years education as a driver for learning and gaining knowledge.</p>\r\n<p class="Body1">Our children were born digital, &ldquo;digital natives&rdquo;&mdash;immersed in digital technology from birth&mdash;<strong>,&nbsp; </strong>and almost are better at this than we are. In addition, a majority of households own at least one device: a computer, a tablet PC or a smartphone. In my case, we have them all, and the first time I saw my oldest son &ndash;when he was barely 2 years old &ndash;unlocking my iPad to find one of his favorite apps ... It was perfectly evident.</p>\r\n<p class="Body1">As I said in my presentation, I&rsquo;m the mother of two kids, -one 4 year old boy and 16 months &ndash;and I use with them all the great educational potential that the advent of tablet-based PCs and smartphones started to offer. Interactive books, bits of intelligence or flashcards, puzzles, painting and drawing pads, pianos&hellip; every single tool I think is helping to boost their learning at home is welcomed.</p>\r\n<p class="Body1">Just an example: when using any of the many <em>bits of intelligence</em> applications or <em>flashcards </em>I have downloaded on my tablet, I do know that while my child has lots of fun he&rsquo;s also increasing his vocabulary. This kind of educational applications &ndash;based on the <em>theory of early learning educator Glenn Doman</em> &ndash; <em><strong>allow infants</strong></em>&nbsp;to develop the&nbsp;<em><strong>capacity for language and to build their vocabulary.</strong></em></p>\r\n<p class="Body1">But this is just the beginning. <strong>What will happen and which new technologies and new features </strong><em><strong>will</strong></em><strong>&nbsp;</strong><strong>be available to us? We just&nbsp;</strong><em><strong>can</strong></em><strong>'t&nbsp;</strong><em><strong>imagine</strong></em><strong>&nbsp;</strong><strong>it</strong>. Still, imagine the multitude of learning opportunities that new technologies will bring. &nbsp;Of course if used as a tool, let&rsquo;s not neglect other traditional methods. Experimentation, object manipulation, discovery learning ... are critical for our children to fully develop their motor skills and intellectual abilities, language, attention, memory, logic, spatial awareness... Let&rsquo;s take advantage of them! Betting on technology and encouraging its adequate use is investing on the future of our kids.</p>\r\n<p class="Body1"><img class="rounded" style="margin-left: auto; margin-right: auto; display: block;" src="http://cdn.walyou.com/wp-content/uploads//2011/08/Vinci-Tablet-1.jpg" alt="Kid Tablet and Parents" width="550" height="368" /></p>\r\n<p class="Body1">&nbsp;</p>\r\n<p>&nbsp;</p>\r\n<p class="Body1">&nbsp;</p>\r\n<p class="Body1">&nbsp;</p>\r\n<p class="Body1">&nbsp;</p>\r\n<p class="Body1">&nbsp;</p>\r\n<p class="Body1">&nbsp;</p>\r\n<p class="Body1">&nbsp;</p>\r\n<p class="Body1">Sara Tarr&eacute;s Corominas</p>\r\n<p class="Body1">www.mamapsicologainfantil.com</p>	...	Sara Tarrés, Psicología Infantil, Pluma Invitada	children-wireless-generation	2	t	t	t	2012-10-26 12:12:47+00	2012-10-26 19:06:06.615286+00	\N	\N	f		entry_detail.html	Children: Wireless generation	Niños Wireless Generation	<p class="Body1">Hello Infantium friends, I'm Sara Tarr&eacute;s, a child psychologist and a mom of two little ones: a 4 year old boy and a 16 months boy. Some of you may already know me from the blogging <a class="blue" href="http://www.mamapsicologainfantil.com/">My mother is a child psychologist</a>, others from my collaborations with <a class="blue" href="http://babyradio.es/">babyradio</a>, and some of you get to know me for the first time.</p>\r\n<p class="Body1">When the Infantium team proposed the idea of participating in their blog as a guest author, I did not hesitate a moment, as I found that it was a very interesting and innovative project. Understanding the importance and relevance that information and communication technologies (ICT) play supporting the learning process of our children, I declare myself as a strong advocate and supporter of making good use of them since early years.</p>\r\n<p class="Body1">Few are those who doubt, today, the recognized potential of ICT as catalysts for early childhood education, knowledge and entertainment, fostering the development and training of children. Everyone &ndash;parents, educators, teachers, professors &ndash;should promote responsible and appropriate use of technology in early years education as a driver for learning and gaining knowledge.</p>\r\n<p class="Body1">Our children were born digital, &ldquo;digital natives&rdquo;&mdash;immersed in digital technology from birth&mdash;<strong>,&nbsp; </strong>and almost are better at this than we are. In addition, a majority of households own at least one device: a computer, a tablet PC or a smartphone. In my case, we have them all, and the first time I saw my oldest son &ndash;when he was barely 2 years old &ndash;unlocking my iPad to find one of his favorite apps ... It was perfectly evident.</p>\r\n<p class="Body1">As I said in my presentation, I&rsquo;m the mother of two kids, -one 4 year old boy and 16 months &ndash;and I use with them all the great educational potential that the advent of tablet-based PCs and smartphones started to offer. Interactive books, bits of intelligence or flashcards, puzzles, painting and drawing pads, pianos&hellip; every single tool I think is helping to boost their learning at home is welcomed.</p>\r\n<p class="Body1">Just an example: when using any of the many <em>bits of intelligence</em> applications or <em>flashcards </em>I have downloaded on my tablet, I do know that while my child has lots of fun he&rsquo;s also increasing his vocabulary. This kind of educational applications &ndash;based on the <em>theory of early learning educator Glenn Doman</em> &ndash; <em><strong>allow infants</strong></em>&nbsp;to develop the&nbsp;<em><strong>capacity for language and to build their vocabulary.</strong></em></p>\r\n<p class="Body1">But this is just the beginning. <strong>What will happen and which new technologies and new features </strong><em><strong>will</strong></em><strong>&nbsp;</strong><strong>be available to us? We just&nbsp;</strong><em><strong>can</strong></em><strong>'t&nbsp;</strong><em><strong>imagine</strong></em><strong>&nbsp;</strong><strong>it</strong>. Still, imagine the multitude of learning opportunities that new technologies will bring. &nbsp;Of course if used as a tool, let&rsquo;s not neglect other traditional methods. Experimentation, object manipulation, discovery learning ... are critical for our children to fully develop their motor skills and intellectual abilities, language, attention, memory, logic, spatial awareness... Let&rsquo;s take advantage of them! Betting on technology and encouraging its adequate use is investing on the future of our kids.</p>\r\n<p class="Body1"><img class="rounded" style="margin-left: auto; margin-right: auto; display: block;" src="http://cdn.walyou.com/wp-content/uploads//2011/08/Vinci-Tablet-1.jpg" alt="Kid Tablet and Parents" width="550" height="368" /></p>\r\n<p class="Body1">&nbsp;</p>\r\n<p>&nbsp;</p>\r\n<p class="Body1">&nbsp;</p>\r\n<p class="Body1">&nbsp;</p>\r\n<p class="Body1">&nbsp;</p>\r\n<p class="Body1">&nbsp;</p>\r\n<p class="Body1">&nbsp;</p>\r\n<p class="Body1">&nbsp;</p>\r\n<p class="Body1">Sara Tarr&eacute;s Corominas</p>\r\n<p class="Body1">www.mamapsicologainfantil.com</p>	<p class="Body1"><em>Hola amigos de Infantium, soy Sara Tarr</em><em>&eacute;</em><em>s, psic</em><em>&oacute;</em><em>loga infantil y madre de dos peque</em><em>&ntilde;</em><em>os, uno de 4 a</em><em>&ntilde;</em><em>os y otro de 16 meses. Algunos de vosotros me conocer</em><em>&eacute;</em><em>is por mi blog <a class="blue" href="http://www.mamapsicologainfantil.com">Mi mam&aacute; es psic&oacute;loga infantil</a>, otros por mis colaboraciones en <a class="blue" href="http://babyradio.es/">babyradio</a>, y otros muchos hoy es la primera vez que escuch</em><em>&aacute;</em><em>is mi nombre. </em></p>\r\n<p class="Body1">Cuando el equipo de Infantium me propuso la idea de participar en su blog como pluma invitada, no lo dud&eacute; ni un instante, puesto que me pareci&oacute; un proyecto muy interesante e innovador. Conocedora de la importancia y relevancia de las nuevas tecnolog&iacute;as de la informaci&oacute;n y comunicaci&oacute;n (TIC) en el proceso de aprendizaje de nuestros hijos me declaro una firme defensora y partidaria de su buen uso desde edades bien tempranas.</p>\r\n<p class="Body1">Pocos son los que dudan, hoy por hoy, del reconocido potencial de las TIC para apoyar la educaci&oacute;n, el conocimiento, el entretenimiento y, el desarrollo y formaci&oacute;n de los ni&ntilde;os. Todos, padres, madres, educadores, maestros, profesores deber&iacute;amos ser responsables de fomentar su buen uso en la educaci&oacute;n infantil como una herramienta de aprendizaje y de obtenci&oacute;n de conocimientos.</p>\r\n<p class="Body1">Nuestros hijos nacidos en plena era digital dominan las nuevas&nbsp; tecnolog&iacute;as casi mejor que nosotros. En la gran mayor&iacute;a de hogares hay como m&iacute;nimo un ordenador, una tablet pc&nbsp; o un smartphone. En mi caso, hay de todo, y cuando vi a mi hijo mayor, cuando aun no ten&iacute;a ni 2 a&ntilde;os, desbloqueando mi ipad para buscar una de sus apps favoritas ... lo tuve a&uacute;n m&aacute;s claro.</p>\r\n<p class="Body1">Como madre de dos peque&ntilde;os, uno de 4 a&ntilde;os y otros de16 meses como dec&iacute;a en mi presentaci&oacute;n, utilizo con mis hijos todo el potencial que se ha abierto con la llegada de las tablets pc y los smart phones y por supuesto el pc de toda la vida. Libros interactivos, bits de inteligencia o flashcards, puzzles, blocs de dibujo y pintura, pianos , ... Todo lo que considero que puedo utilizar como apoyo a su aprendizajes es bienvenido en casa.</p>\r\n<p class="Body1">A modo de ejemplo, cuando utilizo alguna de las muchas aplicaciones de bits de inteligencia o flashcards que tengo descargadas en mi tablet pc, s&eacute; positivamente que mi hijo se divierte mientras incrementa su vocabulario. Este tipo de aplicaciones educativas, basadas en la teor&iacute;a de estimulaci&oacute;n temprana del pedagogo Glenn Doman, permiten estimular el lenguaje de los m&aacute;s peque&ntilde;os aumentando su vocabulario.</p>\r\n<p class="Body1">Esto es solo el inicio, imaginar todo el potencial, todo lo que est&aacute; por venir, y la multitud de posibilidades de aprendizaje que las nuevas tecnolog&iacute;as nos brindan. Obviamente, utilizadas como una herramienta m&aacute;s sin dejar de lado otros m&eacute;todos tradicionales. La&nbsp; experimentaci&oacute;n, la manipulaci&oacute;n de objetos, el aprendizaje por descubrimiento, ... son fundamentales para que nuestros ni&ntilde;os desarrollen plenamente sus capacidades y habilidades intelectuales, ling&uuml;&iacute;sticas, de atenci&oacute;n, memoria, l&oacute;gica, de percepci&oacute;n espacial, ... No las desaprovechemos!!! Apostar por ellas y fomentar su buen uso es apostar por el futuro de nuestros hijos.</p>\r\n<p class="Body1"><img class="rounded" style="margin-left: auto; margin-right: auto; display: block;" src="http://cdn.walyou.com/wp-content/uploads//2011/08/Vinci-Tablet-1.jpg" alt="Kid Tablet and Parents" width="550" height="368" /></p>\r\n<p class="Body1">&nbsp;</p>\r\n<p>&nbsp;</p>\r\n<p class="Body1">&nbsp;</p>\r\n<p class="Body1">&nbsp;</p>\r\n<p class="Body1">&nbsp;</p>\r\n<p class="Body1">&nbsp;</p>\r\n<p class="Body1">&nbsp;</p>\r\n<p class="Body1">&nbsp;</p>\r\n<p class="Body1">Sara Tarr&eacute;s Corominas</p>\r\n<p class="Body1"><a href="http://www.mamapsicologainfantil.com/">www.mamapsicologainfantil.com</a></p>	...	...
 3	20 razones por las cuales el arte es bueno para los niños	uploads/zinnia/Van-Gogh-Miro-Warhol.jpg	<p>A medida que se acerca el lanzamiento de nuestra app-beta <strong>&ldquo;Rufi y las pinturas m&aacute;gicas&rdquo;</strong> nos gustar&iacute;a compartir aqu&iacute; el manifiesto de &ldquo;20 razones por las cuales el arte es bueno para los ni&ntilde;os&rdquo;, del museo de arte para ni&ntilde;os <a href="http://mocha.org/">MOCHA</a> (Oakland, California, USA)</p>\r\n<p>En esta Aventura, adem&aacute;s de trabajar la<strong> inteligencia especial&nbsp; y la representaci&oacute;n mental</strong> (de la que hablaremos m&aacute;s adelante) los m&aacute;s peque&ntilde;os podr&aacute;n tener uno de sus primeros acercamientos al arte de tres uno de los artistas que mejor conecta con el ideario infantil (Mir&oacute;), o cuyo abuso de las formas o uso del color agrada especialmente a los m&aacute;s peque&ntilde;os ( Warhol y Van Gogh)</p>\r\n<p>El <strong>arte es esencial en la etapa de educaci&oacute;n infantil</strong>. Como el propio MOCHA indica, muchas investigaciones revelan que el arte es el <strong>primer lenguaje de los ni&ntilde;os, y un estadio preliminar para el desarrollo del lenguaje, la lectura y la escritura.</strong> El aprendizaje de las artes, adem&aacute;s, se ha demostrado tener un gran impacto en el desarrollo f&iacute;sico, emocional y social de los ni&ntilde;os de 0-5 a&ntilde;os. De ah&iacute; la importancia de estimular su pr&aacute;ctica desde fases tan tempranas como los 18 meses.</p>\r\n<p><a href="http://www.biografiasyvidas.com/biografia/f/frobel.htm">Friedrich Froebel</a>, el padre del kindergarten (jard&iacute;n de infancia), cre&iacute;a que los ni&ntilde;os deb&iacute;an involucrarse tanto en la realizaci&oacute;n de su propio arte, como en disfrutar del arte de los dem&aacute;s. Para Froebel, las actividades art&iacute;sticas eran muy importantes no porque permitieran a los profesores detector habilidades inusuales, sino porque permit&iacute;an el desarrollo completo del ni&ntilde;o&rdquo; (Froebel, 1828). Un siglo m&aacute;s tarde, sus creencias siguen siendo hilo conductor del uso del arte en la infancia. &nbsp;</p>\r\n<p>Aparte de ense&ntilde;arles sobre colores, formas, texturas, sonidos y los conceptos de causa y efecto, el arte favorece la representaci&oacute;n de sus experiencias, la descarga de emociones y el desarrollo de las habilidades motoras finas y de coordinaci&oacute;n viso-motriz.&nbsp;</p>\r\n<p><strong>&iexcl;As&iacute; que seguid al tanto! Profesores de arte y expertos en desarrollo os ense&ntilde;ar&aacute;n (tanto a padres como educadores) como involucrar a los m&aacute;s peques en actividades art&iacute;sticas, a la vez que desarrollan tanto habilidades motoras como cognitivas. Y os podr&aacute;n servir de refuerzo a todo el trabajo previo en "Rufi y las pinturas m&aacute;gicas".</strong><strong></strong></p>\r\n<p>&nbsp;&iexcl;Aqu&iacute; os dejamos las 20 razones! (traducci&oacute;n de Norbertha Torres):</p>\r\n<ul class="cms-ul well well-large">\r\n<li><span class="badge badge-info">1</span> El arte <strong>estimula ambos lados</strong> del cerebro.</li>\r\n<li><span class="badge badge-info">2</span> El 33% de los ni&ntilde;os <strong>son aprendices visuales.</strong></li>\r\n<li><span class="badge badge-info">3</span> Hay estudios que demuestran que los ni&ntilde;os que hacen arte <strong>leen mejor y sacan mejores notas </strong>en matem&aacute;ticas y ciencias.</li>\r\n<li><span class="badge badge-info">4</span> Los ni&ntilde;os aprenden <strong>usando sus sentidos</strong> y el arte es ideal en este proceso.</li>\r\n<li><span class="badge badge-info">5</span> Los ni&ntilde;os necesitan un <strong>lugar en la escuela para expresarse.</strong></li>\r\n<li><span class="badge badge-info">6</span> El arte promueve la <strong>autoestima.</strong></li>\r\n<li><span class="badge badge-info">7</span> El arte estimula a los ni&ntilde;os a prestar <strong>m&aacute;s atenci&oacute;n al espacio f&iacute;sico </strong>que los rodea.</li>\r\n<li><span class="badge badge-info">8</span> El arte desarrolla la <strong>coordinaci&oacute;n entre los ojos y las manos</strong>.</li>\r\n<li><span class="badge badge-info">9</span> El arte estimula <strong>el desarrollo perceptivo</strong>.</li>\r\n<li><span class="badge badge-info">10</span> El arte <strong>ense&ntilde;a a pensar dejando finales abiertos</strong>. Representa una cultura de preguntas m&aacute;s que una cultura de respuestas.</li>\r\n<li><span class="badge badge-info">11</span> El arte ense&ntilde;a que puede haber <strong>m&aacute;s de una soluci&oacute;n para un problema.</strong></li>\r\n<li><span class="badge badge-info">12</span> El arte ense&ntilde;a a los ni&ntilde;os a <strong>pensar creativamente para resolver problemas</strong>.</li>\r\n<li><span class="badge badge-info">13</span> Los ni&ntilde;os pueden compartir y reflexionar acerca de sus trabajos de arte y <strong>aprender algo de s&iacute; mismos y el mundo</strong> en el que viven.</li>\r\n<li><span class="badge badge-info">14</span> Cuando el arte est&aacute; integrado a otras materias del programa escolar los ni&ntilde;os se <strong>comprometen m&aacute;s</strong> en el proceso de aprendizaje.</li>\r\n<li><span class="badge badge-info">15</span> En el proceso de hacer arte el ni&ntilde;o est&aacute; <strong>expuesto a diferentes posibilidades</strong>, al descubrimiento, y a la libertad, de esta manera se evita caer en el control y predictibilidad de la educaci&oacute;n convencional encontrada en los Estados Unidos de hoy en d&iacute;a.</li>\r\n<li><span class="badge badge-info">16</span> El <strong>arte nutre el alma humana</strong>. Se siente bien haci&eacute;ndolo.</li>\r\n<li><span class="badge badge-info">17</span> El arte trae <strong>los recursos culturales</strong> de la comunidad dentro de la clase.</li>\r\n<li><span class="badge badge-info">18</span> El <strong>arte involucra a padres y tutores</strong> en la escuela invit&aacute;ndolos a participar como voluntarios en diversas actividades.</li>\r\n<li><span class="badge badge-info">19</span> El arte <strong>proporciona un medio</strong>, un piso en com&uacute;n, para atravesar estereotipos raciales, barreras y prejuicios.</li>\r\n<li><span class="badge badge-info">20</span> El arte <strong>es valioso por s&iacute; mismo.</strong></li>\r\n</ul>	...	art, spatial intelligence, cognitive development, 	20-reasons-art-good-kids-childrens-museum-art	2	f	t	f	2012-11-03 19:49:43+00	2012-11-03 20:52:19.579376+00	\N	\N	f		entry_detail.html	20 Reasons art is good for kids, Children’s Museum of art	20 razones por las cuales el arte es bueno para los niños	<p>As the release of <strong>&ldquo;Rufi and the magic paintings&rdquo;</strong> is closer, we wanted to share &ldquo;20 reasons art is good for kids&rdquo; from <a href="http://mocha.org/">MOCHA</a>, the Chidren&rsquo;s Museum of art (Oakland, CA).</p>\r\n<p>In this adventure, while working spatial intelligence and mental representation patterns, the younger learners can have an approach to the art of the three of the painters that better connect with the imaginary of kids: Andy Warhol, Vincent van Gogh and Joan Mir&oacute;.</p>\r\n<p>Art in childhood education is essential. As MOCHA says: &nbsp;Research has shown that art serves as a child&rsquo;s first language, laying the groundwork for speaking, reading and writing. Arts learning has also been shown to impact children&rsquo;s physical, social and emotional development to children ages 0-5.</p>\r\n<p><a href="http://www.friedrichfroebel.com/">Friedrich Froebel</a>, the father of kindergarten, believed that young children should be involved <strong>in both making their own art and enjoying the art of others.</strong> To Froebel, art activities were important, not because they allowed teachers to <strong>recognize children with unusual abilities</strong>, but because they encouraged each child's "full and all-sided development" (Froebel, 1826). More than a century later, he&rsquo;s totally right.</p>\r\n<p><strong>So, stay tuned. Art teachers and development experts will show you here how to foster the development of</strong> children's aesthetic sense and how to engage children in creative experiences while promoting motor and cognitive development!<strong></strong></p>\r\n<p>Now enjoy the 20 reasons!</p>\r\n<ul class="cms-ul well well-large">\r\n<li><span class="badge badge-info">1</span> Art stimulates <strong>both sides of the brain</strong></li>\r\n<li><span class="badge badge-info">2</span> 33% of children are <strong>visual learners</strong></li>\r\n<li><span class="badge badge-info">3</span>Studies show that children who do art <strong>read better and do better in math &amp; science</strong></li>\r\n<li><span class="badge badge-info">4</span> Children need to <strong>learn through their senses</strong> and art is an excellent way of doing this</li>\r\n<li><span class="badge badge-info">5</span> Children must have a place in school <strong>to express themselves</strong></li>\r\n<li><span class="badge badge-info">6</span> Art <strong>enhances self-esteem</strong></li>\r\n<li><span class="badge badge-info">7</span> Art enhances awareness of the <strong>physical environment</strong></li>\r\n<li><span class="badge badge-info">8</span> Art develops <strong>hand-eye coordination</strong></li>\r\n<li><span class="badge badge-info">9</span> Art enhances <strong>perceptual development</strong></li>\r\n<li><span class="badge badge-info">10</span> Art teachers open-ended thinking.&nbsp; It presents a <strong>culture of questions</strong> rather than a culture of answers</li>\r\n<li><span class="badge badge-info">11</span> Art teaches children that there can be <strong>more than one solution to the same problem</strong></li>\r\n<li><span class="badge badge-info">12</span> Art teaches children how to engage in <strong>creative problem solving</strong></li>\r\n<li><span class="badge badge-info">13</span> Children can share and reflect on their art to <strong>learn about themselves, each other, and the world</strong> in which they live</li>\r\n<li><span class="badge badge-info">14</span> When art is integrated with other curriculum areas children become <strong>more engaged in the learning process</strong></li>\r\n<li><span class="badge badge-info">15</span> In the process of art making a child is presented with <strong>possibility, discovery, and freedom </strong>thereby disrupting the control and predictability of conventional education found in the US today</li>\r\n<li><span class="badge badge-info">16</span> Art <strong>nurtures the human soul</strong> (It feels good doing it, too!)</li>\r\n<li><span class="badge badge-info">17</span> Art brings the community&rsquo;s <strong>cultural resources</strong> into the classroom</li>\r\n<li><span class="badge badge-info">18</span> Art <strong>involves parents and guardians</strong> in school governance and volunteer activities</li>\r\n<li><span class="badge badge-info">19</span> Art provides <strong>a means, a common ground</strong>, to reach across racial stereotypes, barriers, and prejudices</li>\r\n<li><span class="badge badge-info">20</span> Art is valuable for <strong>its own sake!</strong></li>\r\n</ul>	<p>A medida que se acerca el lanzamiento de nuestra app-beta <strong>&ldquo;Rufi y las pinturas m&aacute;gicas&rdquo;</strong> nos gustar&iacute;a compartir aqu&iacute; el manifiesto de &ldquo;20 razones por las cuales el arte es bueno para los ni&ntilde;os&rdquo;, del museo de arte para ni&ntilde;os <a href="http://mocha.org/">MOCHA</a> (Oakland, California, USA)</p>\r\n<p>En esta Aventura, adem&aacute;s de trabajar la<strong> inteligencia especial&nbsp; y la representaci&oacute;n mental</strong> (de la que hablaremos m&aacute;s adelante) los m&aacute;s peque&ntilde;os podr&aacute;n tener uno de sus primeros acercamientos al arte de tres uno de los artistas que mejor conecta con el ideario infantil (Mir&oacute;), o cuyo abuso de las formas o uso del color agrada especialmente a los m&aacute;s peque&ntilde;os ( Warhol y Van Gogh)</p>\r\n<p>El <strong>arte es esencial en la etapa de educaci&oacute;n infantil</strong>. Como el propio MOCHA indica, muchas investigaciones revelan que el arte es el <strong>primer lenguaje de los ni&ntilde;os, y un estadio preliminar para el desarrollo del lenguaje, la lectura y la escritura.</strong> El aprendizaje de las artes, adem&aacute;s, se ha demostrado tener un gran impacto en el desarrollo f&iacute;sico, emocional y social de los ni&ntilde;os de 0-5 a&ntilde;os. De ah&iacute; la importancia de estimular su pr&aacute;ctica desde fases tan tempranas como los 18 meses.</p>\r\n<p><a href="http://www.biografiasyvidas.com/biografia/f/frobel.htm">Friedrich Froebel</a>, el padre del kindergarten (jard&iacute;n de infancia), cre&iacute;a que los ni&ntilde;os deb&iacute;an involucrarse tanto en la realizaci&oacute;n de su propio arte, como en disfrutar del arte de los dem&aacute;s. Para Froebel, las actividades art&iacute;sticas eran muy importantes no porque permitieran a los profesores detector habilidades inusuales, sino porque permit&iacute;an el desarrollo completo del ni&ntilde;o&rdquo; (Froebel, 1828). Un siglo m&aacute;s tarde, sus creencias siguen siendo hilo conductor del uso del arte en la infancia. &nbsp;</p>\r\n<p>Aparte de ense&ntilde;arles sobre colores, formas, texturas, sonidos y los conceptos de causa y efecto, el arte favorece la representaci&oacute;n de sus experiencias, la descarga de emociones y el desarrollo de las habilidades motoras finas y de coordinaci&oacute;n viso-motriz.&nbsp;</p>\r\n<p><strong>&iexcl;As&iacute; que seguid al tanto! Profesores de arte y expertos en desarrollo os ense&ntilde;ar&aacute;n (tanto a padres como educadores) como involucrar a los m&aacute;s peques en actividades art&iacute;sticas, a la vez que desarrollan tanto habilidades motoras como cognitivas. Y os podr&aacute;n servir de refuerzo a todo el trabajo previo en "Rufi y las pinturas m&aacute;gicas".</strong><strong></strong></p>\r\n<p>&nbsp;&iexcl;Aqu&iacute; os dejamos las 20 razones! (traducci&oacute;n de Norbertha Torres):</p>\r\n<ul class="cms-ul well well-large">\r\n<li><span class="badge badge-info">1</span> El arte <strong>estimula ambos lados</strong> del cerebro.</li>\r\n<li><span class="badge badge-info">2</span> El 33% de los ni&ntilde;os <strong>son aprendices visuales.</strong></li>\r\n<li><span class="badge badge-info">3</span> Hay estudios que demuestran que los ni&ntilde;os que hacen arte <strong>leen mejor y sacan mejores notas </strong>en matem&aacute;ticas y ciencias.</li>\r\n<li><span class="badge badge-info">4</span> Los ni&ntilde;os aprenden <strong>usando sus sentidos</strong> y el arte es ideal en este proceso.</li>\r\n<li><span class="badge badge-info">5</span> Los ni&ntilde;os necesitan un <strong>lugar en la escuela para expresarse.</strong></li>\r\n<li><span class="badge badge-info">6</span> El arte promueve la <strong>autoestima.</strong></li>\r\n<li><span class="badge badge-info">7</span> El arte estimula a los ni&ntilde;os a prestar <strong>m&aacute;s atenci&oacute;n al espacio f&iacute;sico </strong>que los rodea.</li>\r\n<li><span class="badge badge-info">8</span> El arte desarrolla la <strong>coordinaci&oacute;n entre los ojos y las manos</strong>.</li>\r\n<li><span class="badge badge-info">9</span> El arte estimula <strong>el desarrollo perceptivo</strong>.</li>\r\n<li><span class="badge badge-info">10</span> El arte <strong>ense&ntilde;a a pensar dejando finales abiertos</strong>. Representa una cultura de preguntas m&aacute;s que una cultura de respuestas.</li>\r\n<li><span class="badge badge-info">11</span> El arte ense&ntilde;a que puede haber <strong>m&aacute;s de una soluci&oacute;n para un problema.</strong></li>\r\n<li><span class="badge badge-info">12</span> El arte ense&ntilde;a a los ni&ntilde;os a <strong>pensar creativamente para resolver problemas</strong>.</li>\r\n<li><span class="badge badge-info">13</span> Los ni&ntilde;os pueden compartir y reflexionar acerca de sus trabajos de arte y <strong>aprender algo de s&iacute; mismos y el mundo</strong> en el que viven.</li>\r\n<li><span class="badge badge-info">14</span> Cuando el arte est&aacute; integrado a otras materias del programa escolar los ni&ntilde;os se <strong>comprometen m&aacute;s</strong> en el proceso de aprendizaje.</li>\r\n<li><span class="badge badge-info">15</span> En el proceso de hacer arte el ni&ntilde;o est&aacute; <strong>expuesto a diferentes posibilidades</strong>, al descubrimiento, y a la libertad, de esta manera se evita caer en el control y predictibilidad de la educaci&oacute;n convencional encontrada en los Estados Unidos de hoy en d&iacute;a.</li>\r\n<li><span class="badge badge-info">16</span> El <strong>arte nutre el alma humana</strong>. Se siente bien haci&eacute;ndolo.</li>\r\n<li><span class="badge badge-info">17</span> El arte trae <strong>los recursos culturales</strong> de la comunidad dentro de la clase.</li>\r\n<li><span class="badge badge-info">18</span> El <strong>arte involucra a padres y tutores</strong> en la escuela invit&aacute;ndolos a participar como voluntarios en diversas actividades.</li>\r\n<li><span class="badge badge-info">19</span> El arte <strong>proporciona un medio</strong>, un piso en com&uacute;n, para atravesar estereotipos raciales, barreras y prejuicios.</li>\r\n<li><span class="badge badge-info">20</span> El arte <strong>es valioso por s&iacute; mismo.</strong></li>\r\n</ul>	...	...
+4	Infantium en el evento de presentación de Windows 8 en Barcelona	uploads/zinnia/presentacion_Windows8.jpg	<p>Aunque un poco tarde, quer&iacute;amos explicaros que&nbsp;Infantium tuvo el honor de ser uno de los asistentes (y ponentes!) en la presentaci&oacute;n de <strong><a href="http://windows.microsoft.com/es-ES/windows/home">Windows8</a></strong> y <strong>Windows Phone 8</strong>&nbsp;en catal&aacute;n que se celebr&oacute; este pasado jueves 8 de noviembre en el <a href="http://www.mediapro.es/esp/sedes_detalle.php?id=1">Auditorio Imagina de Mediapro</a>.</p>\r\n<p>El evento cont&oacute; con la participaci&oacute;n de <strong><a href="http://www.microsoft.com/spain/prensa/biografias/carlos-grau-lara.aspx">Carles Grau</a>,</strong>&nbsp;<strong>Director General de Microsoft en Catalu&ntilde;a, </strong><a href="http://www.linkedin.com/in/carlesflamerich">&nbsp;Carles Flamerich</a>, <strong>Director General de Telecomunicaciones y Sociedad de la Informaci&oacute;n de la Generalitat de Catalu&ntilde;a</strong>, <a href="http://www.bdigital.org/es/informacion/Paginas/DetallesNotaPrensa.aspx?xid=15">Carles Fradera</a>,<strong> Director General de Barcelona Digital Centro Tecnol&ograve;gico</strong>, <a href="http://www.linkedin.com/in/xavierllobera">Xavier Llobera</a>, <strong>Director del <a href="http://www.micproductivity.com/en">Microsoft Innovation Center &ndash; Productivity (MIC Productivity)</a></strong>, <a href="https://mce_host/es/admin/zinnia/entry/add/@tlworker">Jorge C&oacute;rdova</a>, Director de Canal, <a href="http://www.intel.com/">Intel Corporation Iberia</a>, Jose Ignacio Fernandez Moreira, Responsable Consultores Tecnol&oacute;gicos de Grandes Cuentas y <a href="http://www.linkedin.com/in/albertesplugas">Albert Esplugas</a>, Director de Estrat&egrave;gia y Desarrollo de Negocio de Microsoft</p>\r\n<p>Durante el evento se present&oacute; <strong>Windows 8. Para los que todav&iacute;a no lo teng&aacute;is, </strong>sabed que&nbsp;incorpora una nueva y mejorada interfaz de usuario, much&iacute;simas opciones de personalizaci&oacute;n y conexi&oacute;n, y una gran cantidad de aplicaciones. Windows 8 ha tenido m&aacute;s de cuatro millones de ventas en los primeros tres d&iacute;as, y ya est&aacute; disponible en m&aacute;s de mil modelos de tabletas, port&aacute;tiles, convertibles, ultrapot&aacute;tiles o PCs para Windows 8 (como Sony, Lenovo, HP, etc). Adem&aacute;s de la esperad&iacute;sima Surface!</p>\r\n<p>Tambi&eacute;n se present&oacute; <strong>Windows Phone 8</strong>, entre cuyas caracter&iacute;sticas destacar&iacute;a ersonalizaci&oacute;n completa de la pantalla de inicio, acceso a toda la informaci&oacute;n y contenido en tiempo real a trav&eacute;s de las&nbsp;<strong>Live Tiles</strong>, posibilidad de crear espacios privados para compartir contenidos con grupos cerrados (las salas) o el rinc&oacute;n infantil, un entorno adaptado a lo m&ntilde;as peque&ntilde;os para que no puedan interactuar con el resto de informaci&oacute;n del tel&eacute;fono.</p>\r\n<p>En la presentaci&oacute;n, adem&aacute;s, se presentaron algunas de las mejores aplicaciones hechas en Catalu&ntilde;a. Tuvimos la suerte de presentar junto a<a href="http://www.tv3.cat/3alacarta/"><strong> TV3</strong>&nbsp;(televisi&oacute;n a la carta)</a>, <a href="http://www.sage.com/">Sage</a> (con su efactura) y otros emprendedores como<a href="/es/admin/zinnia/entry/add/bismart.es/"> Bismart</a> (biGov). Xavier Llobera tambi&eacute;n present&oacute; otras de las apps para windows8 OKIPOS+ de OKI, MyCo de <a href="http://www.raona.com/">Raona</a>, <a href="http://www.seidor.es">Seidor</a> y su App Seidor doseApp, <a href="/es/admin/zinnia/entry/add/en.softonic.com/">Softonic</a> o <a href="http://www.anuntis.com/">Anuntis</a>.</p>\r\n<p>Para todo el equipo de Infantium fue todo un honor, adem&aacute;s de una maravillosa experiencia, poder no s&oacute;lo asistir, sino presentar en directo nuestro proyecto. Desde que surgi&oacute; la idea, hace aproximadamente un a&ntilde;o, uno de nuestros principales apoyos ha sido Microsoft Ib&eacute;rica. No s&oacute;lo a trav&eacute;s de su programa global para empendedores &nbsp;Bizspark y su extensi&oacute;n para startups de alto crecimiento Bizspark Plus (tenemos suerte de ser uno de los limitados miembros que acceden al programa), sino como se ha volcado todo el equipo (<a href="https://mce_host/es/admin/zinnia/entry/add/@elis3ta">Elisa Garc&iacute;a</a>, <a href="https://mce_host/es/admin/zinnia/entry/add/@LidiaPitzalis">Lidia</a>, Camilo, Luis, etc.) y como han contribuido a hacer realidad la idea, a implementar nuestro proyecto piloto, a favorecer nuestro crecimiento, y a darnos todas las herramientas necesarias para su ejecuci&oacute;n. Sobre todo agradecer a Carlos todo lo que ha significado para nosotros.&nbsp; Como siempre nos gusta decir, uno de los motivos por los que estamos aqu&iacute; es Carles Grau, sin &eacute;l probablemente no habr&iacute;amos llegado hasta aqu&iacute;. Su apoyo incondicional cuando todav&iacute;a &eacute;ramos un powerpoint, su cercan&iacute;a, y sus consejos, han sido fundamentales. As&iacute; que desde aqu&iacute; de nuevo, gracias Carlos!</p>	...	windows 8, presentación, Microsoft, Barcelona, apps	infantium-microsofts-windows-8-launch-presentation-barcelona	2	f	t	t	2012-11-18 04:51:06+00	2012-11-18 05:43:50.59055+00	\N	\N	f		entry_detail.html	Infantium at the Microsoft's Windows 8 launch presentation in Barcelona 	Infantium en el evento de presentación de Windows 8 en Barcelona	<p>Although a bit late, we wanted to share that the Infantium Team was honored to be one of the attendees (and speakers!) to the presentation event of <a href="http://windows.microsoft.com/en-US/windows-8/meet"><strong>Windows8</strong></a> and <strong>Windows Phone 8</strong> in Catalan, held the past Thursday, November 8th, at the <a href="http://www.mediapro.es/esp/sedes_detalle.php?id=1">Mediapro Auditorium <em>Imagina</em>.</a></p>\r\n<p>The event was conducted by Carles Grau, Microsoft in Catalonia and Public Sector Director, Carles Flamerich, General Director of Telecommunications and Information Society of the Generalitat of Catalonia, Carles Fradera, General Director of Barcelona Digital Technology Center, Xavier Llobera<strong>,</strong> Director of the <a href="http://www.micproductivity.com/en">Microsoft Innovation Center - Productivity (MIC Productivity)</a>, <a href="https://mce_host/es/admin/zinnia/entry/add/@tlworker">Jorge Cordova</a>, <span>Reseller Channel Director Spain &amp; Portugal of</span>&nbsp;<a href="http://www.intel.com/">Intel Corporation Iberia</a>, Jose Ignacio Fernandez, Head of Key Accounts and Technology Consultants, and Albert Esplugas, Director of Strategy and Business Development at Microsoft</p>\r\n<p>For those who haven't upgraded to Windows 8, just highlight that it incorporates a new and improved user interface, lots of customization options and connection, and a lot of great applications (the most popular ones, for instance). Windows 8 has had more than four million sales during the first three days, and it is now available in over a thousand models of tablets, notebooks, convertibles, or PCs (like Sony, Lenovo, HP,). And of course, the surface.</p>\r\n<p>During the event Windows Phone 8 was also introduced. With lots of customization features, we&rsquo;d like to highlight the home screen personalization, access to all information and content in real time through the Live Tiles, ability to create private spaces for sharing content with closed groups (rooms ) or the <strong>Children's Corner (or Kid's Corner). This allows the user to customize a set of apps, games and media which they want their children to access. Kids can access this by swiping to the left on the lockscreen.</strong></p>\r\n<p>The presentation also unveiled some of the best apps &ldquo;made in Catalonia&rdquo;. We were fortunate to present the infantium project together with TV3 (VOD), Sage (with e-bill) and other entrepreneurs as Bismart (biGov). Llobera Xavier also presented other than Android for Windows8 OKI OKIPOS +, MYCO of Raona, Seidor and App Seidor doseApp, or Anuntis and <a href="/es/admin/zinnia/entry/add/en.softonic.com/">Softonic</a>.</p>\r\n<p>For the whole team it was a great experience and a big honour to be there. From the first moment that the idea came up about a year ago, one of our main supporters has been Microsoft Ib&eacute;rica. Not only through its global program for entrepreneurs <a href="http://www.microsoft.com/bizspark/">Bizspark</a>, and its extension for high-growth startups Bizspark Plus, but by means of the whole Microsoft team (Elisa Garcia, Lidia, Camilo, Luis, Xavier Llobera, etc.). They have been critical contributing to realize the idea, to implement our pilot project, to facilitate our growth, and give us all the tools needed for execution. But we especially want to thank Carles. As we always like to say, if it wasn't for Carles Grau, we probably would not be here now. His unconditional support when we were just an idea, proximity, and his advice have been critical during the way.</p>\r\n<p>So again, Thanks Carles! :)</p>\r\n<p>&nbsp;</p>	<p>Aunque un poco tarde, quer&iacute;amos explicaros que&nbsp;Infantium tuvo el honor de ser uno de los asistentes (y ponentes!) en la presentaci&oacute;n de <strong><a href="http://windows.microsoft.com/es-ES/windows/home">Windows8</a></strong> y <strong>Windows Phone 8</strong>&nbsp;en catal&aacute;n que se celebr&oacute; este pasado jueves 8 de noviembre en el <a href="http://www.mediapro.es/esp/sedes_detalle.php?id=1">Auditorio Imagina de Mediapro</a>.</p>\r\n<p>El evento cont&oacute; con la participaci&oacute;n de <strong><a href="http://www.microsoft.com/spain/prensa/biografias/carlos-grau-lara.aspx">Carles Grau</a>,</strong>&nbsp;<strong>Director General de Microsoft en Catalu&ntilde;a, </strong><a href="http://www.linkedin.com/in/carlesflamerich">&nbsp;Carles Flamerich</a>, <strong>Director General de Telecomunicaciones y Sociedad de la Informaci&oacute;n de la Generalitat de Catalu&ntilde;a</strong>, <a href="http://www.bdigital.org/es/informacion/Paginas/DetallesNotaPrensa.aspx?xid=15">Carles Fradera</a>,<strong> Director General de Barcelona Digital Centro Tecnol&ograve;gico</strong>, <a href="http://www.linkedin.com/in/xavierllobera">Xavier Llobera</a>, <strong>Director del <a href="http://www.micproductivity.com/en">Microsoft Innovation Center &ndash; Productivity (MIC Productivity)</a></strong>, <a href="https://mce_host/es/admin/zinnia/entry/add/@tlworker">Jorge C&oacute;rdova</a>, Director de Canal, <a href="http://www.intel.com/">Intel Corporation Iberia</a>, Jose Ignacio Fernandez Moreira, Responsable Consultores Tecnol&oacute;gicos de Grandes Cuentas y <a href="http://www.linkedin.com/in/albertesplugas">Albert Esplugas</a>, Director de Estrat&egrave;gia y Desarrollo de Negocio de Microsoft</p>\r\n<p>Durante el evento se present&oacute; <strong>Windows 8. Para los que todav&iacute;a no lo teng&aacute;is, </strong>sabed que&nbsp;incorpora una nueva y mejorada interfaz de usuario, much&iacute;simas opciones de personalizaci&oacute;n y conexi&oacute;n, y una gran cantidad de aplicaciones. Windows 8 ha tenido m&aacute;s de cuatro millones de ventas en los primeros tres d&iacute;as, y ya est&aacute; disponible en m&aacute;s de mil modelos de tabletas, port&aacute;tiles, convertibles, ultrapot&aacute;tiles o PCs para Windows 8 (como Sony, Lenovo, HP, etc). Adem&aacute;s de la esperad&iacute;sima Surface!</p>\r\n<p>Tambi&eacute;n se present&oacute; <strong>Windows Phone 8</strong>, entre cuyas caracter&iacute;sticas destacar&iacute;a ersonalizaci&oacute;n completa de la pantalla de inicio, acceso a toda la informaci&oacute;n y contenido en tiempo real a trav&eacute;s de las&nbsp;<strong>Live Tiles</strong>, posibilidad de crear espacios privados para compartir contenidos con grupos cerrados (las salas) o el rinc&oacute;n infantil, un entorno adaptado a lo m&ntilde;as peque&ntilde;os para que no puedan interactuar con el resto de informaci&oacute;n del tel&eacute;fono.</p>\r\n<p>En la presentaci&oacute;n, adem&aacute;s, se presentaron algunas de las mejores aplicaciones hechas en Catalu&ntilde;a. Tuvimos la suerte de presentar junto a<a href="http://www.tv3.cat/3alacarta/"><strong> TV3</strong>&nbsp;(televisi&oacute;n a la carta)</a>, <a href="http://www.sage.com/">Sage</a> (con su efactura) y otros emprendedores como<a href="/es/admin/zinnia/entry/add/bismart.es/"> Bismart</a> (biGov). Xavier Llobera tambi&eacute;n present&oacute; otras de las apps para windows8 OKIPOS+ de OKI, MyCo de <a href="http://www.raona.com/">Raona</a>, <a href="http://www.seidor.es">Seidor</a> y su App Seidor doseApp, <a href="/es/admin/zinnia/entry/add/en.softonic.com/">Softonic</a> o <a href="http://www.anuntis.com/">Anuntis</a>.</p>\r\n<p>Para todo el equipo de Infantium fue todo un honor, adem&aacute;s de una maravillosa experiencia, poder no s&oacute;lo asistir, sino presentar en directo nuestro proyecto. Desde que surgi&oacute; la idea, hace aproximadamente un a&ntilde;o, uno de nuestros principales apoyos ha sido Microsoft Ib&eacute;rica. No s&oacute;lo a trav&eacute;s de su programa global para empendedores &nbsp;Bizspark y su extensi&oacute;n para startups de alto crecimiento Bizspark Plus (tenemos suerte de ser uno de los limitados miembros que acceden al programa), sino como se ha volcado todo el equipo (<a href="https://mce_host/es/admin/zinnia/entry/add/@elis3ta">Elisa Garc&iacute;a</a>, <a href="https://mce_host/es/admin/zinnia/entry/add/@LidiaPitzalis">Lidia</a>, Camilo, Luis, etc.) y como han contribuido a hacer realidad la idea, a implementar nuestro proyecto piloto, a favorecer nuestro crecimiento, y a darnos todas las herramientas necesarias para su ejecuci&oacute;n. Sobre todo agradecer a Carlos todo lo que ha significado para nosotros.&nbsp; Como siempre nos gusta decir, uno de los motivos por los que estamos aqu&iacute; es Carles Grau, sin &eacute;l probablemente no habr&iacute;amos llegado hasta aqu&iacute;. Su apoyo incondicional cuando todav&iacute;a &eacute;ramos un powerpoint, su cercan&iacute;a, y sus consejos, han sido fundamentales. As&iacute; que desde aqu&iacute; de nuevo, gracias Carlos!</p>	\N	...
 \.
 
 
@@ -4611,6 +5053,7 @@ COPY zinnia_entry_authors (id, entry_id, user_id) FROM stdin;
 16	1	4
 37	2	6
 60	3	4
+69	4	4
 \.
 
 
@@ -4621,6 +5064,7 @@ COPY zinnia_entry_authors (id, entry_id, user_id) FROM stdin;
 COPY zinnia_entry_categories (id, entry_id, category_id) FROM stdin;
 16	2	1
 28	3	2
+37	4	3
 \.
 
 
@@ -4629,6 +5073,8 @@ COPY zinnia_entry_categories (id, entry_id, category_id) FROM stdin;
 --
 
 COPY zinnia_entry_related (id, from_entry_id, to_entry_id) FROM stdin;
+13	4	1
+14	1	4
 \.
 
 
@@ -4640,6 +5086,7 @@ COPY zinnia_entry_sites (id, entry_id, site_id) FROM stdin;
 16	1	1
 37	2	1
 60	3	1
+69	4	1
 \.
 
 
@@ -5052,6 +5499,30 @@ ALTER TABLE ONLY db_chart
 
 
 --
+-- Name: db_chart_uuid_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY db_chart
+    ADD CONSTRAINT db_chart_uuid_key UNIQUE (uuid);
+
+
+--
+-- Name: db_cluster_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY db_cluster
+    ADD CONSTRAINT db_cluster_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: db_cluster_uuid_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY db_cluster
+    ADD CONSTRAINT db_cluster_uuid_key UNIQUE (uuid);
+
+
+--
 -- Name: db_cognitivearea_multiple_int_cognitivearea_id_multipleinte_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -5076,11 +5547,43 @@ ALTER TABLE ONLY db_cognitivearea
 
 
 --
+-- Name: db_cognitivearea_uuid_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY db_cognitivearea
+    ADD CONSTRAINT db_cognitivearea_uuid_key UNIQUE (uuid);
+
+
+--
+-- Name: db_domainarea_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY db_domainarea
+    ADD CONSTRAINT db_domainarea_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: db_domainarea_uuid_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY db_domainarea
+    ADD CONSTRAINT db_domainarea_uuid_key UNIQUE (uuid);
+
+
+--
 -- Name: db_game_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY db_game
     ADD CONSTRAINT db_game_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: db_game_uuid_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY db_game
+    ADD CONSTRAINT db_game_uuid_key UNIQUE (uuid);
 
 
 --
@@ -5092,6 +5595,14 @@ ALTER TABLE ONLY db_gameplay
 
 
 --
+-- Name: db_gameplay_uuid_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY db_gameplay
+    ADD CONSTRAINT db_gameplay_uuid_key UNIQUE (uuid);
+
+
+--
 -- Name: db_gameroute_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -5100,19 +5611,11 @@ ALTER TABLE ONLY db_gameroute
 
 
 --
--- Name: db_indicator_cognitive_areas_indicator_id_cognitivearea_id_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: db_gameroute_uuid_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
-ALTER TABLE ONLY db_indicator_cognitive_areas
-    ADD CONSTRAINT db_indicator_cognitive_areas_indicator_id_cognitivearea_id_key UNIQUE (indicator_id, cognitivearea_id);
-
-
---
--- Name: db_indicator_cognitive_areas_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
---
-
-ALTER TABLE ONLY db_indicator_cognitive_areas
-    ADD CONSTRAINT db_indicator_cognitive_areas_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY db_gameroute
+    ADD CONSTRAINT db_gameroute_uuid_key UNIQUE (uuid);
 
 
 --
@@ -5121,6 +5624,14 @@ ALTER TABLE ONLY db_indicator_cognitive_areas
 
 ALTER TABLE ONLY db_indicator
     ADD CONSTRAINT db_indicator_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: db_indicator_uuid_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY db_indicator
+    ADD CONSTRAINT db_indicator_uuid_key UNIQUE (uuid);
 
 
 --
@@ -5140,11 +5651,35 @@ ALTER TABLE ONLY db_multipleintelligence
 
 
 --
+-- Name: db_multipleintelligence_uuid_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY db_multipleintelligence
+    ADD CONSTRAINT db_multipleintelligence_uuid_key UNIQUE (uuid);
+
+
+--
 -- Name: db_player_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY db_player
     ADD CONSTRAINT db_player_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: db_player_uuid_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY db_player
+    ADD CONSTRAINT db_player_uuid_key UNIQUE (uuid);
+
+
+--
+-- Name: db_rawdata_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY db_rawdata
+    ADD CONSTRAINT db_rawdata_pkey PRIMARY KEY (id);
 
 
 --
@@ -5169,6 +5704,14 @@ ALTER TABLE ONLY db_route_node
 
 ALTER TABLE ONLY db_scene
     ADD CONSTRAINT db_scene_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: db_scene_uuid_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY db_scene
+    ADD CONSTRAINT db_scene_uuid_key UNIQUE (uuid);
 
 
 --
@@ -6073,20 +6616,6 @@ CREATE INDEX db_chart_title ON db_chart USING btree (title);
 
 
 --
--- Name: db_chart_title_en; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX db_chart_title_en ON db_chart USING btree (title_en);
-
-
---
--- Name: db_chart_title_en_like; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX db_chart_title_en_like ON db_chart USING btree (title_en varchar_pattern_ops);
-
-
---
 -- Name: db_chart_title_es; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -6122,6 +6651,41 @@ CREATE INDEX db_chart_type_like ON db_chart USING btree (type varchar_pattern_op
 
 
 --
+-- Name: db_cluster_domain_area_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX db_cluster_domain_area_id ON db_cluster USING btree (domain_area_id);
+
+
+--
+-- Name: db_cluster_name; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX db_cluster_name ON db_cluster USING btree (name);
+
+
+--
+-- Name: db_cluster_name_es; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX db_cluster_name_es ON db_cluster USING btree (name_es);
+
+
+--
+-- Name: db_cluster_name_es_like; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX db_cluster_name_es_like ON db_cluster USING btree (name_es varchar_pattern_ops);
+
+
+--
+-- Name: db_cluster_name_like; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX db_cluster_name_like ON db_cluster USING btree (name varchar_pattern_ops);
+
+
+--
 -- Name: db_cognitivearea_multiple_intelligences_cognitivearea_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -6143,20 +6707,6 @@ CREATE INDEX db_cognitivearea_name ON db_cognitivearea USING btree (name);
 
 
 --
--- Name: db_cognitivearea_name_en; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX db_cognitivearea_name_en ON db_cognitivearea USING btree (name_en);
-
-
---
--- Name: db_cognitivearea_name_en_like; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX db_cognitivearea_name_en_like ON db_cognitivearea USING btree (name_en varchar_pattern_ops);
-
-
---
 -- Name: db_cognitivearea_name_es; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -6175,6 +6725,48 @@ CREATE INDEX db_cognitivearea_name_es_like ON db_cognitivearea USING btree (name
 --
 
 CREATE INDEX db_cognitivearea_name_like ON db_cognitivearea USING btree (name varchar_pattern_ops);
+
+
+--
+-- Name: db_domainarea_cognitive_area_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX db_domainarea_cognitive_area_id ON db_domainarea USING btree (cognitive_area_id);
+
+
+--
+-- Name: db_domainarea_name; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX db_domainarea_name ON db_domainarea USING btree (name);
+
+
+--
+-- Name: db_domainarea_name_es; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX db_domainarea_name_es ON db_domainarea USING btree (name_es);
+
+
+--
+-- Name: db_domainarea_name_es_like; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX db_domainarea_name_es_like ON db_domainarea USING btree (name_es varchar_pattern_ops);
+
+
+--
+-- Name: db_domainarea_name_like; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX db_domainarea_name_like ON db_domainarea USING btree (name varchar_pattern_ops);
+
+
+--
+-- Name: db_game_owner_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX db_game_owner_id ON db_game USING btree (owner_id);
 
 
 --
@@ -6206,17 +6798,10 @@ CREATE INDEX db_gameroute_order ON db_gameroute USING btree ("order");
 
 
 --
--- Name: db_indicator_cognitive_areas_cognitivearea_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: db_indicator_cluster_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE INDEX db_indicator_cognitive_areas_cognitivearea_id ON db_indicator_cognitive_areas USING btree (cognitivearea_id);
-
-
---
--- Name: db_indicator_cognitive_areas_indicator_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX db_indicator_cognitive_areas_indicator_id ON db_indicator_cognitive_areas USING btree (indicator_id);
+CREATE INDEX db_indicator_cluster_id ON db_indicator USING btree (cluster_id);
 
 
 --
@@ -6224,20 +6809,6 @@ CREATE INDEX db_indicator_cognitive_areas_indicator_id ON db_indicator_cognitive
 --
 
 CREATE INDEX db_indicator_name ON db_indicator USING btree (name);
-
-
---
--- Name: db_indicator_name_en; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX db_indicator_name_en ON db_indicator USING btree (name_en);
-
-
---
--- Name: db_indicator_name_en_like; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX db_indicator_name_en_like ON db_indicator USING btree (name_en varchar_pattern_ops);
 
 
 --
@@ -6266,20 +6837,6 @@ CREATE INDEX db_indicator_name_like ON db_indicator USING btree (name varchar_pa
 --
 
 CREATE INDEX db_level_name ON db_level USING btree (name);
-
-
---
--- Name: db_level_name_en; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX db_level_name_en ON db_level USING btree (name_en);
-
-
---
--- Name: db_level_name_en_like; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX db_level_name_en_like ON db_level USING btree (name_en varchar_pattern_ops);
 
 
 --
@@ -6315,20 +6872,6 @@ CREATE INDEX db_level_number ON db_level USING btree (number);
 --
 
 CREATE INDEX db_multipleintelligence_name ON db_multipleintelligence USING btree (name);
-
-
---
--- Name: db_multipleintelligence_name_en; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX db_multipleintelligence_name_en ON db_multipleintelligence USING btree (name_en);
-
-
---
--- Name: db_multipleintelligence_name_en_like; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX db_multipleintelligence_name_en_like ON db_multipleintelligence USING btree (name_en varchar_pattern_ops);
 
 
 --
@@ -6385,20 +6928,6 @@ CREATE INDEX db_scene_level_id ON db_scene USING btree (level_id);
 --
 
 CREATE INDEX db_scene_name ON db_scene USING btree (name);
-
-
---
--- Name: db_scene_name_en; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX db_scene_name_en ON db_scene USING btree (name_en);
-
-
---
--- Name: db_scene_name_en_like; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX db_scene_name_en_like ON db_scene USING btree (name_en varchar_pattern_ops);
 
 
 --
@@ -6868,6 +7397,14 @@ ALTER TABLE ONLY db_chart_indicators
 
 
 --
+-- Name: cluster_id_refs_id_5b7f180f638449fe; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY db_indicator
+    ADD CONSTRAINT cluster_id_refs_id_5b7f180f638449fe FOREIGN KEY (cluster_id) REFERENCES db_cluster(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
 -- Name: cms_cmsplugin_placeholder_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -7156,6 +7693,14 @@ ALTER TABLE ONLY cmsplugin_zinnia_selectedentriesplugin_entries
 
 
 --
+-- Name: cognitive_area_id_refs_id_52aee46a289c7908; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY db_domainarea
+    ADD CONSTRAINT cognitive_area_id_refs_id_52aee46a289c7908 FOREIGN KEY (cognitive_area_id) REFERENCES db_cognitivearea(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
 -- Name: cognitivearea_id_refs_id_2aaae3e2; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -7217,14 +7762,6 @@ ALTER TABLE ONLY db_gameplay
 
 ALTER TABLE ONLY db_gameroute
     ADD CONSTRAINT db_gameroute_game_play_id_fkey FOREIGN KEY (game_play_id) REFERENCES db_gameplay(id) DEFERRABLE INITIALLY DEFERRED;
-
-
---
--- Name: db_indicator_cognitive_areas_cognitivearea_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY db_indicator_cognitive_areas
-    ADD CONSTRAINT db_indicator_cognitive_areas_cognitivearea_id_fkey FOREIGN KEY (cognitivearea_id) REFERENCES db_cognitivearea(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -7340,6 +7877,14 @@ ALTER TABLE ONLY django_comments
 
 
 --
+-- Name: domain_area_id_refs_id_24cc67934f4bf05; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY db_cluster
+    ADD CONSTRAINT domain_area_id_refs_id_24cc67934f4bf05 FOREIGN KEY (domain_area_id) REFERENCES db_domainarea(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
 -- Name: entry_id_refs_id_350895b0; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -7385,14 +7930,6 @@ ALTER TABLE ONLY cms_globalpagepermission_sites
 
 ALTER TABLE ONLY auth_group_permissions
     ADD CONSTRAINT group_id_refs_id_3cea63fe FOREIGN KEY (group_id) REFERENCES auth_group(id) DEFERRABLE INITIALLY DEFERRED;
-
-
---
--- Name: indicator_id_refs_id_cebb9c7b; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY db_indicator_cognitive_areas
-    ADD CONSTRAINT indicator_id_refs_id_cebb9c7b FOREIGN KEY (indicator_id) REFERENCES db_indicator(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -7513,6 +8050,14 @@ ALTER TABLE ONLY newsletter_subscription
 
 ALTER TABLE ONLY newsletter_subscription
     ADD CONSTRAINT newsletter_subscription_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth_user(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: owner_id_refs_id_5fe48f5c5f3eb68; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY db_game
+    ADD CONSTRAINT owner_id_refs_id_5fe48f5c5f3eb68 FOREIGN KEY (owner_id) REFERENCES auth_user(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
