@@ -281,6 +281,7 @@ end
 
 ##########################################################
 # DJANGO SETUP: Set static files
+# Monkey Patch: Restart Postgresql manually to avoid migrations fail miserably in random situations (alive connections)
 ##########################################################
 script "django-app-setup" do
   user "root"
@@ -292,6 +293,7 @@ script "django-app-setup" do
   source /var/www/infantium_portal/env/bin/activate
   cd /var/www/infantium_portal/infantium
   python ./manage.py collectstatic --noinput
+  service postgresql restart
   python ./manage.py syncdb --all
   python ./manage.py migrate --all
   python ./manage.py update_translation_fields
@@ -299,6 +301,8 @@ script "django-app-setup" do
   EOH
   notifies :restart, "service[uwsgi]"
   notifies :restart, "service[nginx]"
+  notifies :restart, "service[pgpool2]", :immediately
+  notifies :restart, "service[postgresql]", :immediately
 end
 
 ##########################################################
