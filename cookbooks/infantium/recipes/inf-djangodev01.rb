@@ -294,8 +294,8 @@ script "django-app-setup" do
   cd /var/www/infantium_portal/infantium
   python ./manage.py collectstatic --noinput
   service postgresql restart
-  python ./manage.py syncdb --all
   python ./manage.py migrate --all
+  python ./manage.py syncdb --noinput
   python ./manage.py update_translation_fields
   deactivate
   EOH
@@ -303,6 +303,7 @@ script "django-app-setup" do
   notifies :restart, "service[nginx]"
   notifies :restart, "service[pgpool2]", :immediately
   notifies :restart, "service[postgresql]", :immediately
+  notifies :restart, "service[memcached]", :immediately
 end
 
 ##########################################################
