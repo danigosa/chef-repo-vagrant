@@ -248,9 +248,9 @@ script "setup-postgresql" do
   interpreter "bash"
   code <<-EOH
   echo "ALTER ROLE postgres PASSWORD 'postgres';" | psql
-  dropdb infantiumdb
-  createdb -E UTF8 infantiumdb
-  psql infantiumdb < /tmp/infantiumdb_dump_chef.dump
+  #dropdb infantiumdb
+  #createdb -E UTF8 infantiumdb
+  #psql infantiumdb < /tmp/infantiumdb_dump_chef.dump
   EOH
   action :run
 end

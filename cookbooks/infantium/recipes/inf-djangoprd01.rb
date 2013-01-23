@@ -2,7 +2,7 @@
 # NODE VARIABLES: Tunning it from here
 ##########################################################
 # Domain DNS
-node[:inf_version] = "www"
+node[:inf_version] = "beta"
 node[:inf_domain] = "infantium.com"
 # Postgresql
 node[:inf_postgre_password] = "postgres"
@@ -242,18 +242,18 @@ end
 # Postgresql start up
 # WARN: It refreshes DB with clean backup every time! make sure you have the correct db dump in chef-repo/database
 ##########################################################
-script "setup-postgresql" do
-  user "postgres"
-  cwd "/var/www"
-  interpreter "bash"
-  code <<-EOH
-  echo "ALTER ROLE postgres PASSWORD 'postgres';" | psql
-  dropdb infantiumdb
-  createdb -E UTF8 infantiumdb
-  psql infantiumdb < /tmp/infantiumdb_dump_chef.dump
-  EOH
-  action :run
-end
+#script "setup-postgresql" do
+  #user "postgres"
+  #cwd "/var/www"
+  #interpreter "bash"
+  #code <<-EOH
+  #echo "ALTER ROLE postgres PASSWORD 'postgres';" | psql
+  #dropdb infantiumdb
+  #createdb -E UTF8 infantiumdb
+  #psql infantiumdb < /tmp/infantiumdb_dump_chef.dump
+  #EOH
+  #action :run
+#end
 
 ##########################################################
 # PGPOOL2 SETUP
@@ -269,7 +269,6 @@ template "/etc/pgpool2/pgpool.conf" do
   mode "0644"
   owner "root"
   group "root"
-  notifies :restart, "service[pgpool2]", :immediately
 end
 
 template "/etc/pgpool2/pool_hba.conf" do
@@ -277,10 +276,12 @@ template "/etc/pgpool2/pool_hba.conf" do
   owner "root"
   group "root"
   notifies :restart, "service[pgpool2]", :immediately
+  notifies :restart, "service[postgresql]", :immediately
 end
 
 ##########################################################
 # DJANGO SETUP: Set static files
+# Monkey Patch: Restart Postgresql manually to avoid migrations fail miserably in random situations (alive connections)
 ##########################################################
 script "django-app-setup" do
   user "root"
@@ -292,13 +293,17 @@ script "django-app-setup" do
   source /var/www/infantium_portal/env/bin/activate
   cd /var/www/infantium_portal/infantium
   python ./manage.py collectstatic --noinput
-  python ./manage.py syncdb --all
+  service postgresql restart
   python ./manage.py migrate --all
+  python ./manage.py syncdb --noinput
   python ./manage.py update_translation_fields
   deactivate
   EOH
   notifies :restart, "service[uwsgi]"
   notifies :restart, "service[nginx]"
+  notifies :restart, "service[pgpool2]", :immediately
+  notifies :restart, "service[postgresql]", :immediately
+  notifies :restart, "service[memcached]", :immediately
 end
 
 ##########################################################
@@ -342,6 +347,17 @@ end
 
 template "/etc/cron.daily/pg_backup.sh" do
   mode "0755"
+  owner "root"
+  group "root"
+end
+
+##########################################################
+# Setup SFTP
+##########################################################
+package "vsftpd"
+
+template "/etc/vsftpd.conf" do
+  mode "0600"
   owner "root"
   group "root"
 end

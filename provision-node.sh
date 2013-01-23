@@ -3,19 +3,24 @@
 set -e
 set -x
 
-user="$1"
-node="$2"
+node="$1"
 
-ssh-copy-id -i ~/.ssh/dani-inf-azure.pub ${user}@${node}
+ssh-copy-id -i ~/.ssh/dani-inf-azure.pub ${node}
 
-scp /etc/apt/trusted.gpg.d/opscode-keyring.gpg ubuntu@${node}:/tmp
+scp /etc/apt/trusted.gpg.d/opscode-keyring.gpg ${node}:/tmp
 
-ssh -t ubuntu@${node} "cat > /tmp/provision.sh" <<'EOF'
+ssh -t ${node} "cat > /tmp/sudoers.sh" <<'EOF'
 #!/bin/bash
 # Allow ubuntu user to execute sudo without prompting password through The Windows Azure Linux Agent
-sudo chmod 666 /etc/sudoers.d/waagent
-sudo echo "ubuntu ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/waagent
-sudo chmod 440 /etc/sudoers.d/waagent
+# MUST BE EXECUTED AS ROOT
+chmod 666 /etc/sudoers.d/waagent
+echo "ubuntu ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/waagent
+chmod 440 /etc/sudoers.d/waagent
+EOF
+
+ssh -t ${node} "cat > /tmp/provision.sh" <<'EOF'
+#!/bin/bash
+sudo bash /tmp/sudoers.sh
 
 # Set up repos for Nginx
 wget http://nginx.org/keys/nginx_signing.key
@@ -23,9 +28,6 @@ sudo apt-key add nginx_signing.key
 sudo add-apt-repository "deb http://nginx.org/packages/ubuntu/ precise nginx"
 # Gives error but should be possibly uncommented in a future
 #sudo add-apt-repository "deb-src http://nginx.org/packages/ubuntu/ precise nginx"
-
-# Set up repos for Postgresql 9.2
-sudo add-apt-repository ppa:pitti/postgresql
 
 # Install chef-client
 echo "deb http://apt.opscode.com/ `lsb_release -cs`-0.10 main" | sudo tee /etc/apt/sources.list.d/opscode.list
@@ -46,4 +48,4 @@ sudo apt-get upgrade
 sudo reboot
 EOF
 
-ssh -t ${user}@${node} bash /tmp/provision.sh
+ssh -t ${node} bash /tmp/provision.sh
