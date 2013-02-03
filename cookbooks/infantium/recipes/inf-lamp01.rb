@@ -2,18 +2,13 @@
 # NODE VARIABLES: Tunning it from here
 ##########################################################
 # Domain DNS
-node[:inf_version] = "alpha"
+node[:inf_version] = "gamma"
 node[:inf_domain] = "infantium.com"
-# Postgresql
-node[:inf_postgre_password] = "postgres"
-node[:inf_postgre_hostname] = node[:inf_version] + "." + node[:inf_domain]
-node[:inf_postgre_max_cons] = 100
-node[:inf_postgre_shared_buff] = 16
+
 # Memcached
 node[:inf_memcached_mem] = 512
 node[:inf_memcached_cons] = 2048
-# uWSGI
-node[:inf_uwsgi_workers] = 4
+
 
 ##########################################################
 # START PROVISIONING

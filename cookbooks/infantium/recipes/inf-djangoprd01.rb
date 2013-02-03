@@ -163,6 +163,7 @@ script "pull_source" do
   interpreter "bash"
   code <<-EOH
   cd /var/www/infantium_portal
+  cp -rf infantium /tmp/
   rm -rf infantium
   unzip /tmp/infantium.zip -d /var/www/infantium_portal/infantium
   mv /var/www/infantium_portal/infantium/infantium/settings.py /var/www/infantium_portal/infantium/infantium/settings.dev.py

@@ -41,6 +41,9 @@ sudo install -d -o ${user} -g ${user} /srv/chef-solo
 # Install GIT
 sudo apt-get git
 
+# Install Taskel
+sudo apt-get install tasksel
+
 # Upgrade System
 sudo apt-get upgrade
 
