@@ -162,11 +162,10 @@ script "pull_source" do
   cwd "/var/www"
   interpreter "bash"
   code <<-EOH
-  cd /tmp/
+  cd /var/www/infantium_portal
+  cp -rf infantium /tmp/
   rm -rf infantium
   unzip /tmp/infantium.zip -d /var/www/infantium_portal/infantium
-  cd /var/www/infantium_portal
-  cp -Rf infantium .
   mv /var/www/infantium_portal/infantium/infantium/settings.py /var/www/infantium_portal/infantium/infantium/settings.dev.py
   mv /var/www/infantium_portal/infantium/infantium/settings.prod.py /var/www/infantium_portal/infantium/infantium/settings.py
   EOH
@@ -244,18 +243,18 @@ end
 # Postgresql start up
 # WARN: It refreshes DB with clean backup every time! make sure you have the correct db dump in chef-repo/database
 ##########################################################
-script "setup-postgresql" do
-  user "postgres"
-  cwd "/var/www"
-  interpreter "bash"
-  code <<-EOH
-  echo "ALTER ROLE postgres PASSWORD 'postgres';" | psql
+#script "setup-postgresql" do
+  #user "postgres"
+  #cwd "/var/www"
+  #interpreter "bash"
+  #code <<-EOH
+  #echo "ALTER ROLE postgres PASSWORD 'postgres';" | psql
   #dropdb infantiumdb
   #createdb -E UTF8 infantiumdb
   #psql infantiumdb < /tmp/infantiumdb_dump_chef.dump
-  EOH
-  action :run
-end
+  #EOH
+  #action :run
+#end
 
 ##########################################################
 # PGPOOL2 SETUP
@@ -294,6 +293,9 @@ script "django-app-setup" do
   unzip /tmp/media.zip -d /var/www/infantium_portal/infantium/media
   source /var/www/infantium_portal/env/bin/activate
   cd /var/www/infantium_portal/infantium
+  mkdir logs
+  touch logs/django.log
+  touch logs/django_request.log
   python ./manage.py collectstatic --noinput
   service postgresql restart
   python ./manage.py migrate --all
@@ -317,7 +319,6 @@ script "django-app-cleanup" do
   interpreter "bash"
   code <<-EOH
   sudo rm -rf media infantium/media
-  sudo truncate -s 0 infantium/logs/*.log
   EOH
 end
 

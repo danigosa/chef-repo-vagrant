@@ -2,7 +2,7 @@
 # NODE VARIABLES: Tunning it from here
 ##########################################################
 # Domain DNS
-node[:inf_version] = "beta"
+node[:inf_version] = "www"
 node[:inf_domain] = "infantium.com"
 # Postgresql
 node[:inf_postgre_password] = "postgres"
@@ -293,6 +293,9 @@ script "django-app-setup" do
   unzip /tmp/media.zip -d /var/www/infantium_portal/infantium/media
   source /var/www/infantium_portal/env/bin/activate
   cd /var/www/infantium_portal/infantium
+  mkdir logs
+  touch logs/django.log
+  touch logs/django_request.log
   python ./manage.py collectstatic --noinput
   service postgresql restart
   python ./manage.py migrate --all
@@ -316,7 +319,6 @@ script "django-app-cleanup" do
   interpreter "bash"
   code <<-EOH
   sudo rm -rf media infantium/media
-  sudo truncate -s 0 infantium/logs/*.log
   EOH
 end
 
