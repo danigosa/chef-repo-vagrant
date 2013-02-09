@@ -243,18 +243,18 @@ end
 # Postgresql start up
 # WARN: It refreshes DB with clean backup every time! make sure you have the correct db dump in chef-repo/database
 ##########################################################
-#script "setup-postgresql" do
-  #user "postgres"
-  #cwd "/var/www"
-  #interpreter "bash"
-  #code <<-EOH
-  #echo "ALTER ROLE postgres PASSWORD 'postgres';" | psql
-  #dropdb infantiumdb
-  #createdb -E UTF8 infantiumdb
-  #psql infantiumdb < /tmp/infantiumdb_dump_chef.dump
-  #EOH
-  #action :run
-#end
+script "setup-postgresql" do
+  user "postgres"
+  cwd "/var/www"
+  interpreter "bash"
+  code <<-EOH
+  echo "ALTER ROLE postgres PASSWORD 'postgres';" | psql
+  dropdb infantiumdb
+  createdb -E UTF8 infantiumdb
+  psql infantiumdb < /tmp/infantiumdb_dump_chef.dump
+  EOH
+  action :run
+end
 
 ##########################################################
 # PGPOOL2 SETUP

@@ -9,7 +9,7 @@ domain="cloudapp.net"
 rsync -a $(dirname $0)/ ${user}@${node}.${domain}:/srv/chef-solo
 
 #Provide fresh git source copy
-git archive --format zip --output /tmp/infantium.zip --remote ssh://git@bitbucket.org/danigosa/infantium-repo.git master
+git archive --format zip --output /tmp/infantium.zip --remote git@bitbucket.org:infantiumdevteam/infantium-repo.git master
 scp /tmp/infantium.zip ${node}:/tmp
 
 #Provide media folder
