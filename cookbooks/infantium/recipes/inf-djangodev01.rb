@@ -249,9 +249,9 @@ script "setup-postgresql" do
   interpreter "bash"
   code <<-EOH
   echo "ALTER ROLE postgres PASSWORD 'postgres';" | psql
-  dropdb infantiumdb
-  createdb -E UTF8 infantiumdb
-  psql infantiumdb < /tmp/infantiumdb_dump_chef.dump
+  #dropdb infantiumdb
+  #createdb -E UTF8 infantiumdb
+  #psql infantiumdb < /tmp/infantiumdb_dump_chef.dump
   EOH
   action :run
 end
@@ -298,7 +298,7 @@ script "django-app-setup" do
   touch logs/django_request.log
   python ./manage.py collectstatic --noinput
   service postgresql restart
-  python ./manage.py migrate --all
+  python ./manage.py migrate --all --delete-ghost-migrations
   python ./manage.py syncdb --noinput
   python ./manage.py update_translation_fields
   deactivate
