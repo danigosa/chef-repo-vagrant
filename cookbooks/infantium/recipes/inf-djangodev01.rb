@@ -8,7 +8,11 @@ node[:inf_domain] = "infantium.com"
 node[:inf_postgre_password] = "postgres"
 node[:inf_postgre_hostname] = node[:inf_version] + "." + node[:inf_domain]
 node[:inf_postgre_max_cons] = 100
-node[:inf_postgre_shared_buff] = 16
+node[:inf_postgre_shared_buff] = 256
+# SHMMAX
+node[:inf_postgre_max_cons] = 100
+node[:inf_shmmax] = 17179869184
+node[:inf_shmmall] = 4194304
 # Memcached
 node[:inf_memcached_mem] = 512
 node[:inf_memcached_cons] = 2048
@@ -221,16 +225,22 @@ template "/etc/postgresql/9.1/main/pg_hba.conf" do
 end
 
 # Set enough SHM for postgresqld
+template "/etc/rc.local" do
+  owner "root"
+  group "root"
+  mode "0755"
+end
+
 script "set_SHMMAX_kernel" do
   user "root"
   cwd "/var/www"
   interpreter "bash"
   code <<-EOH
-  sudo sysctl -w kernel.shmmax=17179869184
-  sudo sysctl -w kernel.shmall=4194304
+  sudo update-rc.d -f uwsgi disable
+  sudo sysctl -w kernel.shmmax=node[:inf_shmmax]
+  sudo sysctl -w kernel.shmall=node[:inf_shmmall]
   sudo sysctl -p /etc/sysctl.conf
   EOH
-  notifies :restart, "service[postgresql]", :immediately
 end
 
 # From https://github.com/opscode-cookbooks/postgresql/blob/master/recipes/server.rb
