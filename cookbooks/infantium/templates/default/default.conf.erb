@@ -12,11 +12,6 @@ server {
     location /static {
         alias /var/www/infantium_portal/infantium/static;
     }
-    location ~* /blog {
-        if ($scheme = https) {
-                rewrite ^(.*)? http://$server_name$request_uri? permanent;
-        }
-    }
     location / {
         include     uwsgi_params;
         uwsgi_pass  unix:/tmp/uwsgi.sock;
