@@ -6,7 +6,7 @@ node="$1"
 user="ubuntu"
 domain="cloudapp.net"
 
-rsync -v -a $(dirname $0)/ ${user}@${node}.${domain}:/srv/chef-solo >debug.log 2>&1
+rsync -a $(dirname $0)/ ${user}@${node}.${domain}:/srv/chef-solo
 
 #Provide fresh git source copy
 git archive --format zip --output /tmp/infantium.zip --remote git@bitbucket.org:infantiumdevteam/infantium-repo.git master
