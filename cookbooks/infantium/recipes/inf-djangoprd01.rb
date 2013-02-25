@@ -233,6 +233,13 @@ script "set_SHMMAX_kernel" do
   notifies :restart, "service[postgresql]", :immediately
 end
 
+# Set enough SHM for postgresqld
+template "/etc/rc.local" do
+  owner "root"
+  group "root"
+  mode "0755"
+end
+
 # From https://github.com/opscode-cookbooks/postgresql/blob/master/recipes/server.rb
 #
 # Default PostgreSQL install has 'ident' checking on unix user 'postgres'
