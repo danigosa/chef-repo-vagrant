@@ -1,9 +1,4 @@
 server {
-    server_name  infantium.com;
-    return       301 http://<%= node[:inf_version] %>.infantium.com$request_uri;
-}
-
-server {
     listen              80;
     listen              443 ssl;
     ssl_certificate     /usr/local/nginx/conf/sslchain.crt;

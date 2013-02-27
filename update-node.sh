@@ -3,10 +3,8 @@
 set -e
 
 node="$1"
-user="ubuntu"
-domain="cloudapp.net"
 
-rsync -a $(dirname $0)/ ${user}@${node}.${domain}:/srv/chef-solo
+rsync -a $(dirname $0)/ ${node}:/srv/chef-solo
 
 #Provide fresh git source copy
 git archive --format zip --output /tmp/infantium.zip --remote git@bitbucket.org:infantiumdevteam/infantium-repo.git master

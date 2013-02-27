@@ -305,7 +305,7 @@ script "django-app-setup" do
   touch logs/django_request.log
   python ./manage.py collectstatic --noinput
   service postgresql restart
-  python ./manage.py migrate --all
+  python ./manage.py migrate --all --delete-ghost-migrations
   python ./manage.py syncdb --noinput
   python ./manage.py update_translation_fields
   deactivate

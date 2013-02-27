@@ -12,9 +12,11 @@
 # By default this script does nothing.
 
 sudo sysctl -w kernel.shmmax=<%= node[:inf_shmmax]  =%>
+
 sudo sysctl -w kernel.shmall=<%= node[:inf_shmmall]  =%>
+
 sudo service postgresql restart
-sudo service uwgsi restart
+sudo service uwsgi restart
 sudo service nginx restart
 
 exit 0

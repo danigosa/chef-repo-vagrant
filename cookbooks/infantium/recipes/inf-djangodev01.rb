@@ -4,11 +4,6 @@
 # Domain DNS
 node[:inf_version] = "alpha"
 node[:inf_domain] = "infantium.com"
-# Postgresql
-node[:inf_postgre_password] = "postgres"
-node[:inf_postgre_hostname] = node[:inf_version] + "." + node[:inf_domain]
-node[:inf_postgre_max_cons] = 100
-node[:inf_postgre_shared_buff] = 256
 # SHMMAX
 node[:inf_postgre_max_cons] = 100
 node[:inf_shmmax] = 17179869184
@@ -18,6 +13,8 @@ node[:inf_memcached_mem] = 512
 node[:inf_memcached_cons] = 2048
 # uWSGI
 node[:inf_uwsgi_workers] = 4
+# Settings
+node[:settings] = "settings.dev.py"
 
 ##########################################################
 # START PROVISIONING
@@ -124,7 +121,6 @@ script "install_virtualenv" do
   mkdir -p /var/www/infantium_portal
   cd /var/www/infantium_portal
   sudo pip install virtualenv
-# rm -rf env
   virtualenv env
   EOH
 end
@@ -168,10 +164,9 @@ script "pull_source" do
   code <<-EOH
   cd /var/www/infantium_portal
   cp -rf infantium /tmp/
-  rm -rf infantium
-  unzip /tmp/infantium.zip -d /var/www/infantium_portal/infantium
-  mv /var/www/infantium_portal/infantium/infantium/settings.py /var/www/infantium_portal/infantium/infantium/settings.dev.py
-  mv /var/www/infantium_portal/infantium/infantium/settings.prod.py /var/www/infantium_portal/infantium/infantium/settings.py
+  unzip -o /tmp/infantium.zip -d /var/www/infantium_portal/infantium
+  mv /var/www/infantium_portal/infantium/infantium/settings.py /var/www/infantium_portal/infantium/infantium/settings.back.py
+  mv /var/www/infantium_portal/infantium/infantium/#{node[:settings]} /var/www/infantium_portal/infantium/infantium/settings.py
   EOH
 end
 
@@ -199,100 +194,7 @@ script "install_django" do
 end
 
 ##########################################################
-# INSTALL POSTGRESQL: And automated database backup
-##########################################################
-package "postgresql"
-package "postgresql-contrib"
-
-service "postgresql" do
-  supports :restart => true, :status => true, :reload => false
-  start_command "sudo service postgresql start"
-  stop_command "sudo service postgresql stop"
-  restart_command "sudo service postgresql restart"
-  status_command "sudo service postgresql status"
-end
-
-template "/etc/postgresql/9.1/main/postgresql.conf" do
-  owner "postgres"
-  group "postgres"
-  mode "0600"
-end
-
-template "/etc/postgresql/9.1/main/pg_hba.conf" do
-  owner "postgres"
-  group "postgres"
-  mode "0600"
-end
-
-# Set enough SHM for postgresqld
-template "/etc/rc.local" do
-  owner "root"
-  group "root"
-  mode "0755"
-end
-
-script "set_SHMMAX_kernel" do
-  user "root"
-  cwd "/var/www"
-  interpreter "bash"
-  code <<-EOH
-  sudo update-rc.d -f uwsgi disable
-  sudo sysctl -w kernel.shmmax=node[:inf_shmmax]
-  sudo sysctl -w kernel.shmall=node[:inf_shmmall]
-  sudo sysctl -p /etc/sysctl.conf
-  EOH
-end
-
-# From https://github.com/opscode-cookbooks/postgresql/blob/master/recipes/server.rb
-#
-# Default PostgreSQL install has 'ident' checking on unix user 'postgres'
-# and 'md5' password checking with connections from 'localhost'. This script
-# runs as user 'postgres', so we can execute the 'role' and 'database' resources
-# as 'root' later on, passing the below credentials in the PG client.
-##########################################################
-# Postgresql start up
-# WARN: It refreshes DB with clean backup every time! make sure you have the correct db dump in chef-repo/database
-##########################################################
-script "setup-postgresql" do
-  user "postgres"
-  cwd "/var/www"
-  interpreter "bash"
-  code <<-EOH
-  echo "ALTER ROLE postgres PASSWORD 'postgres';" | psql
-  #dropdb infantiumdb
-  #createdb -E UTF8 infantiumdb
-  #psql infantiumdb < /tmp/infantiumdb_dump_chef.dump
-  EOH
-  action :run
-end
-
-##########################################################
-# PGPOOL2 SETUP
-##########################################################
-package "pgpool2"
-
-service "pgpool2" do
-  supports :restart => true, :reload => true
-  action :enable
-end
-
-template "/etc/pgpool2/pgpool.conf" do
-  mode "0644"
-  owner "root"
-  group "root"
-end
-
-template "/etc/pgpool2/pool_hba.conf" do
-  mode "0644"
-  owner "root"
-  group "root"
-  notifies :restart, "service[pgpool2]", :immediately
-  notifies :restart, "service[postgresql]", :immediately
-end
-
-##########################################################
 # DJANGO SETUP: Set static files
-# Monkey Patch: Restart Postgresql manually to avoid migrations fail miserably in random situations (alive connections)
 ##########################################################
 script "django-app-setup" do
   user "root"
@@ -307,7 +209,6 @@ script "django-app-setup" do
   touch logs/django.log
   touch logs/django_request.log
   python ./manage.py collectstatic --noinput
-  service postgresql restart
   python ./manage.py migrate --all --delete-ghost-migrations
   python ./manage.py syncdb --noinput
   python ./manage.py update_translation_fields
@@ -315,9 +216,17 @@ script "django-app-setup" do
   EOH
   notifies :restart, "service[uwsgi]"
   notifies :restart, "service[nginx]"
-  notifies :restart, "service[pgpool2]", :immediately
-  notifies :restart, "service[postgresql]", :immediately
   notifies :restart, "service[memcached]", :immediately
+end
+
+##########################################################
+# Start Up Scripts
+##########################################################
+# Set init params
+template "/etc/rc.local" do
+  owner "root"
+  group "root"
+  mode "0755"
 end
 
 ##########################################################
@@ -344,24 +253,6 @@ script "django-app-permissions" do
   sudo chown -R $USER:nginx /var/www/infantium_portal
   sudo chmod -R g+w /var/www/infantium_portal
   EOH
-end
-
-##########################################################
-# Automated backuping
-##########################################################
-script "pg_backup_infantiumdb-setup" do
-  user "root"
-  cwd "/var/www"
-  interpreter "bash"
-  code <<-EOH
-  sudo mkdir -p /var/backups/database/postgresql/pg_backup_infantiumdb
-  EOH
-end
-
-template "/etc/cron.daily/pg_backup.sh" do
-  mode "0755"
-  owner "root"
-  group "root"
 end
 
 ##########################################################

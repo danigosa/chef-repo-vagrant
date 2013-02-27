@@ -3,6 +3,7 @@
 set -e
 set -x
 
+user="ubuntu"
 node="$1"
 
 ssh-copy-id -i ~/.ssh/dani-inf-azure.pub ${node}

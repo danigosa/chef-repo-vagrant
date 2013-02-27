@@ -2,13 +2,16 @@
 # NODE VARIABLES: Tunning it from here
 ##########################################################
 # Domain DNS
-node[:inf_version] = "alpha"
+node[:inf_version] = "sqldev"
 node[:inf_domain] = "infantium.com"
 # Postgresql
 node[:inf_postgre_password] = "postgres"
 node[:inf_postgre_hostname] = node[:inf_version] + "." + node[:inf_domain]
 node[:inf_postgre_max_cons] = 200
 node[:inf_postgre_shared_buff] = 1024
+# SHMMAX
+node[:inf_shmmax] = 17179869184
+node[:inf_shmmall] = 4194304
 
 ##########################################################
 # START PROVISIONING
@@ -48,7 +51,6 @@ end
 # Set enough SHM for postgresqld
 script "set_SHMMAX_kernel" do
   user "root"
-  cwd "/var/www"
   interpreter "bash"
   code <<-EOH
   sudo sysctl -w kernel.shmmax=17179869184
@@ -56,6 +58,13 @@ script "set_SHMMAX_kernel" do
   sudo sysctl -p /etc/sysctl.conf
   EOH
   notifies :restart, "service[postgresql]", :immediately
+end
+
+# Set enough SHM for postgresqld
+template "/etc/rc.local" do
+  owner "root"
+  group "root"
+  mode "0755"
 end
 
 # From https://github.com/opscode-cookbooks/postgresql/blob/master/recipes/server.rb
@@ -70,7 +79,6 @@ end
 ##########################################################
 script "setup-postgresql" do
   user "postgres"
-  cwd "/var/www"
   interpreter "bash"
   code <<-EOH
   echo "ALTER ROLE postgres PASSWORD 'postgres';" | psql
@@ -110,7 +118,6 @@ end
 ##########################################################
 script "pg_backup_infantiumdb-setup" do
   user "root"
-  cwd "/var/www"
   interpreter "bash"
   code <<-EOH
   sudo mkdir -p /var/backups/database/postgresql/pg_backup_infantiumdb
@@ -119,17 +126,6 @@ end
 
 template "/etc/cron.daily/pg_backup.sh" do
   mode "0755"
-  owner "root"
-  group "root"
-end
-
-##########################################################
-# Setup SFTP
-##########################################################
-package "vsftpd"
-
-template "/etc/vsftpd.conf" do
-  mode "0600"
   owner "root"
   group "root"
 end
