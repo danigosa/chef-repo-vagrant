@@ -2,7 +2,7 @@
 # NODE VARIABLES: Tunning it from here
 ##########################################################
 # Domain DNS
-node[:inf_version] = "sqldev"
+node[:inf_version] = "sql"
 node[:inf_domain] = "infantium.com"
 # Postgresql
 node[:inf_postgre_password] = "postgres"

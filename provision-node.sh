@@ -40,7 +40,7 @@ sudo apt-get update
 sudo apt-get install chef opscode-keyring
 
 # Set up remote chef-solo
-sudo install -d -o ${user} -g ${user} /srv/chef-solo
+sudo install -d -o ubuntu -g ubuntu /srv/chef-solo
 
 # Install GIT
 sudo apt-get git

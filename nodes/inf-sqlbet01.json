@@ -1,6 +1,6 @@
 {
     "run_list": [
         "recipe[infantium::ssh-config]",
-        "recipe[infantium::inf-djangodev02]"
+        "recipe[infantium::inf-sqldev]"
     ]
 }

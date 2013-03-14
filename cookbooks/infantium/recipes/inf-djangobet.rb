@@ -2,7 +2,7 @@
 # NODE VARIABLES: Tunning it from here
 ##########################################################
 # Domain DNS
-node[:inf_version] = "alpha"
+node[:inf_version] = "beta"
 node[:inf_domain] = "infantium.com"
 # SHMMAX
 node[:inf_postgre_max_cons] = 100
@@ -14,7 +14,7 @@ node[:inf_memcached_cons] = 2048
 # uWSGI
 node[:inf_uwsgi_workers] = 4
 # Settings
-node[:settings] = "settings.dev.py"
+node[:settings] = "settings.bet.py"
 
 ##########################################################
 # START PROVISIONING
