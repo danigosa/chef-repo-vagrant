@@ -27,6 +27,7 @@ ssh -t ${node} "cat > /tmp/iptables.firewall.rules" <<'EOF'
 -A INPUT -p tcp --dport 5433 -j ACCEPT
 #  Allow MONGODB connections from anywhere
 -A INPUT -p tcp --dport 27017 -j ACCEPT
+-A INPUT -p tcp --dport 28017 -j ACCEPT
 
 
 #  Allow SSH connections
