@@ -164,6 +164,7 @@ script "pull_source" do
   code <<-EOH
   cd /var/www/infantium_portal
   cp -rf infantium /tmp/
+  rm -rf /var/www/infantium_portal/infantium
   unzip -o /tmp/infantium.zip -d /var/www/infantium_portal/infantium
   mv /var/www/infantium_portal/infantium/infantium/settings.py /var/www/infantium_portal/infantium/infantium/settings.back.py
   mv /var/www/infantium_portal/infantium/infantium/#{node[:settings]} /var/www/infantium_portal/infantium/infantium/settings.py

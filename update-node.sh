@@ -3,11 +3,16 @@
 set -e
 
 node="$1"
+branch="$2"
+
+if [[ -z "$branch" ]]; then
+   branch="master"
+fi
 
 rsync -a $(dirname $0)/ ${node}:/srv/chef-solo
 
 #Provide fresh git source copy
-git archive --format zip --output /tmp/infantium.zip --remote git@bitbucket.org:infantiumdevteam/infantium-repo.git master
+git archive --format zip --output /tmp/infantium.zip --remote git@bitbucket.org:infantiumdevteam/infantium-repo.git ${branch}
 scp /tmp/infantium.zip ${node}:/tmp
 
 #Provide media folder
