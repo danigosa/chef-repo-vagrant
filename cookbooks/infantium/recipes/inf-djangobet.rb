@@ -171,7 +171,6 @@ script "pull_source" do
   EOH
 end
 
-
 ##########################################################
 # INSTALL DJANGO: And requirements
 ##########################################################
@@ -181,13 +180,17 @@ package "python-lxml"
 package "libxml2-dev"
 package "libxslt-dev"
 package "gettext"
+package "libjpeg-dev"
+package "libfreetype6-dev"
+package "zlib1g-dev"
+package "libpng12-dev"
+
 
 script "install_django" do
   user "root"
   cwd "/var/www"
   interpreter "bash"
   code <<-EOH
-  sudo apt-get install libjpeg libjpeg-dev libfreetype6 libfreetype6-dev zlib1g-dev
   source /var/www/infantium_portal/env/bin/activate
   pip install -r /var/www/infantium_portal/infantium/requirements.txt
   deactivate
