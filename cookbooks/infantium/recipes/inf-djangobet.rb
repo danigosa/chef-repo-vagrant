@@ -171,10 +171,14 @@ script "pull_source" do
   EOH
 end
 
+
 ##########################################################
-# INSTALL DJANGO: And requirements
+# INSTALL DJANGO: Previous OS stuff
 ##########################################################
+package "build-essential"
+package "g++"
 package "python-dev"
+package "python2.7-dev"
 package "libpq-dev"
 package "python-lxml"
 package "libxml2-dev"
@@ -184,8 +188,43 @@ package "libjpeg-dev"
 package "libfreetype6-dev"
 package "zlib1g-dev"
 package "libpng12-dev"
+package "unixodbc-dev"
+package "unixodbc-bin"
+package "libssl-dev"
+package "libssl1.0.0"
+package "libssl1.0.0-dbg"
+package "git"
 
+##########################################################
+# DJANGO SETUP: Set static files
+##########################################################
+=begin
+script "install_SQLServerDriver" do
+  user "root"
+  cwd "/var/www"
+  interpreter "bash"
+  code <<-EOH
+  cd /tmp/
+  wget ftp://ftp.unixodbc.org/pub/unixODBC/unixODBC-2.3.0.tar.gz
+  tar xvf unixODBC-2.3.0.tar.gz
+  wget http://download.microsoft.com/download/6/A/B/6AB27E13-46AE-4CE9-AFFD-406367CADC1D/Linux6/sqlncli-11.0.1790.0.tar.gz
+  tar xvf sqlncli-11.0.1790.0.tar.gz
+  cd unixODBC-2.3.0/
+  ./configure --disable-gui --disable-drivers --enable-iconv --with-iconv-char-enc=UTF8 --with-iconv-ucode-enc=UTF16LE
+  sudo make install
+  cd ..
+  sudo ln -nfs /lib/x86_64-linux-gnu/libssl.so.1.0.0 /usr/lib/libssl.so.10
+  sudo ln -nfs /lib/x86_64-linux-gnu/libcrypto.so.1.0.0 /usr/lib/libcrypto.so.10
+  sudo ldconfig /usr/local/lib
+  cd sqlncli-11.0.1790.0/
+  sudo bash ./install.sh install --force
+  EOH
+end
+=end
 
+##########################################################
+# DJANGO SETUP: Set requirements
+##########################################################
 script "install_django" do
   user "root"
   cwd "/var/www"
@@ -206,13 +245,13 @@ script "django-app-setup" do
   interpreter "bash"
   code <<-EOH
   sudo -s
-  unzip /tmp/media.zip -d /var/www/infantium_portal/infantium/media
+  #unzip /tmp/media.zip -d /var/www/infantium_portal/infantium/media
   source /var/www/infantium_portal/env/bin/activate
   cd /var/www/infantium_portal/infantium
   mkdir logs
   touch logs/django.log
   touch logs/django_request.log
-  python ./manage.py collectstatic --noinput
+  #python ./manage.py collectstatic --noinput
   python ./manage.py migrate --all --delete-ghost-migrations
   python ./manage.py syncdb --noinput
   python ./manage.py update_translation_fields
