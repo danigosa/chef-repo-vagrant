@@ -48,7 +48,6 @@ script "set_SHMMAX_kernel" do
 end
 
 package "mongodb-10gen"
-package "mongodb-clients"
 
 service "mongodb" do
   supports :restart => true, :status => true, :reload => false

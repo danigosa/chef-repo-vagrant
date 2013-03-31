@@ -109,6 +109,27 @@ service "memcached" do
 end
 
 ##########################################################
+# INSTALL RABBITMQ-SERVER: And creates user and vhost
+##########################################################
+package "rabbitmq-server"
+
+service "rabbitmq-server" do
+  supports :restart => true, :reload => true
+  action :enable
+end
+
+script "install_rabittmq-server" do
+  user "root"
+  interpreter "bash"
+  code <<-EOH
+  sudo rabbitmqctl add_user nachovidal inf-nacho_4321
+  sudo rabbitmqctl add_vhost infantiumvhost
+  sudo rabbitmqctl set_permissions -p infantiumvhost nachovidal ".*" ".*" ".*"
+  EOH
+  notifies :restart, "service[rabbitmq-server]"
+end
+
+##########################################################
 # INSTALL VIRTUALENV: And creates the app env
 ##########################################################
 package "python-pip"

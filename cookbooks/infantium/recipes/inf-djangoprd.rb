@@ -4,16 +4,16 @@
 # Domain DNS
 node[:inf_version] = "www"
 node[:inf_domain] = "infantium.com"
-# Postgresql
-node[:inf_postgre_password] = "postgres"
-node[:inf_postgre_hostname] = node[:inf_version] + "." + node[:inf_domain]
-node[:inf_postgre_max_cons] = 100
-node[:inf_postgre_shared_buff] = 16
+# SHMMAX
+node[:inf_shmmax] = 17179869184
+node[:inf_shmmall] = 4194304
 # Memcached
-node[:inf_memcached_mem] = 512
+node[:inf_memcached_mem] = 2048
 node[:inf_memcached_cons] = 2048
 # uWSGI
-node[:inf_uwsgi_workers] = 4
+node[:inf_uwsgi_workers] = 8
+# Settings
+node[:settings] = "settings.prd.py"
 
 ##########################################################
 # START PROVISIONING
@@ -108,6 +108,27 @@ service "memcached" do
 end
 
 ##########################################################
+# INSTALL RABBITMQ-SERVER: And creates user and vhost
+##########################################################
+package "rabbitmq-server"
+
+service "rabbitmq-server" do
+  supports :restart => true, :reload => true
+  action :enable
+end
+
+script "install_rabittmq-server" do
+  user "root"
+  interpreter "bash"
+  code <<-EOH
+  sudo rabbitmqctl add_user nachovidal inf-nacho_4321
+  sudo rabbitmqctl add_vhost infantiumvhost
+  sudo rabbitmqctl set_permissions -p infantiumvhost nachovidal ".*" ".*" ".*"
+  EOH
+  notifies :restart, "service[rabbitmq-server]"
+end
+
+##########################################################
 # INSTALL VIRTUALENV: And creates the app env
 ##########################################################
 package "python-pip"
@@ -120,7 +141,6 @@ script "install_virtualenv" do
   mkdir -p /var/www/infantium_portal
   cd /var/www/infantium_portal
   sudo pip install virtualenv
-# rm -rf env
   virtualenv env
   EOH
 end
@@ -164,30 +184,72 @@ script "pull_source" do
   code <<-EOH
   cd /var/www/infantium_portal
   cp -rf infantium /tmp/
-  rm -rf infantium
-  unzip /tmp/infantium.zip -d /var/www/infantium_portal/infantium
-  mv /var/www/infantium_portal/infantium/infantium/settings.py /var/www/infantium_portal/infantium/infantium/settings.dev.py
-  mv /var/www/infantium_portal/infantium/infantium/settings.prod.py /var/www/infantium_portal/infantium/infantium/settings.py
+  rm -rf /var/www/infantium_portal/infantium
+  unzip -o /tmp/infantium.zip -d /var/www/infantium_portal/infantium
+  mv /var/www/infantium_portal/infantium/infantium/settings.py /var/www/infantium_portal/infantium/infantium/settings.back.py
+  mv /var/www/infantium_portal/infantium/infantium/#{node[:settings]} /var/www/infantium_portal/infantium/infantium/settings.py
   EOH
 end
 
 
 ##########################################################
-# INSTALL DJANGO: And requirements
+# INSTALL DJANGO: Previous OS stuff
 ##########################################################
+package "build-essential"
+package "g++"
 package "python-dev"
+package "python2.7-dev"
 package "libpq-dev"
 package "python-lxml"
 package "libxml2-dev"
 package "libxslt-dev"
 package "gettext"
+package "libjpeg-dev"
+package "libfreetype6-dev"
+package "zlib1g-dev"
+package "libpng12-dev"
+package "unixodbc-dev"
+package "unixodbc-bin"
+package "libssl-dev"
+package "libssl1.0.0"
+package "libssl1.0.0-dbg"
+package "git"
 
+##########################################################
+# DJANGO SETUP: Set static files
+##########################################################
+=begin
+script "install_SQLServerDriver" do
+  user "root"
+  cwd "/var/www"
+  interpreter "bash"
+  code <<-EOH
+  cd /tmp/
+  wget ftp://ftp.unixodbc.org/pub/unixODBC/unixODBC-2.3.0.tar.gz
+  tar xvf unixODBC-2.3.0.tar.gz
+  wget http://download.microsoft.com/download/6/A/B/6AB27E13-46AE-4CE9-AFFD-406367CADC1D/Linux6/sqlncli-11.0.1790.0.tar.gz
+  tar xvf sqlncli-11.0.1790.0.tar.gz
+  cd unixODBC-2.3.0/
+  ./configure --disable-gui --disable-drivers --enable-iconv --with-iconv-char-enc=UTF8 --with-iconv-ucode-enc=UTF16LE
+  sudo make install
+  cd ..
+  sudo ln -nfs /lib/x86_64-linux-gnu/libssl.so.1.0.0 /usr/lib/libssl.so.10
+  sudo ln -nfs /lib/x86_64-linux-gnu/libcrypto.so.1.0.0 /usr/lib/libcrypto.so.10
+  sudo ldconfig /usr/local/lib
+  cd sqlncli-11.0.1790.0/
+  sudo bash ./install.sh install --force
+  EOH
+end
+=end
+
+##########################################################
+# DJANGO SETUP: Set requirements
+##########################################################
 script "install_django" do
   user "root"
   cwd "/var/www"
   interpreter "bash"
   code <<-EOH
-  sudo apt-get install libjpeg libjpeg-dev libfreetype6 libfreetype6-dev zlib1g-dev
   source /var/www/infantium_portal/env/bin/activate
   pip install -r /var/www/infantium_portal/infantium/requirements.txt
   deactivate
@@ -195,101 +257,7 @@ script "install_django" do
 end
 
 ##########################################################
-# INSTALL POSTGRESQL: And automated database backup
-##########################################################
-package "postgresql"
-package "postgresql-contrib"
-
-service "postgresql" do
-  supports :restart => true, :status => true, :reload => false
-  start_command "sudo service postgresql start"
-  stop_command "sudo service postgresql stop"
-  restart_command "sudo service postgresql restart"
-  status_command "sudo service postgresql status"
-end
-
-template "/etc/postgresql/9.1/main/postgresql.conf" do
-  owner "postgres"
-  group "postgres"
-  mode "0600"
-end
-
-template "/etc/postgresql/9.1/main/pg_hba.conf" do
-  owner "postgres"
-  group "postgres"
-  mode "0600"
-end
-
-# Set enough SHM for postgresqld
-script "set_SHMMAX_kernel" do
-  user "root"
-  cwd "/var/www"
-  interpreter "bash"
-  code <<-EOH
-  sudo sysctl -w kernel.shmmax=17179869184
-  sudo sysctl -w kernel.shmall=4194304
-  sudo sysctl -p /etc/sysctl.conf
-  EOH
-  notifies :restart, "service[postgresql]", :immediately
-end
-
-# Set enough SHM for postgresqld
-template "/etc/rc.local" do
-  owner "root"
-  group "root"
-  mode "0755"
-end
-
-# From https://github.com/opscode-cookbooks/postgresql/blob/master/recipes/server.rb
-#
-# Default PostgreSQL install has 'ident' checking on unix user 'postgres'
-# and 'md5' password checking with connections from 'localhost'. This script
-# runs as user 'postgres', so we can execute the 'role' and 'database' resources
-# as 'root' later on, passing the below credentials in the PG client.
-##########################################################
-# Postgresql start up
-# WARN: It refreshes DB with clean backup every time! make sure you have the correct db dump in chef-repo/database
-##########################################################
-#script "setup-postgresql" do
-  #user "postgres"
-  #cwd "/var/www"
-  #interpreter "bash"
-  #code <<-EOH
-  #echo "ALTER ROLE postgres PASSWORD 'postgres';" | psql
-  #dropdb infantiumdb
-  #createdb -E UTF8 infantiumdb
-  #psql infantiumdb < /tmp/infantiumdb_dump_chef.dump
-  #EOH
-  #action :run
-#end
-
-##########################################################
-# PGPOOL2 SETUP
-##########################################################
-package "pgpool2"
-
-service "pgpool2" do
-  supports :restart => true, :reload => true
-  action :enable
-end
-
-template "/etc/pgpool2/pgpool.conf" do
-  mode "0644"
-  owner "root"
-  group "root"
-end
-
-template "/etc/pgpool2/pool_hba.conf" do
-  mode "0644"
-  owner "root"
-  group "root"
-  notifies :restart, "service[pgpool2]", :immediately
-  notifies :restart, "service[postgresql]", :immediately
-end
-
-##########################################################
 # DJANGO SETUP: Set static files
-# Monkey Patch: Restart Postgresql manually to avoid migrations fail miserably in random situations (alive connections)
 ##########################################################
 script "django-app-setup" do
   user "root"
@@ -297,14 +265,13 @@ script "django-app-setup" do
   interpreter "bash"
   code <<-EOH
   sudo -s
-  unzip /tmp/media.zip -d /var/www/infantium_portal/infantium/media
+  #unzip /tmp/media.zip -d /var/www/infantium_portal/infantium/media
   source /var/www/infantium_portal/env/bin/activate
   cd /var/www/infantium_portal/infantium
   mkdir logs
   touch logs/django.log
   touch logs/django_request.log
-  python ./manage.py collectstatic --noinput
-  service postgresql restart
+  #python ./manage.py collectstatic --noinput
   python ./manage.py migrate --all --delete-ghost-migrations
   python ./manage.py syncdb --noinput
   python ./manage.py update_translation_fields
@@ -312,9 +279,17 @@ script "django-app-setup" do
   EOH
   notifies :restart, "service[uwsgi]"
   notifies :restart, "service[nginx]"
-  notifies :restart, "service[pgpool2]", :immediately
-  notifies :restart, "service[postgresql]", :immediately
   notifies :restart, "service[memcached]", :immediately
+end
+
+##########################################################
+# Start Up Scripts
+##########################################################
+# Set init params
+template "/etc/rc.local" do
+  owner "root"
+  group "root"
+  mode "0755"
 end
 
 ##########################################################
@@ -341,24 +316,6 @@ script "django-app-permissions" do
   sudo chown -R $USER:nginx /var/www/infantium_portal
   sudo chmod -R g+w /var/www/infantium_portal
   EOH
-end
-
-##########################################################
-# Automated backuping
-##########################################################
-script "pg_backup_infantiumdb-setup" do
-  user "root"
-  cwd "/var/www"
-  interpreter "bash"
-  code <<-EOH
-  sudo mkdir -p /var/backups/database/postgresql/pg_backup_infantiumdb
-  EOH
-end
-
-template "/etc/cron.daily/pg_backup.sh" do
-  mode "0755"
-  owner "root"
-  group "root"
 end
 
 ##########################################################

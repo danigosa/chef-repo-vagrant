@@ -109,6 +109,27 @@ service "memcached" do
 end
 
 ##########################################################
+# INSTALL RABBITMQ-SERVER: And creates user and vhost
+##########################################################
+package "rabbitmq-server"
+
+service "rabbitmq-server" do
+  supports :restart => true, :reload => true
+  action :enable
+end
+
+script "install_rabittmq-server" do
+  user "root"
+  interpreter "bash"
+  code <<-EOH
+  sudo rabbitmqctl add_user nachovidal inf-nacho_4321
+  sudo rabbitmqctl add_vhost infantiumvhost
+  sudo rabbitmqctl set_permissions -p infantiumvhost nachovidal ".*" ".*" ".*"
+  EOH
+  notifies :restart, "service[rabbitmq-server]"
+end
+
+##########################################################
 # INSTALL VIRTUALENV: And creates the app env
 ##########################################################
 package "python-pip"
@@ -124,32 +145,6 @@ script "install_virtualenv" do
   virtualenv env
   EOH
 end
-
-###################### BEGIN COMMENT #####################
-=begin
-##########################################################
-GETTING SOURCE IN UPDATE-NODE.SH TO ALLOW SSH LOGIN TO BITBUCKET
-INSTALLING GIT IN PROVISION-NODE.SH
-
-package "git"
-
-script "pull_source" do
-  ##########################################################
-  # TODO: Pull source with ssh auth without promtping passwd
-  ##########################################################
-  user "root"
-  cwd "/var/www"
-  interpreter "bash"
-  code <<-EOH
-  cd /var/www/infantium_portal
-  rm -rf infantium
-  git clone https://danigosa@bitbucket.org/gloriamh/infantium.git
-  rm -rf ./infantium/.git ./infantium/.gitignore
-  EOH
-end
-###################### END COMMENT #######################
-=end
-##########################################################
 
 ##########################################################
 # PULL SOURCE: Pull source from /tmp

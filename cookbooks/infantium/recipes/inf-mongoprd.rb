@@ -2,7 +2,7 @@
 # NODE VARIABLES: Tunning it from here
 ##########################################################
 # Domain DNS
-node[:inf_version] = "mongodev"
+node[:inf_version] = "mongoprd"
 node[:inf_domain] = "infantium.com"
 # SHMMAX
 node[:inf_shmmax] = 17179869184
@@ -48,7 +48,6 @@ script "set_SHMMAX_kernel" do
 end
 
 package "mongodb-10gen"
-package "mongodb-clients"
 
 service "mongodb" do
   supports :restart => true, :status => true, :reload => false
