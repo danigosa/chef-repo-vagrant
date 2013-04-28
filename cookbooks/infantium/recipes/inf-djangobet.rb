@@ -130,6 +130,20 @@ script "install_rabittmq-server" do
 end
 
 ##########################################################
+# INSTALL NODEJS AND NPM FOR YUGLIFY
+##########################################################
+package "nodejs"
+package "npm"
+
+script "install_yuglify" do
+  user "root"
+  interpreter "bash"
+  code <<-EOH
+  sudo npm -g install yuglify
+  EOH
+end
+
+##########################################################
 # INSTALL VIRTUALENV: And creates the app env
 ##########################################################
 package "python-pip"
