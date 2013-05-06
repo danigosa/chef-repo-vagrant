@@ -72,4 +72,18 @@ template "/etc/rc.local" do
   mode "0755"
 end
 
+script "install_mairena_db" do
+  user "root"
+  interpreter "bash"
+  code <<-EOH
+  mongo localhost:27017/test /tmp/mairena_setup_db.js
+  EOH
+end
 
+script "install_fary_db" do
+  user "root"
+  interpreter "bash"
+  code <<-EOH
+  mongo localhost:27017/test /tmp/fary_setup_db.js
+  EOH
+end
