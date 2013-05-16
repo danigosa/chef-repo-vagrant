@@ -272,6 +272,44 @@ script "install_django" do
 end
 
 ##########################################################
+# Setup CELERY
+##########################################################
+template "/etc/default/celeryd" do
+  source "celeryd.default.erb"
+  mode "0400"
+  owner "root"
+  group "root"
+end
+
+template "/etc/init.d/celeryd" do
+  source "celeryd.init.d.erb"
+  mode "0550"
+  owner "root"
+  group "root"
+end
+
+script "celery-setup" do
+  user "root"
+  interpreter "bash"
+  code <<-EOH
+  sudo mkdir -p /var/log/celery/
+  sudo mkdir -p /var/run/celery/
+  sudo chown -R nginx:nginx /var/log/celery
+  sudo chmod -R g+w /var/log/celery
+  sudo chown -R nginx:nginx /var/run/celery
+  sudo chmod -R g+w /var/run/celery
+  sudo ln -s -f /etc/init.d/celeryd /etc/rc0.d/
+  sudo ln -s -f /etc/init.d/celeryd /etc/rc1.d/
+  sudo ln -s -f /etc/init.d/celeryd /etc/rc2.d/
+  sudo ln -s -f /etc/init.d/celeryd /etc/rc3.d/
+  sudo ln -s -f /etc/init.d/celeryd /etc/rc4.d/
+  sudo ln -s -f /etc/init.d/celeryd /etc/rc5.d/
+  sudo ln -s -f /etc/init.d/celeryd /etc/rc6.d/
+  EOH
+end
+
+
+##########################################################
 # DJANGO SETUP: Set static files
 ##########################################################
 script "django-app-setup" do
@@ -290,6 +328,7 @@ script "django-app-setup" do
   python ./manage.py migrate --all --delete-ghost-migrations
   python ./manage.py syncdb --noinput
   python ./manage.py update_translation_fields
+  #python ./manage.py celery worker --loglevel=info
   deactivate
   EOH
   notifies :restart, "service[uwsgi]"
@@ -343,3 +382,6 @@ template "/etc/vsftpd.conf" do
   owner "root"
   group "root"
 end
+
+
+
