@@ -5,11 +5,12 @@
 node[:inf_version] = "www"
 node[:inf_domain] = "infantium.com"
 # SHMMAX
+node[:inf_postgre_max_cons] = 100
 node[:inf_shmmax] = 17179869184
 node[:inf_shmmall] = 4194304
 # Memcached
-node[:inf_memcached_mem] = 2048
-node[:inf_memcached_cons] = 2048
+node[:inf_memcached_mem] = 1024
+node[:inf_memcached_cons] = 4048
 # uWSGI
 node[:inf_uwsgi_workers] = 8
 # Settings
@@ -129,6 +130,20 @@ script "install_rabittmq-server" do
 end
 
 ##########################################################
+# INSTALL NODEJS AND NPM FOR YUGLIFY
+##########################################################
+package "nodejs"
+package "npm"
+
+script "install_yuglify" do
+  user "root"
+  interpreter "bash"
+  code <<-EOH
+  sudo npm -g install yuglify
+  EOH
+end
+
+##########################################################
 # INSTALL VIRTUALENV: And creates the app env
 ##########################################################
 package "python-pip"
@@ -141,8 +156,15 @@ script "install_virtualenv" do
   mkdir -p /var/www/infantium_portal
   cd /var/www/infantium_portal
   sudo pip install virtualenv
-  virtualenv env
   EOH
+end
+
+execute "create_virtualenv" do
+  user "root"
+  cwd "/var/www/infantium_portal"
+  command "virtualenv env"
+  creates "/home/ubuntu/virtualenv_created.donothing"
+  action :run
 end
 
 ###################### BEGIN COMMENT #####################
@@ -271,7 +293,6 @@ script "django-app-setup" do
   mkdir logs
   touch logs/django.log
   touch logs/django_request.log
-  #python ./manage.py collectstatic --noinput
   python ./manage.py migrate --all --delete-ghost-migrations
   python ./manage.py syncdb --noinput
   python ./manage.py update_translation_fields
@@ -328,3 +349,44 @@ template "/etc/vsftpd.conf" do
   owner "root"
   group "root"
 end
+
+
+##########################################################
+# Setup CELERY as daemon
+##########################################################
+template "/etc/default/celeryd" do
+  source "celeryd.default.erb"
+  mode "0400"
+  owner "root"
+  group "root"
+end
+
+template "/etc/init.d/celeryd" do
+  source "celeryd.init.d.erb"
+  mode "0550"
+  owner "root"
+  group "root"
+end
+
+script "celery-setup" do
+  user "root"
+  cwd "/var/www/infantium_portal/infantium/"
+  interpreter "bash"
+  code <<-EOH
+  sudo mkdir -p /var/log/celery/
+  sudo mkdir -p /var/run/celery/
+  sudo chown -R nginx:nginx /var/log/celery
+  sudo chmod -R g+w /var/log/celery
+  sudo chown -R nginx:nginx /var/run/celery
+  sudo chmod -R g+w /var/run/celery
+  sudo ln -s -f /etc/init.d/celeryd /etc/rc0.d/
+  sudo ln -s -f /etc/init.d/celeryd /etc/rc1.d/
+  sudo ln -s -f /etc/init.d/celeryd /etc/rc2.d/
+  sudo ln -s -f /etc/init.d/celeryd /etc/rc3.d/
+  sudo ln -s -f /etc/init.d/celeryd /etc/rc4.d/
+  sudo ln -s -f /etc/init.d/celeryd /etc/rc5.d/
+  sudo ln -s -f /etc/init.d/celeryd /etc/rc6.d/
+  sudo /etc/init.d/celeryd restart
+  EOH
+end
+
