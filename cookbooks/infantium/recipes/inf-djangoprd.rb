@@ -9,7 +9,7 @@ node[:inf_postgre_max_cons] = 100
 node[:inf_shmmax] = 17179869184
 node[:inf_shmmall] = 4194304
 # Memcached
-node[:inf_memcached_mem] = 1024
+node[:inf_memcached_mem] = 2048
 node[:inf_memcached_cons] = 4048
 # uWSGI
 node[:inf_uwsgi_workers] = 8
