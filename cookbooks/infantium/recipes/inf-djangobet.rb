@@ -342,18 +342,6 @@ script "django-app-permissions" do
 end
 
 ##########################################################
-# Setup SFTP
-##########################################################
-package "vsftpd"
-
-template "/etc/vsftpd.conf" do
-  mode "0600"
-  owner "root"
-  group "root"
-end
-
-
-##########################################################
 # Setup CELERY as daemon
 ##########################################################
 template "/etc/default/celeryd" do
