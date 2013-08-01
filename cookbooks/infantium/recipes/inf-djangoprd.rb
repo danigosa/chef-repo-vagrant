@@ -210,6 +210,7 @@ script "pull_source" do
   cp -rf infantium/locale /temp/locales/locale$(date +%m%d%y%h%s)
   rm -rf /var/www/infantium_portal/infantium
   unzip -o /tmp/infantium.zip -d /var/www/infantium_portal/infantium
+  cp -rf /tmp/infantium/static infantium/
   mv /var/www/infantium_portal/infantium/infantium/settings_local.py /var/www/infantium_portal/infantium/infantium/settings.back.py
   mv /var/www/infantium_portal/infantium/infantium/#{node[:settings]} /var/www/infantium_portal/infantium/infantium/settings_local.py
   EOH
