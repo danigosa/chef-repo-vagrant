@@ -301,7 +301,7 @@ script "django-app-setup" do
   python ./manage.py migrate --all --delete-ghost-migrations
   python ./manage.py syncdb --noinput
   python ./manage.py update_translation_fields
-  python ./manage.py rebuild_index --no-input
+  python ./manage.py rebuild_index --noinput
   deactivate
   EOH
   notifies :restart, "service[uwsgi]"
