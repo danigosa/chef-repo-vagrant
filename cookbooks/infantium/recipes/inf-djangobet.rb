@@ -207,17 +207,15 @@ script "pull_source" do
   cd /var/www/infantium_portal
   mkdir -p /tmp/locales
   cp -rf infantium /tmp/
-  cp -rf infantium/locale /temp/locales/locale$(date +%m%d%y%h%s)
+  cp -rf infantium/locale /tmp/locales/locale$(date +%m%d%y%h%s)
   rm -rf /var/www/infantium_portal/infantium
   unzip -o /tmp/infantium.zip -d /var/www/infantium_portal/infantium
   cd infantium
   mkdir -p whoosh_index
-  cp -rf /tmp/infantium/static .
   mv /var/www/infantium_portal/infantium/infantium/settings_local.py /var/www/infantium_portal/infantium/infantium/settings.back.py
   mv /var/www/infantium_portal/infantium/infantium/#{node[:settings]} /var/www/infantium_portal/infantium/infantium/settings_local.py
   EOH
 end
-
 
 ##########################################################
 # INSTALL DJANGO: Previous OS stuff
