@@ -22,32 +22,6 @@ echo "ubuntu ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/waagent
 chmod 440 /etc/sudoers.d/waagent
 EOF
 
-ssh -t ${node} "cat > /tmp/fary_setup_db.js" <<'EOF'
-//init with $mongo localhost:27017/test fary_init.js
-db = new Mongo().getDB('mairena_db');
-things={'init': true};
-db.things.insert(things);
-//Add user auth
-if(!db.auth('infantiumongo','1234')){
-   db.addUser('infantiumongo','1234');
-}
-
-quit();
-EOF
-
-ssh -t ${node} "cat > /tmp/mairena_setup_db.js" <<'EOF'
-//init with $mongo localhost:27017/test fary_init.js
-db = new Mongo().getDB('fary_db');
-things={'init': true};
-db.things.insert(things);
-//Add user auth
-if(!db.auth('infantiumongo','1234')){
-   db.addUser('infantiumongo','1234');
-}
-
-quit();
-EOF
-
 ssh -t ${node} "cat > /tmp/provision.sh" <<'EOF'
 #!/bin/bash
 sudo bash /tmp/sudoers.sh
