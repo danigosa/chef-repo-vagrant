@@ -277,7 +277,7 @@ script "install_django" do
   interpreter "bash"
   code <<-EOH
   source /var/www/infantium_portal/env/bin/activate
-  pip install -r /var/www/infantium_portal/infantium/requirements.txt
+  pip install -r /var/www/infantium_portal/infantium/requirements/prod.txt
   deactivate
   EOH
 end
