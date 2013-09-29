@@ -6,7 +6,7 @@ set -x
 user="ubuntu"
 node="$1"
 
-ssh-copy-id -i ~/.ssh/dani-inf-azure.pub ${node}
+ssh-copy-id -i ~/.ssh/vm-inf-azure.pub ${node}
 
 #Patch if not found keying
 #sudo touch /etc/apt/trusted.gpg.d/opscode-keyring.gpg && sudo gpg --fetch-key http://apt.opscode.com/packages@opscode.com.gpg.key && sudo gpg --export 83EF826A | sudo apt-key --keyring /etc/apt/trusted.gpg.d/opscode-keyring.gpg add - && sudo gpg --yes --delete-key 83EF826A
