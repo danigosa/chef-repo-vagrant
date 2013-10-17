@@ -25,6 +25,22 @@ service "chef-client" do
   action [:stop, :disable]
 end
 
+
+##########################################################
+# INCREASE SHMMAX
+##########################################################
+# Set enough SHM for postgresqld
+script "set_SHMMAX_kernel" do
+  user "root"
+  interpreter "bash"
+  code <<-EOH
+  sudo sysctl -w kernel.shmmax=17179869184
+  sudo sysctl -w kernel.shmall=4194304
+  sudo sysctl -p /etc/sysctl.conf
+  EOH
+  notifies :restart, "service[postgresql]", :immediately
+end
+
 ##########################################################
 # INSTALL NGINX
 ##########################################################
@@ -112,7 +128,7 @@ end
 template "/etc/memcached.conf" do
   owner "root"
   group "root"
-  mode "0600"
+  mode "0664"
 end
 
 ##########################################################
