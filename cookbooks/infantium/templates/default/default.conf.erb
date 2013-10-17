@@ -13,6 +13,8 @@ server {
         uwsgi_param UWSGI_PYHOME /var/www/infantium_portal/env;
         uwsgi_param UWSGI_CHDIR /var/www/infantium_portal/infantium;
         uwsgi_param UWSGI_MODULE infantium.wsgi:application;
+        client_max_body_size 100M;
+        client_body_buffer_size 128k;
     }
 }
 
