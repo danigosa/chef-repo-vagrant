@@ -38,6 +38,7 @@ script "set_SHMMAX_kernel" do
   sudo sysctl -w kernel.shmall=4194304
   sudo sysctl -p /etc/sysctl.conf
   EOH
+  notifies :restart, "service[memcached]", :immediately
 end
 
 ##########################################################
