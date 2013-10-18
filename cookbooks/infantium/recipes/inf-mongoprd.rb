@@ -18,6 +18,21 @@ service "chef-client" do
 end
 
 ##########################################################
+# INCREASE SHMMAX
+##########################################################
+# Set enough SHM for postgresqld
+script "set_SHMMAX_kernel" do
+ user "root"
+ interpreter "bash"
+ code <<-EOH
+ sudo sysctl -w kernel.shmmax=17179869184
+ sudo sysctl -w kernel.shmall=4194304
+ sudo sysctl -p /etc/sysctl.conf
+ EOH
+ notifies :restart, "service[memcached]", :immediately
+end
+
+##########################################################
 # INSTALL MONGODB: And automated database backup
 ##########################################################
 template "/etc/apt/sources.list.d/10gen.list" do
