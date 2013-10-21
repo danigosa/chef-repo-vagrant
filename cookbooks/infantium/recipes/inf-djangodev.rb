@@ -12,11 +12,11 @@ node[:inf_shmmall] = 4194304
 node[:inf_memcached_mem] = 512
 node[:inf_memcached_cons] = 2048
 # uWSGI
-node[:inf_uwsgi_workers] = 2
+node[:inf_uwsgi_workers] = 1
 # NGINX
-node[:inf_nginx_workers] = 2
-node[:inf_nginx_worker_cons] = 4500
-node[:inf_nginx_worker_rlimit] = 5000
+node[:inf_nginx_workers] = 1
+node[:inf_nginx_worker_cons] = 900
+node[:inf_nginx_worker_rlimit] = 1000
 # Settings
 node[:settings] = "settings.dev.py"
 
