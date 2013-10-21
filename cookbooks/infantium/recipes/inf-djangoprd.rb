@@ -9,10 +9,14 @@ node[:inf_postgre_max_cons] = 100
 node[:inf_shmmax] = 17179869184
 node[:inf_shmmall] = 4194304
 # Memcached
-node[:inf_memcached_mem] = 2048
+node[:inf_memcached_mem] = 5120
 node[:inf_memcached_cons] = 4048
 # uWSGI
-node[:inf_uwsgi_workers] = 8
+node[:inf_uwsgi_workers] = 4
+# NGINX
+node[:inf_nginx_workers] = 4
+node[:inf_nginx_worker_cons] = 9500
+node[:inf_nginx_worker_rlimit] = 10000
 # Settings
 node[:settings] = "settings.prd.py"
 
@@ -26,9 +30,30 @@ service "chef-client" do
 end
 
 ##########################################################
+# INCREASE SHMMAX
+##########################################################
+# Set enough SHM for postgresqld
+script "set_SHMMAX_kernel" do
+  user "root"
+  interpreter "bash"
+  code <<-EOH
+  sudo sysctl -w kernel.shmmax=17179869184
+  sudo sysctl -w kernel.shmall=4194304
+  sudo sysctl -p /etc/sysctl.conf
+  EOH
+  notifies :restart, "service[memcached]", :immediately
+end
+
+##########################################################
 # INSTALL NGINX
 ##########################################################
 package "nginx"
+
+template "/etc/nginx/nginx.conf" do
+  mode "0600"
+  owner "root"
+  group "root"
+end
 
 template "/etc/nginx/conf.d/default.conf" do
   mode "0600"
