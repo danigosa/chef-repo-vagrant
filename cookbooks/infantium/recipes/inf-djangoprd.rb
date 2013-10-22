@@ -13,6 +13,8 @@ node[:inf_memcached_mem] = 5120
 node[:inf_memcached_cons] = 4048
 # uWSGI
 node[:inf_uwsgi_workers] = 4
+node[:inf_uwsgi_timeout] = 60
+node[:inf_uwsgi_maxsize] = 5
 # NGINX
 node[:inf_nginx_workers] = 4
 node[:inf_nginx_worker_cons] = 9500
