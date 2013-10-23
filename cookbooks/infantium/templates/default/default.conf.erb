@@ -14,7 +14,7 @@ server {
         uwsgi_param UWSGI_CHDIR /var/www/infantium_portal/infantium;
         uwsgi_param UWSGI_MODULE infantium.wsgi:application;
         uwsgi_read_timeout <%= node[:inf_uwsgi_timeout] %>;
-        client_max_body_size <%= node[:inf_uwsgimaxsize] %>M;
+        client_max_body_size <%= node[:inf_uwsgi_maxsize] %>M;
         client_body_buffer_size 128k;
     }
 }
