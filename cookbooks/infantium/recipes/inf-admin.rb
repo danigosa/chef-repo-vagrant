@@ -190,6 +190,8 @@ script "install_virtualenv" do
   mkdir -p /var/www/infantium_portal
   cd /var/www/infantium_portal
   sudo pip install virtualenv
+  cd /home/ubuntu/
+  touch virtualenv_created.donothing
   EOH
 end
 
