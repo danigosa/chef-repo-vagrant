@@ -9,7 +9,7 @@ cp /etc/apt/trusted.gpg.d/opscode-keyring.gpg /tmp
 echo "deb http://apt.opscode.com/ `lsb_release -cs`-0.10 main" | tee /etc/apt/sources.list.d/opscode.list
 cp /tmp/opscode-keyring.gpg /etc/apt/trusted.gpg.d/opscode-keyring.gpg
 apt-get update
-apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install chef opscode-keyring
+apt-get -y install chef opscode-keyring
 
 # Set up remote chef-solo
 install -d -o vagrant -g vagrant /srv/chef-solo

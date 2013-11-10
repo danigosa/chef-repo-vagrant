@@ -12,6 +12,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Every Vagrant virtual environment requires a box to build off of.
   config.vm.box = "inf-vagrant"
   config.vm.provision :shell, :path => "bootstrap.sh"
+  config.vm.box_url = "http://files.vagrantup.com/precise64.box"
 
   # Enable provisioning with chef solo, specifying a cookbooks path, roles
   # path, and data_bags path (all relative to this Vagrantfile), and adding
