@@ -22,7 +22,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
      chef.cookbooks_path = "./cookbooks"
      chef.roles_path = "./roles"
      chef.data_bags_path = "./data_bags"
-     chef.add_recipe "infantium::inf-vagrant"
+     chef.add_recipe "infantium::vagrant"
 
   end
 

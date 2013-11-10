@@ -1,6 +1,0 @@
-{
-    "run_list": [
-        "recipe[infantium::ssh-config]",
-        "recipe[infantium::inf-admin]"
-    ]
-}
