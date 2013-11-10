@@ -87,9 +87,8 @@ script "setup-postgresql" do
   interpreter "bash"
   code <<-EOH
   echo "ALTER ROLE postgres PASSWORD 'postgres';" | psql
-  #dropdb infantiumdb
-  createdb -E UTF8 infantiumdb
-  psql infantiumdb < /vagrant/database/infantiumdb_dump_latest.dump
+  #dropdb yourdb
+  createdb -E UTF8 yourdb
   EOH
   action :run
 end
