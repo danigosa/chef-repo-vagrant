@@ -10,7 +10,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # please see the online documentation at vagrantup.com.
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "inf-vagrant"
+  config.vm.box = "vagrant"
   config.vm.provision :shell, :path => "bootstrap.sh"
   config.vm.box_url = "http://files.vagrantup.com/precise64.box"
 
